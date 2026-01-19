@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router';
 import { LiquidSurface } from './Liquid/LiquidSurface';
 import { getAIResponse, sendToolResult, type AIMessage } from '~/services/ai';
-import { searchMovies, type Movie } from '~/services/tmdb';
+import { searchMovies, discoverMovies, type Movie } from '~/services/tmdb';
+import { useVoiceInput } from '~/hooks/useVoiceInput';
 
 interface ChatMessage {
   id: string;
@@ -17,13 +19,23 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
     {
       id: 'welcome',
       role: 'assistant',
-      content: "Hey there! 🎬 I'm ScanMovie AI. Ask me for movie recommendations, or just chat about films!",
+      content: "Hey there! 🎬 I'm ScanMovie AI. Ask me for movie recommendations, or just chat about films! 🎤 Try voice search!",
     },
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Voice input
+  const { isListening, transcript, isSupported: voiceSupported, startListening, stopListening } = useVoiceInput();
+
+  // Update input when voice transcript changes
+  useEffect(() => {
+    if (transcript) {
+      setInput(transcript);
+    }
+  }, [transcript]);
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -62,42 +74,62 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
 
       const response = await getAIResponse(aiMessages);
 
-      // Handle tool calls (movie search)
+      // Handle tool calls (movie search or discovery)
       if (response.toolCalls && response.toolCalls.length > 0) {
         const toolCall = response.toolCalls[0];
+        const toolName = toolCall.function.name;
+        const args = JSON.parse(toolCall.function.arguments);
         
-        if (toolCall.function.name === 'search_movies') {
-          const args = JSON.parse(toolCall.function.arguments);
-          const query = args.query;
-          
-          // Search movies
-          const movieResults = await searchMovies(query);
-          const topMovies = movieResults.slice(0, 6);
-          
-          // Get AI follow-up summary
-          const toolResultSummary = topMovies.length > 0
-            ? `Found ${topMovies.length} movies: ${topMovies.map(m => m.title).join(', ')}`
-            : 'No movies found for that search.';
-          
-          const followUp = await sendToolResult(
-            aiMessages,
-            toolCall.id,
-            'search_movies',
-            toolResultSummary
+        let movieResults: Movie[] = [];
+        let toolResultSummary = '';
+        
+        if (toolName === 'explore_cinema') {
+          // Smart Discovery - use enhanced filters
+          const { genre_ids, year_gte, year_lte, vote_average_gte, vote_count_gte, vote_count_lte, sort_by, page } = args;
+          movieResults = await discoverMovies(
+            genre_ids,
+            year_gte,
+            year_lte,
+            sort_by || 'popularity.desc',
+            page || '1',
+            vote_average_gte,
+            vote_count_gte,
+            vote_count_lte
           );
-
-          // Update with movie results
-          setMessages(prev => prev.map(m => 
-            m.id === loadingId
-              ? {
-                  ...m,
-                  content: followUp.content || `Here's what I found for "${query}" 🍿`,
-                  movies: topMovies,
-                  isLoading: false,
-                }
-              : m
-          ));
+          
+          toolResultSummary = movieResults.length > 0
+            ? `Discovered ${movieResults.length} movies: ${movieResults.slice(0, 5).map(m => m.title).join(', ')}`
+            : 'No movies found with those filters.';
+        } else if (toolName === 'search_movies') {
+          // Fallback text search for specific titles/actors
+          const query = args.query;
+          movieResults = await searchMovies(query);
+          
+          toolResultSummary = movieResults.length > 0
+            ? `Found ${movieResults.length} movies: ${movieResults.slice(0, 5).map(m => m.title).join(', ')}`
+            : 'No movies found for that search.';
         }
+
+        const topMovies = movieResults.slice(0, 6);
+        
+        const followUp = await sendToolResult(
+          aiMessages,
+          toolCall.id,
+          toolName,
+          toolResultSummary
+        );
+
+        // Update with movie results
+        setMessages(prev => prev.map(m => 
+          m.id === loadingId
+            ? {
+                ...m,
+                content: followUp.content || `Here's what I found! 🍿`,
+                movies: topMovies,
+                isLoading: false,
+              }
+            : m
+        ));
       } else {
         // Regular text response
         setMessages(prev => prev.map(m =>
@@ -264,35 +296,41 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                               style={{ scrollSnapType: 'x mandatory' }}
                             >
                               {message.movies.map((movie) => (
-                                <motion.div
+                                <Link
                                   key={movie.id}
-                                  whileHover={{ scale: 1.05 }}
-                                  whileTap={{ scale: 0.98 }}
-                                  className="flex-shrink-0 cursor-pointer"
-                                  style={{ scrollSnapAlign: 'start' }}
+                                  to={`/movie/${movie.id}`}
+                                  onClick={onClose}
+                                  style={{ textDecoration: 'none' }}
                                 >
-                                  <div className="w-24 flex flex-col gap-1">
-                                    {/* Poster */}
-                                    <div className="relative w-24 h-36 rounded-lg overflow-hidden bg-white/5 shadow-lg">
-                                      <img
-                                        src={movie.poster_path
-                                          ? `https://image.tmdb.org/t/p/w185${movie.poster_path}`
-                                          : 'https://via.placeholder.com/185x278?text=No+Poster'
-                                        }
-                                        alt={movie.title}
-                                        className="w-full h-full object-cover"
-                                      />
-                                      {/* Rating Badge */}
-                                      <div className="absolute bottom-1 left-1 bg-black/80 backdrop-blur-sm rounded px-1.5 py-0.5 text-[9px] font-semibold text-amber-400">
-                                        ⭐ {movie.vote_average?.toFixed(1)}
+                                  <motion.div
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    className="flex-shrink-0 cursor-pointer"
+                                    style={{ scrollSnapAlign: 'start' }}
+                                  >
+                                    <div className="w-24 flex flex-col gap-1">
+                                      {/* Poster */}
+                                      <div className="relative w-24 h-36 rounded-lg overflow-hidden bg-white/5 shadow-lg">
+                                        <img
+                                          src={movie.poster_path
+                                            ? `https://image.tmdb.org/t/p/w185${movie.poster_path}`
+                                            : 'https://via.placeholder.com/185x278?text=No+Poster'
+                                          }
+                                          alt={movie.title}
+                                          className="w-full h-full object-cover"
+                                        />
+                                        {/* Rating Badge */}
+                                        <div className="absolute bottom-1 left-1 bg-black/80 backdrop-blur-sm rounded px-1.5 py-0.5 text-[9px] font-semibold text-amber-400">
+                                          ⭐ {movie.vote_average?.toFixed(1)}
+                                        </div>
                                       </div>
+                                      {/* Title */}
+                                      <p className="text-[10px] text-gray-400 text-center leading-tight line-clamp-2">
+                                        {movie.title}
+                                      </p>
                                     </div>
-                                    {/* Title */}
-                                    <p className="text-[10px] text-gray-400 text-center leading-tight line-clamp-2">
-                                      {movie.title}
-                                    </p>
-                                  </div>
-                                </motion.div>
+                                  </motion.div>
+                                </Link>
                               ))}
                             </div>
                           </>
@@ -304,25 +342,26 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Input - iMessage Style */}
+              {/* Input - iMessage Style with Voice */}
               <form onSubmit={handleSubmit} style={{
                 padding: '12px 16px 16px',
               }}>
                 <div style={{
                   display: 'flex',
-                  gap: '10px',
+                  gap: '8px',
                   alignItems: 'center',
                   background: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  border: isListening ? '1px solid #667eea' : '1px solid rgba(255,255,255,0.1)',
                   borderRadius: '24px',
                   padding: '6px 6px 6px 18px',
+                  transition: 'border-color 0.2s ease',
                 }}>
                   <input
                     ref={inputRef}
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Ask for recommendations..."
+                    placeholder={isListening ? "Listening..." : "Ask for recommendations..."}
                     disabled={isLoading}
                     style={{
                       flex: 1,
@@ -333,6 +372,54 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                       fontSize: '14px',
                     }}
                   />
+                  
+                  {/* Voice Button */}
+                  {voiceSupported && (
+                    <motion.button
+                      type="button"
+                      onClick={isListening ? stopListening : startListening}
+                      disabled={isLoading}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      style={{
+                        background: isListening 
+                          ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                          : 'rgba(255,255,255,0.1)',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '34px',
+                        height: '34px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        fontSize: '14px',
+                        transition: 'background 0.2s ease',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {isListening ? (
+                        <motion.div
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 1, repeat: Infinity }}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="6" y="6" width="12" height="12" rx="2" />
+                          </svg>
+                        </motion.div>
+                      ) : (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                          <line x1="12" y1="19" x2="12" y2="23"></line>
+                          <line x1="8" y1="23" x2="16" y2="23"></line>
+                        </svg>
+                      )}
+                    </motion.button>
+                  )}
+                  
+                  {/* Send Button */}
                   <motion.button
                     type="submit"
                     disabled={isLoading || !input.trim()}

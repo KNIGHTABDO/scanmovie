@@ -413,3 +413,155 @@ export function getAllUserData(): UserData {
 export function resetAllUserData(): void {
   saveData({ ...defaultUserData });
 }
+
+// ============================================================
+// WATCH PARTY SYSTEM
+// ============================================================
+
+export interface WatchParty {
+  id: string;
+  name: string;
+  description: string;
+  emoji: string;
+  movieIds: number[];
+  createdAt: number;
+  createdBy: string; // Display name
+  sharedWith: string[]; // Could be names or placeholder
+}
+
+const WATCH_PARTY_KEY = 'scanmovie_watch_parties';
+
+function getStoredWatchParties(): WatchParty[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const stored = localStorage.getItem(WATCH_PARTY_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveWatchParties(parties: WatchParty[]): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(WATCH_PARTY_KEY, JSON.stringify(parties));
+}
+
+export function createWatchParty(
+  name: string,
+  emoji: string,
+  movieIds: number[],
+  createdBy: string = 'You',
+  description: string = ''
+): WatchParty {
+  const party: WatchParty = {
+    id: `party-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    name,
+    emoji,
+    description,
+    movieIds,
+    createdAt: Date.now(),
+    createdBy,
+    sharedWith: [],
+  };
+  
+  const parties = getStoredWatchParties();
+  parties.unshift(party);
+  saveWatchParties(parties);
+  
+  return party;
+}
+
+export function getWatchParties(): WatchParty[] {
+  return getStoredWatchParties();
+}
+
+export function getWatchPartyById(id: string): WatchParty | null {
+  const parties = getStoredWatchParties();
+  return parties.find(p => p.id === id) || null;
+}
+
+export function deleteWatchParty(id: string): void {
+  const parties = getStoredWatchParties();
+  const filtered = parties.filter(p => p.id !== id);
+  saveWatchParties(filtered);
+}
+
+export function updateWatchPartyMovies(id: string, movieIds: number[]): void {
+  const parties = getStoredWatchParties();
+  const index = parties.findIndex(p => p.id === id);
+  if (index !== -1) {
+    parties[index].movieIds = movieIds;
+    saveWatchParties(parties);
+  }
+}
+
+export function addMovieToWatchParty(partyId: string, movieId: number): void {
+  const parties = getStoredWatchParties();
+  const party = parties.find(p => p.id === partyId);
+  if (party && !party.movieIds.includes(movieId)) {
+    party.movieIds.push(movieId);
+    saveWatchParties(parties);
+  }
+}
+
+export function removeMovieFromWatchParty(partyId: string, movieId: number): void {
+  const parties = getStoredWatchParties();
+  const party = parties.find(p => p.id === partyId);
+  if (party) {
+    party.movieIds = party.movieIds.filter(id => id !== movieId);
+    saveWatchParties(parties);
+  }
+}
+
+/**
+ * Generate a shareable URL/code for a watch party
+ * Uses base64 encoding of party data for simple sharing
+ */
+export function generateShareableLink(party: WatchParty): string {
+  const shareData = {
+    n: party.name,
+    e: party.emoji,
+    m: party.movieIds,
+    d: party.description,
+    c: party.createdBy,
+  };
+  
+  const encoded = btoa(JSON.stringify(shareData));
+  // In a real app, this would be a full URL - using hash for simplicity
+  return `${typeof window !== 'undefined' ? window.location.origin : ''}/watch-party?share=${encoded}`;
+}
+
+/**
+ * Import a watch party from a shareable link/code
+ */
+export function importWatchParty(shareCode: string): WatchParty | null {
+  try {
+    // Extract code from URL or use directly
+    const code = shareCode.includes('share=') 
+      ? shareCode.split('share=')[1] 
+      : shareCode;
+    
+    const decoded = JSON.parse(atob(code));
+    
+    const party: WatchParty = {
+      id: `party-imported-${Date.now()}`,
+      name: decoded.n || 'Imported Party',
+      emoji: decoded.e || '🎬',
+      description: decoded.d || '',
+      movieIds: decoded.m || [],
+      createdAt: Date.now(),
+      createdBy: decoded.c || 'Friend',
+      sharedWith: [],
+    };
+    
+    // Save the imported party
+    const parties = getStoredWatchParties();
+    parties.unshift(party);
+    saveWatchParties(parties);
+    
+    return party;
+  } catch (error) {
+    console.error('Failed to import watch party:', error);
+    return null;
+  }
+}

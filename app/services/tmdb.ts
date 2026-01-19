@@ -149,22 +149,35 @@ export async function searchMovies(query: string): Promise<Movie[]> {
  * This is the smart discovery endpoint - better for genre/mood searches
  */
 export async function discoverMovies(
-  genreId?: string,
-  year?: string,
-  sortBy: string = 'popularity.desc'
+  genreIds?: string,
+  yearGte?: string,
+  yearLte?: string,
+  sortBy: string = 'popularity.desc',
+  page: string = '1',
+  voteAverageGte?: string,
+  voteCountGte?: string,
+  voteCountLte?: string
 ): Promise<Movie[]> {
   const params = new URLSearchParams({
     api_key: TMDB_API_KEY,
     include_adult: 'false',
     include_video: 'false',
     language: 'en-US',
-    page: '1',
+    page: page,
     sort_by: sortBy,
-    'vote_count.gte': '200', // Filter out low-quality spam
   });
 
-  if (genreId) params.append('with_genres', genreId);
-  if (year) params.append('primary_release_year', year);
+  // Only add vote_count.gte filter if not looking for hidden gems
+  if (!voteCountLte) {
+    params.append('vote_count.gte', voteCountGte || '100');
+  }
+
+  if (genreIds) params.append('with_genres', genreIds);
+  if (yearGte) params.append('primary_release_date.gte', `${yearGte}-01-01`);
+  if (yearLte) params.append('primary_release_date.lte', `${yearLte}-12-31`);
+  if (voteAverageGte) params.append('vote_average.gte', voteAverageGte);
+  if (voteCountGte) params.append('vote_count.gte', voteCountGte);
+  if (voteCountLte) params.append('vote_count.lte', voteCountLte);
 
   const response = await fetch(`${BASE_URL}/discover/movie?${params.toString()}`);
   if (!response.ok) {
@@ -237,4 +250,107 @@ export function getBackdropUrl(path: string | null, size: 'w300' | 'w780' | 'w12
 export function getProfileUrl(path: string | null, size: 'w45' | 'w185' | 'h632' | 'original' = 'w185'): string {
   if (!path) return '/placeholder-profile.jpg';
   return `${IMAGE_BASE_URL}/${size}${path}`;
+}
+
+// ============================================================
+// PERSON / CAST MEMBER APIs
+// ============================================================
+
+export interface Person {
+  id: number;
+  name: string;
+  biography: string;
+  birthday: string | null;
+  deathday: string | null;
+  place_of_birth: string | null;
+  profile_path: string | null;
+  known_for_department: string;
+  popularity: number;
+  also_known_as: string[];
+  gender: number;
+  homepage: string | null;
+}
+
+export interface PersonMovieCredit {
+  id: number;
+  title: string;
+  character?: string;
+  job?: string;
+  department?: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  release_date: string;
+  vote_average: number;
+  vote_count: number;
+  overview: string;
+  credit_id: string;
+}
+
+export interface PersonCredits {
+  cast: PersonMovieCredit[];
+  crew: PersonMovieCredit[];
+}
+
+export interface PersonImages {
+  profiles: {
+    file_path: string;
+    width: number;
+    height: number;
+    aspect_ratio: number;
+    vote_average: number;
+  }[];
+}
+
+/**
+ * Fetch person details by ID
+ */
+export async function getPersonDetails(personId: number): Promise<Person> {
+  const url = withApiKey(`${BASE_URL}/person/${personId}?language=en-US`);
+  const response = await fetch(url);
+  if (!response.ok) {
+    console.error('getPersonDetails failed:', response.status, await response.text());
+    throw new Error('Failed to fetch person details');
+  }
+  return response.json();
+}
+
+/**
+ * Fetch person's movie credits (as cast and crew)
+ */
+export async function getPersonMovieCredits(personId: number): Promise<PersonCredits> {
+  const url = withApiKey(`${BASE_URL}/person/${personId}/movie_credits?language=en-US`);
+  const response = await fetch(url);
+  if (!response.ok) {
+    console.error('getPersonMovieCredits failed:', response.status, await response.text());
+    throw new Error('Failed to fetch person movie credits');
+  }
+  return response.json();
+}
+
+/**
+ * Fetch person's images/photos
+ */
+export async function getPersonImages(personId: number): Promise<PersonImages> {
+  const url = withApiKey(`${BASE_URL}/person/${personId}/images`);
+  const response = await fetch(url);
+  if (!response.ok) {
+    console.error('getPersonImages failed:', response.status, await response.text());
+    throw new Error('Failed to fetch person images');
+  }
+  return response.json();
+}
+
+/**
+ * Search for people by name
+ */
+export async function searchPeople(query: string): Promise<Person[]> {
+  if (!query.trim()) return [];
+  const url = withApiKey(`${BASE_URL}/search/person?query=${encodeURIComponent(query)}&language=en-US&page=1`);
+  const response = await fetch(url);
+  if (!response.ok) {
+    console.error('searchPeople failed:', response.status, await response.text());
+    throw new Error('Failed to search people');
+  }
+  const data = await response.json();
+  return data.results;
 }

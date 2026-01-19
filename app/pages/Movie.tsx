@@ -14,6 +14,7 @@
  * - Personal Rating
  * - Add to Collection
  * - Add to Comparison
+ * - AI-powered "More Like This" insights
  */
 
 import { useEffect, useState, useRef } from 'react';
@@ -22,6 +23,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
 import { MovieCard } from '~/components/MovieCard';
 import { useUserData } from '~/contexts/UserDataContext';
+import { explainMovieConnections } from '~/services/ai';
 import {
   getMovieDetails,
   getMovieCredits,
@@ -33,6 +35,7 @@ import {
   type Credits,
 } from '~/services/tmdb';
 
+
 export function MoviePage() {
   const { id } = useParams();
   const movieId = parseInt(id || '0', 10);
@@ -41,6 +44,8 @@ export function MoviePage() {
   const [credits, setCredits] = useState<Credits | null>(null);
   const [similar, setSimilar] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
+  const [aiInsight, setAiInsight] = useState<string>('');
+  const [aiInsightLoading, setAiInsightLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // User data hooks
@@ -51,6 +56,7 @@ export function MoviePage() {
     
     async function fetchMovieData() {
       setLoading(true);
+      setAiInsight('');
       try {
         const [movieData, creditsData, similarData] = await Promise.all([
           getMovieDetails(movieId),
@@ -63,6 +69,15 @@ export function MoviePage() {
         
         // Track in view history
         addToViewHistory(movieId);
+        
+        // Fetch AI insight for similar movies (non-blocking)
+        if (similarData.length > 0) {
+          setAiInsightLoading(true);
+          explainMovieConnections(movieData, similarData.slice(0, 4))
+            .then(insight => setAiInsight(insight))
+            .catch(() => setAiInsight(''))
+            .finally(() => setAiInsightLoading(false));
+        }
       } catch (error) {
         console.error('Failed to fetch movie data:', error);
       } finally {
@@ -283,7 +298,20 @@ export function MoviePage() {
                     style={{ marginBottom: '24px' }}
                   >
                     <span style={{ opacity: 0.6, marginRight: '8px' }}>Director:</span>
-                    <span style={{ fontWeight: 500 }}>{director.name}</span>
+                    <Link
+                      to={`/person/${director.id}`}
+                      style={{
+                        fontWeight: 500,
+                        color: '#fff',
+                        textDecoration: 'none',
+                        borderBottom: '1px solid rgba(255,255,255,0.3)',
+                        transition: 'border-color 0.2s ease',
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#667eea')}
+                      onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)')}
+                    >
+                      {director.name}
+                    </Link>
                   </motion.div>
                 )}
 
@@ -334,54 +362,60 @@ export function MoviePage() {
               }}
             >
               {topCast.map((member, index) => (
-                <motion.div
+                <Link
                   key={member.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05, y: -5 }}
+                  to={`/person/${member.id}`}
+                  style={{ textDecoration: 'none' }}
                 >
-                  <LiquidSurface
-                    variant="card"
-                    cornerRadius={16}
-                    padding="12px"
-                    displacementScale={50}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    style={{ cursor: 'pointer' }}
                   >
-                    <div style={{ textAlign: 'center' }}>
-                      <div
-                        style={{
-                          width: '100px',
-                          height: '100px',
-                          borderRadius: '50%',
-                          overflow: 'hidden',
-                          margin: '0 auto 12px',
-                        }}
-                      >
-                        <img
-                          src={getProfileUrl(member.profile_path, 'w185')}
-                          alt={member.name}
+                    <LiquidSurface
+                      variant="card"
+                      cornerRadius={16}
+                      padding="12px"
+                      displacementScale={50}
+                    >
+                      <div style={{ textAlign: 'center' }}>
+                        <div
                           style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
+                            width: '100px',
+                            height: '100px',
+                            borderRadius: '50%',
+                            overflow: 'hidden',
+                            margin: '0 auto 12px',
                           }}
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%23333" width="100" height="100"/><text x="50" y="55" font-size="40" text-anchor="middle" fill="%23666">👤</text></svg>';
-                          }}
-                        />
+                        >
+                          <img
+                            src={getProfileUrl(member.profile_path, 'w185')}
+                            alt={member.name}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                            }}
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%23333" width="100" height="100"/><text x="50" y="55" font-size="40" text-anchor="middle" fill="%23666">👤</text></svg>';
+                            }}
+                          />
+                        </div>
+                        <p style={{ fontWeight: 600, fontSize: '14px', marginBottom: '4px', color: '#fff' }}>{member.name}</p>
+                        <p style={{ fontSize: '12px', opacity: 0.6, color: '#fff' }}>{member.character}</p>
                       </div>
-                      <p style={{ fontWeight: 600, fontSize: '14px', marginBottom: '4px' }}>{member.name}</p>
-                      <p style={{ fontSize: '12px', opacity: 0.6 }}>{member.character}</p>
-                    </div>
-                  </LiquidSurface>
-                </motion.div>
+                    </LiquidSurface>
+                  </motion.div>
+                </Link>
               ))}
             </div>
           </motion.section>
         )}
 
-        {/* Similar Movies Section */}
+        {/* Similar Movies Section - Enhanced with AI Insights */}
         {similar.length > 0 && (
           <motion.section
             initial={{ opacity: 0, y: 50 }}
@@ -389,7 +423,7 @@ export function MoviePage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div style={{ marginBottom: '24px', display: 'inline-block' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
               <LiquidSurface
                 variant="container"
                 cornerRadius={20}
@@ -398,9 +432,80 @@ export function MoviePage() {
                 displacementScale={45}
                 mouseContainer={containerRef}
               >
-                <h2 style={{ fontSize: '24px', fontWeight: 600 }}>🎬 Similar Movies</h2>
+                <h2 style={{ fontSize: '24px', fontWeight: 600 }}>🤖 More Like This</h2>
               </LiquidSurface>
             </div>
+
+            {/* AI Insight Card */}
+            <AnimatePresence>
+              {(aiInsight || aiInsightLoading) && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  style={{ marginBottom: '24px' }}
+                >
+                  <LiquidSurface
+                    variant="card"
+                    cornerRadius={16}
+                    padding="16px 20px"
+                    displacementScale={40}
+                    mouseContainer={containerRef}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                      <div style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '18px',
+                        flexShrink: 0,
+                      }}>
+                        ✨
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <p style={{ 
+                          fontSize: '13px', 
+                          fontWeight: 600, 
+                          color: 'rgba(255,255,255,0.5)', 
+                          marginBottom: '6px',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                        }}>
+                          AI Insight
+                        </p>
+                        {aiInsightLoading ? (
+                          <div style={{ display: 'flex', gap: '4px' }}>
+                            <motion.span
+                              animate={{ opacity: [0.4, 1, 0.4] }}
+                              transition={{ duration: 1, repeat: Infinity, delay: 0 }}
+                              style={{ color: 'rgba(255,255,255,0.6)' }}
+                            >●</motion.span>
+                            <motion.span
+                              animate={{ opacity: [0.4, 1, 0.4] }}
+                              transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
+                              style={{ color: 'rgba(255,255,255,0.6)' }}
+                            >●</motion.span>
+                            <motion.span
+                              animate={{ opacity: [0.4, 1, 0.4] }}
+                              transition={{ duration: 1, repeat: Infinity, delay: 0.4 }}
+                              style={{ color: 'rgba(255,255,255,0.6)' }}
+                            >●</motion.span>
+                          </div>
+                        ) : (
+                          <p style={{ fontSize: '15px', lineHeight: 1.6, color: '#fff' }}>
+                            {aiInsight}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </LiquidSurface>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <div
               style={{
@@ -409,8 +514,8 @@ export function MoviePage() {
                 gap: '24px',
               }}
             >
-              {similar.slice(0, 6).map((movie, index) => (
-                <MovieCard key={movie.id} movie={movie} index={index} />
+              {similar.slice(0, 6).map((m, index) => (
+                <MovieCard key={m.id} movie={m} index={index} />
               ))}
             </div>
           </motion.section>

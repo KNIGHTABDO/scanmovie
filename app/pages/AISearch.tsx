@@ -7,6 +7,7 @@ import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
 import { MovieCard } from '~/components/MovieCard';
 import { getAIResponse, sendToolResult, type AIMessage } from '~/services/ai';
 import { searchMovies, discoverMovies, type Movie } from '~/services/tmdb';
+import { useVoiceInput } from '~/hooks/useVoiceInput';
 
 export function AISearch() {
   const [query, setQuery] = useState('');
@@ -18,6 +19,9 @@ export function AISearch() {
   const [isMobile, setIsMobile] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Voice input
+  const { isListening, transcript, isSupported: voiceSupported, startListening, stopListening } = useVoiceInput();
 
   // Check mobile on mount
   useEffect(() => {
@@ -31,6 +35,13 @@ export function AISearch() {
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+  
+  // Update query when voice transcript changes
+  useEffect(() => {
+    if (transcript) {
+      setQuery(transcript);
+    }
+  }, [transcript]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,9 +64,18 @@ export function AISearch() {
         let toolResultSummary = '';
         
         if (toolName === 'explore_cinema') {
-          // Smart Discovery - use genre/year/sort filters
-          const { genre_id, year, sort_by } = args;
-          movieResults = await discoverMovies(genre_id, year, sort_by || 'popularity.desc');
+          // Smart Discovery - use enhanced filters
+          const { genre_ids, year_gte, year_lte, vote_average_gte, vote_count_gte, vote_count_lte, sort_by, page } = args;
+          movieResults = await discoverMovies(
+            genre_ids,
+            year_gte,
+            year_lte,
+            sort_by || 'popularity.desc',
+            page || '1',
+            vote_average_gte,
+            vote_count_gte,
+            vote_count_lte
+          );
           
           toolResultSummary = movieResults.length > 0
             ? `Discovered ${movieResults.length} movies: ${movieResults.slice(0, 5).map(m => m.title).join(', ')}`
@@ -279,8 +299,11 @@ export function AISearch() {
                         borderRadius: '50px',
                         overflow: 'hidden',
                         background: 'rgba(0,0,0,0.4)',
-                        border: '1px solid rgba(255,255,255,0.15)',
-                        boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)',
+                        border: isListening ? '1px solid #667eea' : '1px solid rgba(255,255,255,0.15)',
+                        boxShadow: isListening 
+                          ? '0 8px 32px rgba(102, 126, 234, 0.3), inset 0 1px 0 rgba(255,255,255,0.1)'
+                          : '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)',
+                        transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
                       }}
                     >
                       <input
@@ -288,10 +311,10 @@ export function AISearch() {
                         type="text"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        placeholder={isMobile ? "Describe the vibe..." : "Describe the vibe... e.g., '90s sci-fi with mind-bending plots'"}
+                        placeholder={isListening ? "🎤 Listening..." : (isMobile ? "Describe the vibe..." : "Describe the vibe... e.g., '90s sci-fi with mind-bending plots'")}
                         style={{
                           width: '100%',
-                          padding: isMobile ? '18px 60px 18px 24px' : '22px 70px 22px 32px',
+                          padding: isMobile ? '18px 110px 18px 24px' : '22px 130px 22px 32px',
                           background: 'transparent',
                           border: 'none',
                           outline: 'none',
@@ -299,6 +322,55 @@ export function AISearch() {
                           fontSize: isMobile ? '16px' : '18px',
                         }}
                       />
+                      
+                      {/* Voice Button */}
+                      {voiceSupported && (
+                        <motion.button
+                          type="button"
+                          onClick={isListening ? stopListening : startListening}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                          style={{
+                            position: 'absolute',
+                            right: isMobile ? '58px' : '70px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            width: isMobile ? '40px' : '46px',
+                            height: isMobile ? '40px' : '46px',
+                            borderRadius: '50%',
+                            border: 'none',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: isListening
+                              ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                              : 'rgba(255,255,255,0.1)',
+                            boxShadow: isListening ? '0 4px 20px rgba(239, 68, 68, 0.4)' : 'none',
+                            transition: 'all 0.3s ease',
+                          }}
+                        >
+                          {isListening ? (
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 1, repeat: Infinity }}
+                            >
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff">
+                                <rect x="6" y="6" width="12" height="12" rx="2" />
+                              </svg>
+                            </motion.div>
+                          ) : (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                              <line x1="12" y1="19" x2="12" y2="23"></line>
+                              <line x1="8" y1="23" x2="16" y2="23"></line>
+                            </svg>
+                          )}
+                        </motion.button>
+                      )}
+                      
+                      {/* Search Button */}
                       <motion.button
                         type="submit"
                         disabled={isSearching || !query.trim()}
