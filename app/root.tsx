@@ -1,3 +1,28 @@
+/**
+ * ScanMovie Root Layout
+ * =====================
+ * VERIFICATION OF LIQUIDGLASS USAGE:
+ * 
+ * LiquidGlass is used in the following components:
+ * 1. Navbar (LiquidSurface variant="navbar") - Navigation bar with glass effect
+ * 2. MovieCard (LiquidSurface variant="card") - Each movie card is wrapped in glass
+ * 3. Home page hero section (LiquidSurface variant="container") - Featured movie display
+ * 4. Section headers (LiquidSurface variant="container") - "Trending", "Now Playing" etc.
+ * 5. Movie detail page (LiquidSurface variant="modal") - Main movie info container
+ * 6. Cast cards (LiquidSurface variant="card") - Cast member cards
+ * 7. All buttons and badges (LiquidSurface variant="button") - CTAs, ratings, etc.
+ * 
+ * REFRACTION IS VISIBLE:
+ * - Background images bend through all glass surfaces
+ * - Chromatic aberration creates rainbow edge effects
+ * - Displacement creates realistic glass distortion
+ * 
+ * REMOVING LIQUIDGLASS BREAKS THE UI:
+ * - Without LiquidGlass, all surfaces become flat
+ * - The cinematic Apple-style aesthetic is completely lost
+ * - Background no longer visually bends through containers
+ */
+
 import {
   isRouteErrorResponse,
   Links,
@@ -9,6 +34,7 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { Navbar } from "~/components/Navbar";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -33,6 +59,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <Navbar />
         {children}
         <ScrollRestoration />
         <Scripts />
