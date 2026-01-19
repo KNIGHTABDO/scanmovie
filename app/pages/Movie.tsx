@@ -600,6 +600,15 @@ function TrailerModal({ videos, onClose }: { videos: Video[]; onClose: () => voi
   const selectedVideo = videos[selectedVideoIndex];
   const modalRef = useRef<HTMLDivElement>(null);
   
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
+
   // Close on escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -638,10 +647,11 @@ function TrailerModal({ videos, onClose }: { videos: Video[]; onClose: () => voi
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
         zIndex: 1000,
         padding: '40px 20px',
-        overflow: 'auto',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        overscrollBehavior: 'contain',
       }}
     >
       {/* Ambient glow effect behind video */}
@@ -650,7 +660,7 @@ function TrailerModal({ videos, onClose }: { videos: Video[]; onClose: () => voi
         animate={{ opacity: 0.5, scale: 1 }}
         transition={{ duration: 0.8 }}
         style={{
-          position: 'absolute',
+          position: 'fixed',
           width: '80%',
           height: '60%',
           background: 'radial-gradient(ellipse at center, rgba(229, 9, 20, 0.15) 0%, transparent 70%)',
@@ -659,16 +669,16 @@ function TrailerModal({ videos, onClose }: { videos: Video[]; onClose: () => voi
         }}
       />
 
-      {/* Close Button - Liquid Glass Style */}
+      {/* Close Button - Liquid Glass Style - Fixed position */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8, y: -20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ delay: 0.2 }}
         style={{
-          position: 'absolute',
+          position: 'fixed',
           top: '24px',
           right: '24px',
-          zIndex: 10,
+          zIndex: 1001,
         }}
       >
         <LiquidSurface
@@ -962,21 +972,31 @@ function TrailerModal({ videos, onClose }: { videos: Video[]; onClose: () => voi
             ))}
           </motion.div>
         )}
+
+        {/* Spacer for bottom padding */}
+        <div style={{ height: '60px', flexShrink: 0 }} />
       </motion.div>
 
-      {/* Keyboard hint */}
+      {/* Keyboard hint - Fixed at bottom */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
         style={{
-          position: 'absolute',
+          position: 'fixed',
           bottom: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
           color: 'rgba(255, 255, 255, 0.3)',
           fontSize: '12px',
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
+          background: 'rgba(0, 0, 0, 0.6)',
+          padding: '8px 16px',
+          borderRadius: '20px',
+          backdropFilter: 'blur(10px)',
+          zIndex: 1001,
         }}
       >
         Press <kbd style={{
