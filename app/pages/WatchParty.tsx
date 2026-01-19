@@ -97,11 +97,30 @@ export function WatchPartyPage() {
   // Lock body scroll when any modal is open
   useEffect(() => {
     if (isCreating || showShareModal || showImportModal) {
+      // Save current scroll position and lock
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
       document.body.style.overflow = 'hidden';
     } else {
+      // Restore scroll position
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
       document.body.style.overflow = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
     }
     return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
       document.body.style.overflow = '';
     };
   }, [isCreating, showShareModal, showImportModal]);
@@ -457,58 +476,73 @@ export function WatchPartyPage() {
       <AnimatePresence>
         {isCreating && (
           <>
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsCreating(false)}
               style={{
                 position: 'fixed',
                 inset: 0,
-                background: 'rgba(0,0,0,0.8)',
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                zIndex: 1998,
+                background: 'rgba(0,0,0,0.85)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                zIndex: 9998,
               }}
             />
+            {/* Scrollable Modal Container */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.85, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.85, y: 30 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              onClick={(e) => e.target === e.currentTarget && setIsCreating(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={(e) => {
+                if (e.target === e.currentTarget) setIsCreating(false);
+              }}
               style={{
                 position: 'fixed',
-                inset: 0,
-                display: 'flex',
-                alignItems: 'flex-start',
-                justifyContent: 'center',
-                padding: '40px 20px',
-                zIndex: 1999,
-                overflowY: 'auto',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 9999,
+                overflowY: 'scroll',
                 WebkitOverflowScrolling: 'touch',
+                display: 'block',
               }}
             >
               <div
-                onClick={(e) => e.stopPropagation()}
                 style={{
-                  width: '100%',
-                  maxWidth: '550px',
-                  borderRadius: '32px',
-                  flexShrink: 0,
+                  minHeight: '100%',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  justifyContent: 'center',
+                  padding: '60px 20px 40px',
                 }}
               >
-                <LiquidSurface variant="modal" cornerRadius={32} padding="0">
-                  {/* Modal Header - Fixed */}
-                  <div
-                    style={{
-                      padding: '28px 32px 20px',
-                      borderBottom: '1px solid rgba(255,255,255,0.08)',
-                      background: 'linear-gradient(180deg, rgba(102,126,234,0.1) 0%, transparent 100%)',
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <h2 style={{ fontSize: '26px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9, y: 40 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9, y: 40 }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    width: '100%',
+                    maxWidth: '550px',
+                    borderRadius: '32px',
+                    marginBottom: '40px',
+                  }}
+                >
+                  <LiquidSurface variant="modal" cornerRadius={32} padding="0">
+                    {/* Modal Header */}
+                    <div
+                      style={{
+                        padding: '28px 32px 20px',
+                        borderBottom: '1px solid rgba(255,255,255,0.08)',
+                        background: 'linear-gradient(180deg, rgba(102,126,234,0.1) 0%, transparent 100%)',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <h2 style={{ fontSize: '26px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <span style={{ fontSize: '32px' }}>✨</span>
                         Create Watch Party
                       </h2>
@@ -775,6 +809,7 @@ export function WatchPartyPage() {
                     </div>
                   </div>
                 </LiquidSurface>
+                </motion.div>
               </div>
             </motion.div>
           </>
@@ -789,33 +824,50 @@ export function WatchPartyPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setShowShareModal(false)}
               style={{
                 position: 'fixed',
                 inset: 0,
-                background: 'rgba(0,0,0,0.8)',
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                zIndex: 1998,
+                background: 'rgba(0,0,0,0.85)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                zIndex: 9998,
               }}
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.85 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={(e) => {
+                if (e.target === e.currentTarget) setShowShareModal(false);
+              }}
               style={{
                 position: 'fixed',
-                inset: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '24px',
-                zIndex: 1999,
-                pointerEvents: 'none',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 9999,
+                overflowY: 'scroll',
+                WebkitOverflowScrolling: 'touch',
               }}
             >
-              <div style={{ width: '100%', maxWidth: '500px', pointerEvents: 'auto' }}>
+              <div
+                style={{
+                  minHeight: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '40px 20px',
+                }}
+              >
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9, y: 30 }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                  onClick={(e) => e.stopPropagation()}
+                  style={{ width: '100%', maxWidth: '500px' }}
+                >
                 <LiquidSurface variant="modal" cornerRadius={28} padding="32px">
                   <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>
                     🔗 Share Watch Party
@@ -972,6 +1024,7 @@ export function WatchPartyPage() {
                     Close
                   </motion.button>
                 </LiquidSurface>
+                </motion.div>
               </div>
             </motion.div>
           </>
@@ -986,33 +1039,45 @@ export function WatchPartyPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setShowImportModal(false)}
               style={{
                 position: 'fixed',
                 inset: 0,
-                background: 'rgba(0,0,0,0.8)',
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                zIndex: 1998,
+                background: 'rgba(0,0,0,0.85)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                zIndex: 9998,
               }}
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.85 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={(e) => {
+                if (e.target === e.currentTarget) setShowImportModal(false);
+              }}
               style={{
                 position: 'fixed',
-                inset: 0,
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 9999,
+                overflowY: 'scroll',
+                WebkitOverflowScrolling: 'touch',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '24px',
-                zIndex: 1999,
-                pointerEvents: 'none',
               }}
             >
-              <div style={{ width: '100%', maxWidth: '450px', pointerEvents: 'auto' }}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 30 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                onClick={(e) => e.stopPropagation()}
+                style={{ width: '100%', maxWidth: '450px' }}
+              >
                 <LiquidSurface variant="modal" cornerRadius={28} padding="32px">
                   <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>
                     📥 Import Watch Party
@@ -1086,7 +1151,7 @@ export function WatchPartyPage() {
                     </motion.button>
                   </div>
                 </LiquidSurface>
-              </div>
+              </motion.div>
             </motion.div>
           </>
         )}
