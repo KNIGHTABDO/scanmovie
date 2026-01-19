@@ -75,3 +75,56 @@ a {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* ====== Liquid Glass CSS Fallback Styles (iOS/iPad) ====== */
+/* Enhanced glassmorphism for devices that can't use WebGL */
+
+.liquid-surface-css {
+  /* Smooth transitions */
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+  /* Prevent layout shifts */
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Subtle hover effect for CSS glass surfaces */
+.liquid-surface-css:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Active/pressed state */
+.liquid-surface-css:active {
+  transform: translateZ(0) scale(0.98);
+}
+
+/* iOS Safari-specific optimizations */
+@supports (-webkit-touch-callout: none) {
+  .liquid-surface-css {
+    /* Force hardware acceleration on iOS */
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+  }
+  
+  /* Reduce blur on older iOS devices for performance */
+  @media (max-device-width: 1024px) {
+    .liquid-surface-css {
+      -webkit-backdrop-filter: blur(16px) saturate(160%);
+      backdrop-filter: blur(16px) saturate(160%);
+    }
+  }
+}
+
+/* iPad-specific enhancements */
+@media (min-device-width: 768px) and (max-device-width: 1366px) and (-webkit-min-device-pixel-ratio: 2) {
+  .liquid-surface-css {
+    /* Optimize for iPad Retina displays */
+    -webkit-backdrop-filter: blur(20px) saturate(170%) brightness(1.02);
+    backdrop-filter: blur(20px) saturate(170%) brightness(1.02);
+  }
+}
+

@@ -5,10 +5,33 @@
  * ========================
  * WRAPPER around liquid-glass-react's LiquidGlass component.
  * Fixed with proper dimensions to prevent canvas collapse.
+ * 
+ * iOS/iPad FIX: Uses CSS-only glass effect on iOS devices
+ * to avoid WebGL rendering issues on Safari/WebKit.
  */
 
 import { useState, useEffect, useRef, type ReactNode, type CSSProperties, type RefObject } from 'react';
 import type { ComponentType } from 'react';
+
+// Detect iOS/iPad devices where WebGL liquid glass has issues
+function isIOSDevice(): boolean {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
+  
+  const userAgent = navigator.userAgent || navigator.vendor || '';
+  
+  // Check for iOS devices
+  const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !(window as typeof window & { MSStream?: unknown }).MSStream;
+  
+  // Check for iPad on iOS 13+ (which reports as Mac)
+  const isIPadOS = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+  
+  // Check for Safari on macOS with touch (can have similar issues)
+  const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
+  const hasTouchScreen = navigator.maxTouchPoints > 0;
+  const isTouchSafari = isSafari && hasTouchScreen;
+  
+  return isIOS || isIPadOS || isTouchSafari;
+}
 
 export interface LiquidSurfaceProps {
   children: ReactNode;
@@ -115,20 +138,31 @@ export function LiquidSurface({
   const [LiquidGlass, setLiquidGlass] = useState<ComponentType<LiquidGlassComponentProps> | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [dimensions, setDimensions] = useState<{ width: number; height: number } | null>(null);
+  const [useCSS, setUseCSS] = useState(false);
   const measureRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsMounted(true);
-    import('liquid-glass-react').then((module) => {
-      setLiquidGlass(() => module.default);
-    }).catch((err) => {
-      console.error('Failed to load liquid-glass-react:', err);
-    });
+    
+    // Check if we should use CSS-only fallback (iOS/iPad/touch Safari)
+    const shouldUseCSS = isIOSDevice();
+    setUseCSS(shouldUseCSS);
+    
+    // Only load WebGL library on non-iOS devices
+    if (!shouldUseCSS) {
+      import('liquid-glass-react').then((module) => {
+        setLiquidGlass(() => module.default);
+      }).catch((err) => {
+        console.error('Failed to load liquid-glass-react:', err);
+        // Fallback to CSS on error
+        setUseCSS(true);
+      });
+    }
   }, []);
 
   // Measure the content to get proper dimensions for the canvas
   useEffect(() => {
-    if (measureRef.current) {
+    if (measureRef.current && !useCSS) {
       const observer = new ResizeObserver((entries) => {
         for (const entry of entries) {
           const { width, height } = entry.contentRect;
@@ -140,13 +174,13 @@ export function LiquidSurface({
       observer.observe(measureRef.current);
       return () => observer.disconnect();
     }
-  }, [isMounted]);
+  }, [isMounted, useCSS]);
 
   const preset = PRESETS[variant];
   const finalCornerRadius = cornerRadius ?? preset.cornerRadius;
   const finalPadding = padding ?? '16px';
 
-  // Glass effect styles (used for both fallback and overlay)
+  // Enhanced glass effect styles for CSS fallback (optimized for iOS/iPad)
   const glassStyle: CSSProperties = {
     position: 'relative',
     width: width ?? '100%',
@@ -154,19 +188,28 @@ export function LiquidSurface({
     minHeight: minHeight,
     padding: finalPadding,
     borderRadius: `${finalCornerRadius}px`,
-    background: 'rgba(255, 255, 255, 0.08)',
-    backdropFilter: 'blur(20px) saturate(180%)',
-    WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-    border: '1px solid rgba(255, 255, 255, 0.18)',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.37)',
+    // Enhanced glass effect with better contrast
+    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%)',
+    backdropFilter: 'blur(24px) saturate(180%) brightness(1.05)',
+    WebkitBackdropFilter: 'blur(24px) saturate(180%) brightness(1.05)',
+    // Subtle inner glow effect
+    border: '1px solid rgba(255, 255, 255, 0.15)',
+    boxShadow: `
+      0 8px 32px rgba(0, 0, 0, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.05)
+    `,
+    // Smooth transitions for hover states
+    transition: 'all 0.3s ease',
     ...style,
   };
 
-  // SSR fallback or before LiquidGlass loads - use pure CSS glass effect
-  if (!isMounted || !LiquidGlass) {
+  // iOS/iPad/Safari - use pure CSS glass effect (no WebGL)
+  // This provides a beautiful glassmorphism effect without the rendering bugs
+  if (useCSS || !isMounted || !LiquidGlass) {
     return (
       <div
-        className={`liquid-surface ${className}`}
+        className={`liquid-surface liquid-surface-css ${className}`}
         style={glassStyle}
         onClick={onClick}
       >
