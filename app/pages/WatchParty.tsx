@@ -470,23 +470,26 @@ export function WatchPartyPage() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '24px',
+                padding: '20px',
                 zIndex: 1999,
                 pointerEvents: 'none',
+                overflow: 'auto',
               }}
             >
               <div
                 style={{
                   width: '100%',
                   maxWidth: '550px',
-                  maxHeight: 'calc(100vh - 120px)',
-                  overflow: 'auto',
+                  maxHeight: 'calc(100vh - 40px)',
+                  overflow: 'hidden',
                   pointerEvents: 'auto',
                   borderRadius: '32px',
+                  display: 'flex',
+                  flexDirection: 'column',
                 }}
               >
                 <LiquidSurface variant="modal" cornerRadius={32} padding="0">
-                  {/* Modal Header */}
+                  {/* Modal Header - Fixed */}
                   <div
                     style={{
                       padding: '28px 32px 20px',
@@ -525,8 +528,16 @@ export function WatchPartyPage() {
                     </p>
                   </div>
 
-                  {/* Modal Body */}
-                  <div style={{ padding: '24px 32px 32px' }}>
+                  {/* Modal Body - Scrollable */}
+                  <div 
+                    style={{ 
+                      padding: '24px 32px 32px',
+                      overflowY: 'auto',
+                      maxHeight: 'calc(100vh - 200px)',
+                      scrollbarWidth: 'thin',
+                      scrollbarColor: 'rgba(102,126,234,0.5) transparent',
+                    }}
+                  >
                     {/* Party Name */}
                     <div style={{ marginBottom: '24px' }}>
                       <label style={{ fontSize: '13px', fontWeight: 600, marginBottom: '10px', display: 'block', textTransform: 'uppercase', letterSpacing: '0.5px', opacity: 0.7 }}>
@@ -699,7 +710,7 @@ export function WatchPartyPage() {
                         </p>
                       </div>
                     )}
-                  </div>
+                    </div>
 
                     {/* Actions */}
                     <div
@@ -707,7 +718,7 @@ export function WatchPartyPage() {
                         display: 'flex',
                         gap: '14px',
                         justifyContent: 'flex-end',
-                        paddingTop: '8px',
+                        paddingTop: '20px',
                         borderTop: '1px solid rgba(255,255,255,0.06)',
                         marginTop: '8px',
                       }}
