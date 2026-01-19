@@ -237,16 +237,16 @@ export function WatchPartyPage() {
             </LiquidSurface>
 
             <div style={{ display: 'flex', gap: '12px' }}>
-              <motion.button
+              <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowImportModal(true)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                style={{ cursor: 'pointer' }}
               >
                 <LiquidSurface variant="button" padding="12px 20px" cornerRadius={50}>
                   <span style={{ fontWeight: 500 }}>📥 Import</span>
                 </LiquidSurface>
-              </motion.button>
+              </motion.div>
 
               <Link to="/create-party" style={{ textDecoration: 'none' }}>
                 <motion.div
@@ -340,27 +340,27 @@ export function WatchPartyPage() {
                   </div>
                   
                   <div style={{ display: 'flex', gap: '10px' }}>
-                    <motion.button
+                    <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleShare(selectedParty)}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                      style={{ cursor: 'pointer' }}
                     >
                       <LiquidSurface variant="button" padding="10px 16px" cornerRadius={50}>
                         <span>🔗 Share</span>
                       </LiquidSurface>
-                    </motion.button>
+                    </motion.div>
                     
-                    <motion.button
+                    <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleDeleteParty(selectedParty.id)}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                      style={{ cursor: 'pointer' }}
                     >
                       <LiquidSurface variant="button" padding="10px 16px" cornerRadius={50}>
                         <span>🗑️</span>
                       </LiquidSurface>
-                    </motion.button>
+                    </motion.div>
                   </div>
                 </div>
 
