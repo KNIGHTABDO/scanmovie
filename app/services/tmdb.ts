@@ -52,6 +52,21 @@ export interface MovieResponse {
   total_results: number;
 }
 
+export interface Video {
+  id: string;
+  key: string;
+  name: string;
+  site: string;
+  type: string;
+  official: boolean;
+  published_at: string;
+}
+
+export interface VideoResponse {
+  id: number;
+  results: Video[];
+}
+
 export interface CastMember {
   id: number;
   name: string;
@@ -226,6 +241,46 @@ export async function getSimilarMovies(movieId: number): Promise<Movie[]> {
   }
   const data: MovieResponse = await response.json();
   return data.results;
+}
+
+/**
+ * Fetch movie videos (trailers, teasers, clips, etc.)
+ * Returns videos sorted by: Official trailers first, then by publish date
+ */
+export async function getMovieVideos(movieId: number): Promise<Video[]> {
+  const url = withApiKey(`${BASE_URL}/movie/${movieId}/videos?language=en-US`);
+  const response = await fetch(url);
+  if (!response.ok) {
+    console.error('getMovieVideos failed:', response.status, await response.text());
+    throw new Error('Failed to fetch movie videos');
+  }
+  const data: VideoResponse = await response.json();
+  
+  // Filter for YouTube videos and sort: official trailers first, then by date
+  return data.results
+    .filter(video => video.site === 'YouTube')
+    .sort((a, b) => {
+      // Prioritize trailers over other types
+      const aIsTrailer = a.type === 'Trailer' ? 1 : 0;
+      const bIsTrailer = b.type === 'Trailer' ? 1 : 0;
+      if (bIsTrailer !== aIsTrailer) return bIsTrailer - aIsTrailer;
+      
+      // Then prioritize official videos
+      const aOfficial = a.official ? 1 : 0;
+      const bOfficial = b.official ? 1 : 0;
+      if (bOfficial !== aOfficial) return bOfficial - aOfficial;
+      
+      // Finally sort by publish date (newest first)
+      return new Date(b.published_at).getTime() - new Date(a.published_at).getTime();
+    });
+}
+
+/**
+ * Get the main trailer for a movie (best quality official trailer)
+ */
+export async function getMovieTrailer(movieId: number): Promise<Video | null> {
+  const videos = await getMovieVideos(movieId);
+  return videos.length > 0 ? videos[0] : null;
 }
 
 /**

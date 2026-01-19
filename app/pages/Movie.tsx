@@ -29,11 +29,13 @@ import {
   getMovieDetails,
   getMovieCredits,
   getSimilarMovies,
+  getMovieVideos,
   getBackdropUrl,
   getPosterUrl,
   getProfileUrl,
   type Movie,
   type Credits,
+  type Video,
 } from '~/services/tmdb';
 
 
@@ -44,9 +46,11 @@ export function MoviePage() {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [credits, setCredits] = useState<Credits | null>(null);
   const [similar, setSimilar] = useState<Movie[]>([]);
+  const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
   const [aiInsight, setAiInsight] = useState<string>('');
   const [aiInsightLoading, setAiInsightLoading] = useState(false);
+  const [showTrailer, setShowTrailer] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // User data hooks
@@ -58,15 +62,18 @@ export function MoviePage() {
     async function fetchMovieData() {
       setLoading(true);
       setAiInsight('');
+      setShowTrailer(false);
       try {
-        const [movieData, creditsData, similarData] = await Promise.all([
+        const [movieData, creditsData, similarData, videosData] = await Promise.all([
           getMovieDetails(movieId),
           getMovieCredits(movieId),
           getSimilarMovies(movieId),
+          getMovieVideos(movieId),
         ]);
         setMovie(movieData);
         setCredits(creditsData);
         setSimilar(similarData);
+        setVideos(videosData);
         
         // Track in view history
         addToViewHistory(movieId);
@@ -326,6 +333,46 @@ export function MoviePage() {
                   <p style={{ lineHeight: 1.7, opacity: 0.85 }}>{movie.overview}</p>
                 </motion.div>
 
+                {/* Watch Trailer Button */}
+                {videos.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8 }}
+                    style={{ marginTop: '24px' }}
+                  >
+                    <motion.button
+                      onClick={() => setShowTrailer(true)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        padding: '14px 28px',
+                        background: 'linear-gradient(135deg, #e50914 0%, #b81d24 100%)',
+                        border: 'none',
+                        borderRadius: '50px',
+                        color: '#fff',
+                        fontSize: '16px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 20px rgba(229, 9, 20, 0.4)',
+                        transition: 'box-shadow 0.3s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = '0 6px 30px rgba(229, 9, 20, 0.6)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = '0 4px 20px rgba(229, 9, 20, 0.4)';
+                      }}
+                    >
+                      <span style={{ fontSize: '20px' }}>▶</span>
+                      Watch Trailer
+                    </motion.button>
+                  </motion.div>
+                )}
+
                 {/* Action Buttons */}
                 <MovieActions movie={movie} />
               </div>
@@ -465,6 +512,16 @@ export function MoviePage() {
           </motion.section>
         )}
       </main>
+
+      {/* Trailer Modal */}
+      <AnimatePresence>
+        {showTrailer && videos.length > 0 && (
+          <TrailerModal
+            videos={videos}
+            onClose={() => setShowTrailer(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -534,6 +591,402 @@ function MovieNotFound() {
         </div>
       </LiquidSurface>
     </div>
+  );
+}
+
+// ====== Trailer Modal Component ======
+function TrailerModal({ videos, onClose }: { videos: Video[]; onClose: () => void }) {
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
+  const selectedVideo = videos[selectedVideoIndex];
+  const modalRef = useRef<HTMLDivElement>(null);
+  
+  // Close on escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  // Get video type icon
+  const getVideoIcon = (type: string) => {
+    switch (type) {
+      case 'Trailer': return '🎬';
+      case 'Teaser': return '✨';
+      case 'Clip': return '🎞️';
+      case 'Behind the Scenes': return '🎥';
+      case 'Featurette': return '📽️';
+      default: return '▶️';
+    }
+  };
+
+  return (
+    <motion.div
+      ref={modalRef}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'radial-gradient(ellipse at center, rgba(10, 10, 10, 0.9) 0%, rgba(0, 0, 0, 0.98) 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+        padding: '40px 20px',
+        overflow: 'auto',
+      }}
+    >
+      {/* Ambient glow effect behind video */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 0.5, scale: 1 }}
+        transition={{ duration: 0.8 }}
+        style={{
+          position: 'absolute',
+          width: '80%',
+          height: '60%',
+          background: 'radial-gradient(ellipse at center, rgba(229, 9, 20, 0.15) 0%, transparent 70%)',
+          filter: 'blur(80px)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Close Button - Liquid Glass Style */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8, y: -20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        style={{
+          position: 'absolute',
+          top: '24px',
+          right: '24px',
+          zIndex: 10,
+        }}
+      >
+        <LiquidSurface
+          variant="button"
+          padding="0"
+          cornerRadius={50}
+          displacementScale={40}
+          onClick={onClose}
+        >
+          <motion.div
+            whileHover={{ scale: 1.1, rotate: 90 }}
+            whileTap={{ scale: 0.9 }}
+            style={{
+              width: '50px',
+              height: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: '#fff',
+              fontSize: '20px',
+            }}
+          >
+            ✕
+          </motion.div>
+        </LiquidSurface>
+      </motion.div>
+
+      {/* Main Content Container */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, type: 'spring', stiffness: 200, damping: 25 }}
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: '100%',
+          maxWidth: '1100px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '24px',
+        }}
+      >
+        {/* Video Player with Liquid Glass Frame */}
+        <LiquidSurface
+          variant="modal"
+          padding="8px"
+          cornerRadius={28}
+          displacementScale={80}
+          aberrationIntensity={4}
+          mouseContainer={modalRef}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 30 }}
+            style={{
+              aspectRatio: '16 / 9',
+              borderRadius: '20px',
+              overflow: 'hidden',
+              position: 'relative',
+              boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
+            }}
+          >
+            <iframe
+              src={`https://www.youtube.com/embed/${selectedVideo.key}?autoplay=1&rel=0&modestbranding=1&showinfo=0`}
+              title={selectedVideo.name}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{
+                width: '100%',
+                height: '100%',
+                border: 'none',
+              }}
+            />
+          </motion.div>
+        </LiquidSurface>
+
+        {/* Video Info Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <LiquidSurface
+            variant="container"
+            padding="20px 28px"
+            cornerRadius={20}
+            displacementScale={50}
+            mouseContainer={modalRef}
+          >
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '16px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <motion.div
+                  animate={{ rotate: [0, 5, -5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  style={{ fontSize: '32px' }}
+                >
+                  {getVideoIcon(selectedVideo.type)}
+                </motion.div>
+                <div>
+                  <h3 style={{ 
+                    color: '#fff', 
+                    fontSize: '20px', 
+                    fontWeight: 600,
+                    marginBottom: '4px',
+                  }}>
+                    {selectedVideo.name}
+                  </h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ 
+                      color: 'rgba(255, 255, 255, 0.7)', 
+                      fontSize: '14px',
+                    }}>
+                      {selectedVideo.type}
+                    </span>
+                    {selectedVideo.official && (
+                      <span style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        padding: '3px 10px',
+                        borderRadius: '12px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: '#fff',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                      }}>
+                        Official
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Video Navigation */}
+              {videos.length > 1 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <motion.button
+                    onClick={() => setSelectedVideoIndex(prev => prev > 0 ? prev - 1 : videos.length - 1)}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      color: '#fff',
+                      fontSize: '16px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    ←
+                  </motion.button>
+                  <span style={{ 
+                    color: 'rgba(255, 255, 255, 0.6)', 
+                    fontSize: '14px',
+                    minWidth: '50px',
+                    textAlign: 'center',
+                  }}>
+                    {selectedVideoIndex + 1} / {Math.min(videos.length, 8)}
+                  </span>
+                  <motion.button
+                    onClick={() => setSelectedVideoIndex(prev => prev < videos.length - 1 ? prev + 1 : 0)}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      color: '#fff',
+                      fontSize: '16px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    →
+                  </motion.button>
+                </div>
+              )}
+            </div>
+          </LiquidSurface>
+        </motion.div>
+
+        {/* Video Selector Thumbnails */}
+        {videos.length > 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+              gap: '12px',
+            }}
+          >
+            {videos.slice(0, 8).map((video, index) => (
+              <motion.div
+                key={video.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4 + index * 0.05 }}
+                whileHover={{ scale: 1.03, y: -4 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setSelectedVideoIndex(index)}
+                style={{ cursor: 'pointer' }}
+              >
+                <LiquidSurface
+                  variant="card"
+                  padding="12px"
+                  cornerRadius={16}
+                  displacementScale={index === selectedVideoIndex ? 60 : 40}
+                  mouseContainer={modalRef}
+                >
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                  }}>
+                    {/* Video Thumbnail */}
+                    <div style={{
+                      width: '64px',
+                      height: '36px',
+                      borderRadius: '8px',
+                      background: `url(https://img.youtube.com/vi/${video.key}/mqdefault.jpg) center/cover`,
+                      flexShrink: 0,
+                      position: 'relative',
+                      overflow: 'hidden',
+                      boxShadow: index === selectedVideoIndex 
+                        ? '0 0 0 2px #e50914, 0 4px 12px rgba(229, 9, 20, 0.3)' 
+                        : '0 2px 8px rgba(0,0,0,0.3)',
+                    }}>
+                      {/* Play indicator for selected */}
+                      {index === selectedVideoIndex && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          style={{
+                            position: 'absolute',
+                            inset: 0,
+                            background: 'rgba(229, 9, 20, 0.7)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '14px',
+                          }}
+                        >
+                          ▶
+                        </motion.div>
+                      )}
+                    </div>
+                    
+                    {/* Video Info */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{
+                        color: index === selectedVideoIndex ? '#fff' : 'rgba(255,255,255,0.8)',
+                        fontSize: '12px',
+                        fontWeight: index === selectedVideoIndex ? 600 : 500,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        marginBottom: '2px',
+                      }}>
+                        {video.type}
+                      </p>
+                      <p style={{
+                        color: 'rgba(255,255,255,0.5)',
+                        fontSize: '10px',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}>
+                        {video.name.length > 25 ? video.name.substring(0, 25) + '...' : video.name}
+                      </p>
+                    </div>
+                  </div>
+                </LiquidSurface>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </motion.div>
+
+      {/* Keyboard hint */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        style={{
+          position: 'absolute',
+          bottom: '20px',
+          color: 'rgba(255, 255, 255, 0.3)',
+          fontSize: '12px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+        }}
+      >
+        Press <kbd style={{
+          background: 'rgba(255,255,255,0.1)',
+          padding: '2px 8px',
+          borderRadius: '4px',
+          fontSize: '11px',
+        }}>ESC</kbd> to close
+      </motion.div>
+    </motion.div>
   );
 }
 
