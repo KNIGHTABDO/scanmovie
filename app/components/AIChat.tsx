@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router';
 import { LiquidSurface } from './Liquid/LiquidSurface';
+import { AIResponseBubble } from './AIResponseCard';
 import { getAIResponse, sendToolResult, type AIMessage } from '~/services/ai';
 import { searchMovies, discoverMovies, type Movie } from '~/services/tmdb';
 import { useVoiceInput } from '~/hooks/useVoiceInput';
@@ -257,27 +258,70 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                   >
                     {message.role === 'user' ? (
                       /* User Message */
-                      <div className="max-w-[80%] px-4 py-2.5 rounded-2xl rounded-br-sm bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-sm leading-relaxed">
+                      <div className="max-w-[80%] px-4 py-2.5 rounded-2xl rounded-br-sm bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-sm leading-relaxed shadow-lg shadow-purple-500/20">
                         {message.content}
                       </div>
                     ) : (
-                      /* AI Message - SINGLE UNIFIED CARD */
+                      /* AI Message - Enhanced with gradient border */
                       <div 
-                        className="max-w-[92%] rounded-2xl overflow-hidden border border-white/10"
+                        className="max-w-[92%] rounded-2xl overflow-hidden"
                         style={{
-                          background: 'rgba(0,0,0,0.6)',
+                          background: 'linear-gradient(135deg, rgba(102,126,234,0.15) 0%, rgba(168,85,247,0.1) 100%)',
+                          border: '1px solid rgba(139,92,246,0.3)',
                           backdropFilter: 'blur(16px)',
                           WebkitBackdropFilter: 'blur(16px)',
                           width: message.movies?.length ? '100%' : 'auto',
+                          boxShadow: '0 4px 20px rgba(139,92,246,0.1)',
                         }}
                       >
+                        {/* Subtle top glow */}
+                        <div 
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: '50px',
+                            background: 'linear-gradient(180deg, rgba(139,92,246,0.08) 0%, transparent 100%)',
+                            pointerEvents: 'none',
+                            borderRadius: '16px 16px 0 0',
+                          }}
+                        />
+                        
                         {/* TEXT CONTENT - Part 1 */}
-                        <div className="px-4 py-3 text-white text-[13px] leading-relaxed">
+                        <div className="px-4 py-3 text-white text-[13px] leading-relaxed relative">
                           {message.isLoading ? (
-                            <div className="flex gap-1 py-1">
-                              <motion.span animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1, repeat: Infinity, delay: 0 }} className="text-white/60">●</motion.span>
-                              <motion.span animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1, repeat: Infinity, delay: 0.2 }} className="text-white/60">●</motion.span>
-                              <motion.span animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1, repeat: Infinity, delay: 0.4 }} className="text-white/60">●</motion.span>
+                            <div className="flex items-center gap-1.5 py-1">
+                              <motion.span 
+                                animate={{ opacity: [0.3, 1, 0.3] }} 
+                                transition={{ duration: 1.2, repeat: Infinity, delay: 0 }} 
+                                style={{ 
+                                  width: '6px', 
+                                  height: '6px', 
+                                  borderRadius: '50%', 
+                                  background: 'linear-gradient(135deg, #667eea, #a855f7)',
+                                }}
+                              />
+                              <motion.span 
+                                animate={{ opacity: [0.3, 1, 0.3] }} 
+                                transition={{ duration: 1.2, repeat: Infinity, delay: 0.2 }} 
+                                style={{ 
+                                  width: '6px', 
+                                  height: '6px', 
+                                  borderRadius: '50%', 
+                                  background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+                                }}
+                              />
+                              <motion.span 
+                                animate={{ opacity: [0.3, 1, 0.3] }} 
+                                transition={{ duration: 1.2, repeat: Infinity, delay: 0.4 }} 
+                                style={{ 
+                                  width: '6px', 
+                                  height: '6px', 
+                                  borderRadius: '50%', 
+                                  background: 'linear-gradient(135deg, #ec4899, #667eea)',
+                                }}
+                              />
                             </div>
                           ) : (
                             message.content
@@ -287,8 +331,13 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                         {/* MOVIES - Part 2 (INSIDE THE SAME CARD) */}
                         {message.movies && message.movies.length > 0 && (
                           <>
-                            {/* Divider */}
-                            <div className="h-px bg-white/10 mx-4" />
+                            {/* Divider with gradient */}
+                            <div 
+                              className="h-px mx-4" 
+                              style={{ 
+                                background: 'linear-gradient(90deg, transparent, rgba(139,92,246,0.4), transparent)' 
+                              }} 
+                            />
                             
                             {/* Scrollable Movie List */}
                             <div 

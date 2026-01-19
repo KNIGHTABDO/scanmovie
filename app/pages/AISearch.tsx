@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router';
 import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
 import { MovieCard } from '~/components/MovieCard';
+import { AIResponseCard } from '~/components/AIResponseCard';
 import { getAIResponse, sendToolResult, type AIMessage } from '~/services/ai';
 import { searchMovies, discoverMovies, type Movie } from '~/services/tmdb';
 import { useVoiceInput } from '~/hooks/useVoiceInput';
@@ -500,45 +501,14 @@ export function AISearch() {
               <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
                 {/* AI Response Card */}
                 {aiResponse && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    style={{ marginBottom: '40px' }}
-                  >
-                    <LiquidSurface
-                      variant="container"
-                      cornerRadius={24}
-                      padding={isMobile ? '24px' : '32px'}
-                      displacementScale={50}
-                      mouseContainer={containerRef}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-                        <div
-                          style={{
-                            width: '40px',
-                            height: '40px',
-                            borderRadius: '50%',
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '20px',
-                            flexShrink: 0,
-                          }}
-                        >
-                          🤖
-                        </div>
-                        <p style={{
-                          color: '#fff',
-                          fontSize: isMobile ? '15px' : '17px',
-                          lineHeight: 1.7,
-                          margin: 0,
-                        }}>
-                          {aiResponse}
-                        </p>
-                      </div>
-                    </LiquidSurface>
-                  </motion.div>
+                  <div style={{ marginBottom: '40px' }}>
+                    <AIResponseCard
+                      content={aiResponse}
+                      isLoading={false}
+                      variant="default"
+                      containerRef={containerRef}
+                    />
+                  </div>
                 )}
 
                 {/* Error */}

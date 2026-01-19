@@ -847,47 +847,93 @@ export function WatchPartyPage() {
                     </motion.button>
                   </div>
 
-                  {/* AI Description */}
+                  {/* AI Description - Enhanced */}
                   <div
                     style={{
+                      position: 'relative',
                       padding: '20px',
                       borderRadius: '16px',
-                      background: 'rgba(102, 126, 234, 0.08)',
-                      border: '1px solid rgba(102, 126, 234, 0.15)',
+                      background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(168, 85, 247, 0.08) 100%)',
+                      border: '1px solid rgba(139, 92, 246, 0.25)',
+                      overflow: 'hidden',
                     }}
                   >
-                    <p style={{ fontSize: '12px', fontWeight: 600, color: 'rgba(255,255,255,0.5)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                      ✨ AI-Generated Description
-                    </p>
-                    {isGeneratingDesc ? (
-                    <div style={{ display: 'flex', gap: '4px' }}>
-                      <motion.span animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1, repeat: Infinity }}>●</motion.span>
-                      <motion.span animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}>●</motion.span>
-                      <motion.span animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1, repeat: Infinity, delay: 0.4 }}>●</motion.span>
-                    </div>
-                  ) : (
-                    <>
-                      <p style={{ fontSize: '15px', lineHeight: 1.7 }}>{aiDescription}</p>
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => copyToClipboard(aiDescription)}
-                        style={{
-                          marginTop: '14px',
-                          padding: '10px 18px',
-                          borderRadius: '10px',
-                          background: 'rgba(255,255,255,0.1)',
-                          border: 'none',
-                          color: '#fff',
-                          cursor: 'pointer',
-                          fontSize: '13px',
-                          fontWeight: 500,
-                        }}
+                    {/* Animated glow */}
+                    <motion.div
+                      animate={{
+                        background: [
+                          'radial-gradient(circle at 0% 0%, rgba(139,92,246,0.15) 0%, transparent 50%)',
+                          'radial-gradient(circle at 100% 0%, rgba(139,92,246,0.15) 0%, transparent 50%)',
+                          'radial-gradient(circle at 100% 100%, rgba(139,92,246,0.15) 0%, transparent 50%)',
+                          'radial-gradient(circle at 0% 100%, rgba(139,92,246,0.15) 0%, transparent 50%)',
+                          'radial-gradient(circle at 0% 0%, rgba(139,92,246,0.15) 0%, transparent 50%)',
+                        ],
+                      }}
+                      transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        pointerEvents: 'none',
+                      }}
+                    />
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', position: 'relative' }}>
+                      <motion.span
+                        animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.1, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        style={{ fontSize: '16px' }}
                       >
-                        📋 Copy Description
-                      </motion.button>
-                    </>
-                  )}
+                        ✨
+                      </motion.span>
+                      <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(167, 139, 250, 0.9)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+                        AI-Generated Description
+                      </p>
+                    </div>
+                    
+                    {isGeneratingDesc ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', position: 'relative' }}>
+                        <motion.span 
+                          animate={{ opacity: [0.3, 1, 0.3] }} 
+                          transition={{ duration: 1.2, repeat: Infinity, delay: 0 }}
+                          style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'linear-gradient(135deg, #667eea, #a855f7)' }}
+                        />
+                        <motion.span 
+                          animate={{ opacity: [0.3, 1, 0.3] }} 
+                          transition={{ duration: 1.2, repeat: Infinity, delay: 0.2 }}
+                          style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'linear-gradient(135deg, #a855f7, #ec4899)' }}
+                        />
+                        <motion.span 
+                          animate={{ opacity: [0.3, 1, 0.3] }} 
+                          transition={{ duration: 1.2, repeat: Infinity, delay: 0.4 }}
+                          style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'linear-gradient(135deg, #ec4899, #667eea)' }}
+                        />
+                        <span style={{ marginLeft: '8px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>
+                          Generating...
+                        </span>
+                      </div>
+                    ) : (
+                      <div style={{ position: 'relative' }}>
+                        <p style={{ fontSize: '15px', lineHeight: 1.75, color: 'rgba(255,255,255,0.9)' }}>{aiDescription}</p>
+                        <motion.button
+                          whileHover={{ scale: 1.02, background: 'rgba(139,92,246,0.2)' }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => copyToClipboard(aiDescription)}
+                          style={{
+                            marginTop: '14px',
+                            padding: '10px 18px',
+                            borderRadius: '10px',
+                            background: 'rgba(139,92,246,0.1)',
+                            border: '1px solid rgba(139,92,246,0.3)',
+                            color: '#a78bfa',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                            fontWeight: 600,
+                          }}
+                        >
+                          📋 Copy Description
+                        </motion.button>
+                      </div>
+                    )}
                   </div>
 
                   <motion.button

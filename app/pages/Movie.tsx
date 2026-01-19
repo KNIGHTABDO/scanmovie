@@ -22,6 +22,7 @@ import { useParams, Link } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
 import { MovieCard } from '~/components/MovieCard';
+import { AIResponseCard } from '~/components/AIResponseCard';
 import { useUserData } from '~/contexts/UserDataContext';
 import { explainMovieConnections } from '~/services/ai';
 import {
@@ -439,71 +440,14 @@ export function MoviePage() {
             {/* AI Insight Card */}
             <AnimatePresence>
               {(aiInsight || aiInsightLoading) && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  style={{ marginBottom: '24px' }}
-                >
-                  <LiquidSurface
-                    variant="card"
-                    cornerRadius={16}
-                    padding="16px 20px"
-                    displacementScale={40}
-                    mouseContainer={containerRef}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                      <div style={{
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '18px',
-                        flexShrink: 0,
-                      }}>
-                        ✨
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <p style={{ 
-                          fontSize: '13px', 
-                          fontWeight: 600, 
-                          color: 'rgba(255,255,255,0.5)', 
-                          marginBottom: '6px',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px',
-                        }}>
-                          AI Insight
-                        </p>
-                        {aiInsightLoading ? (
-                          <div style={{ display: 'flex', gap: '4px' }}>
-                            <motion.span
-                              animate={{ opacity: [0.4, 1, 0.4] }}
-                              transition={{ duration: 1, repeat: Infinity, delay: 0 }}
-                              style={{ color: 'rgba(255,255,255,0.6)' }}
-                            >●</motion.span>
-                            <motion.span
-                              animate={{ opacity: [0.4, 1, 0.4] }}
-                              transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
-                              style={{ color: 'rgba(255,255,255,0.6)' }}
-                            >●</motion.span>
-                            <motion.span
-                              animate={{ opacity: [0.4, 1, 0.4] }}
-                              transition={{ duration: 1, repeat: Infinity, delay: 0.4 }}
-                              style={{ color: 'rgba(255,255,255,0.6)' }}
-                            >●</motion.span>
-                          </div>
-                        ) : (
-                          <p style={{ fontSize: '15px', lineHeight: 1.6, color: '#fff' }}>
-                            {aiInsight}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </LiquidSurface>
-                </motion.div>
+                <div style={{ marginBottom: '28px' }}>
+                  <AIResponseCard
+                    content={aiInsight}
+                    isLoading={aiInsightLoading}
+                    variant="compact"
+                    containerRef={containerRef}
+                  />
+                </div>
               )}
             </AnimatePresence>
 
