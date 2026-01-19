@@ -453,197 +453,312 @@ export function WatchPartyPage() {
               style={{
                 position: 'fixed',
                 inset: 0,
-                background: 'rgba(0,0,0,0.7)',
+                background: 'rgba(0,0,0,0.8)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
                 zIndex: 1998,
               }}
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 50 }}
+              initial={{ opacity: 0, scale: 0.85, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 50 }}
+              exit={{ opacity: 0, scale: 0.85, y: 30 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               style={{
                 position: 'fixed',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 'min(600px, calc(100vw - 48px))',
-                maxHeight: 'calc(100vh - 100px)',
-                overflow: 'auto',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '24px',
                 zIndex: 1999,
+                pointerEvents: 'none',
               }}
             >
-              <LiquidSurface variant="modal" cornerRadius={28} padding="32px">
-                <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '24px' }}>
-                  ✨ Create Watch Party
-                </h2>
-
-                {/* Party Name */}
-                <div style={{ marginBottom: '20px' }}>
-                  <label style={{ fontSize: '14px', fontWeight: 500, marginBottom: '8px', display: 'block' }}>
-                    Party Name
-                  </label>
-                  <input
-                    type="text"
-                    value={newPartyName}
-                    onChange={e => setNewPartyName(e.target.value)}
-                    placeholder="Friday Night Horror Marathon"
+              <div
+                style={{
+                  width: '100%',
+                  maxWidth: '550px',
+                  maxHeight: 'calc(100vh - 120px)',
+                  overflow: 'auto',
+                  pointerEvents: 'auto',
+                  borderRadius: '32px',
+                }}
+              >
+                <LiquidSurface variant="modal" cornerRadius={32} padding="0">
+                  {/* Modal Header */}
+                  <div
                     style={{
-                      width: '100%',
-                      padding: '14px 18px',
-                      borderRadius: '12px',
-                      background: 'rgba(255,255,255,0.08)',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      color: '#fff',
-                      fontSize: '16px',
-                      outline: 'none',
+                      padding: '28px 32px 20px',
+                      borderBottom: '1px solid rgba(255,255,255,0.08)',
+                      background: 'linear-gradient(180deg, rgba(102,126,234,0.1) 0%, transparent 100%)',
                     }}
-                  />
-                </div>
-
-                {/* Emoji Picker */}
-                <div style={{ marginBottom: '24px' }}>
-                  <label style={{ fontSize: '14px', fontWeight: 500, marginBottom: '8px', display: 'block' }}>
-                    Choose an Emoji
-                  </label>
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                    {PARTY_EMOJIS.map(emoji => (
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <h2 style={{ fontSize: '26px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span style={{ fontSize: '32px' }}>✨</span>
+                        Create Watch Party
+                      </h2>
                       <motion.button
-                        key={emoji}
-                        whileHover={{ scale: 1.1 }}
+                        whileHover={{ scale: 1.1, rotate: 90 }}
                         whileTap={{ scale: 0.9 }}
-                        onClick={() => setNewPartyEmoji(emoji)}
+                        onClick={() => setIsCreating(false)}
                         style={{
-                          width: '44px',
-                          height: '44px',
-                          borderRadius: '12px',
-                          background: newPartyEmoji === emoji
-                            ? 'linear-gradient(135deg, #667eea, #764ba2)'
-                            : 'rgba(255,255,255,0.08)',
+                          background: 'rgba(255,255,255,0.1)',
                           border: 'none',
+                          width: '36px',
+                          height: '36px',
+                          borderRadius: '50%',
                           cursor: 'pointer',
-                          fontSize: '22px',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
+                          fontSize: '18px',
+                          color: '#fff',
                         }}
                       >
-                        {emoji}
+                        ✕
                       </motion.button>
-                    ))}
+                    </div>
+                    <p style={{ fontSize: '14px', opacity: 0.6, marginTop: '8px' }}>
+                      Curate the perfect movie night for your friends
+                    </p>
                   </div>
-                </div>
 
-                {/* Movie Selection */}
-                <div style={{ marginBottom: '24px' }}>
-                  <label style={{ fontSize: '14px', fontWeight: 500, marginBottom: '8px', display: 'block' }}>
-                    Select Movies ({selectedMovieIds.length} selected)
-                  </label>
-                  {availableMovies.length > 0 ? (
-                    <div
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
-                        gap: '12px',
-                        maxHeight: '250px',
-                        overflow: 'auto',
-                        padding: '8px',
-                        borderRadius: '12px',
-                        background: 'rgba(0,0,0,0.2)',
-                      }}
-                    >
-                      {availableMovies.map(movie => (
-                        <motion.div
-                          key={movie.id}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => toggleMovieSelection(movie.id)}
+                  {/* Modal Body */}
+                  <div style={{ padding: '24px 32px 32px' }}>
+                    {/* Party Name */}
+                    <div style={{ marginBottom: '24px' }}>
+                      <label style={{ fontSize: '13px', fontWeight: 600, marginBottom: '10px', display: 'block', textTransform: 'uppercase', letterSpacing: '0.5px', opacity: 0.7 }}>
+                        Party Name
+                      </label>
+                      <input
+                        type="text"
+                        value={newPartyName}
+                        onChange={e => setNewPartyName(e.target.value)}
+                        placeholder="Friday Night Horror Marathon"
+                        style={{
+                          width: '100%',
+                          padding: '16px 20px',
+                          borderRadius: '14px',
+                          background: 'rgba(255,255,255,0.06)',
+                          border: '2px solid rgba(255,255,255,0.1)',
+                          color: '#fff',
+                          fontSize: '16px',
+                          outline: 'none',
+                          transition: 'all 0.2s ease',
+                        }}
+                        onFocus={e => {
+                          e.target.style.borderColor = 'rgba(102,126,234,0.5)';
+                          e.target.style.background = 'rgba(102,126,234,0.08)';
+                        }}
+                        onBlur={e => {
+                          e.target.style.borderColor = 'rgba(255,255,255,0.1)';
+                          e.target.style.background = 'rgba(255,255,255,0.06)';
+                        }}
+                      />
+                    </div>
+
+                    {/* Emoji Picker */}
+                    <div style={{ marginBottom: '28px' }}>
+                      <label style={{ fontSize: '13px', fontWeight: 600, marginBottom: '12px', display: 'block', textTransform: 'uppercase', letterSpacing: '0.5px', opacity: 0.7 }}>
+                        Choose an Emoji
+                      </label>
+                      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center', padding: '16px', borderRadius: '16px', background: 'rgba(255,255,255,0.03)' }}>
+                        {PARTY_EMOJIS.map(emoji => (
+                          <motion.button
+                            key={emoji}
+                            whileHover={{ scale: 1.15, y: -2 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => setNewPartyEmoji(emoji)}
+                            style={{
+                              width: '52px',
+                              height: '52px',
+                              borderRadius: '14px',
+                              background: newPartyEmoji === emoji
+                                ? 'linear-gradient(135deg, #667eea, #764ba2)'
+                                : 'rgba(255,255,255,0.06)',
+                              border: newPartyEmoji === emoji ? '2px solid rgba(102,126,234,0.5)' : '2px solid transparent',
+                              cursor: 'pointer',
+                              fontSize: '26px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              transition: 'all 0.2s ease',
+                              boxShadow: newPartyEmoji === emoji ? '0 4px 20px rgba(102,126,234,0.3)' : 'none',
+                            }}
+                          >
+                            {emoji}
+                          </motion.button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Movie Selection */}
+                    <div style={{ marginBottom: '28px' }}>
+                      <label style={{ fontSize: '13px', fontWeight: 600, marginBottom: '12px', display: 'block', textTransform: 'uppercase', letterSpacing: '0.5px', opacity: 0.7 }}>
+                        Select Movies 
+                        {selectedMovieIds.length > 0 && (
+                          <span style={{ 
+                            marginLeft: '8px', 
+                            background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                            padding: '4px 10px',
+                            borderRadius: '20px',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                          }}>
+                            {selectedMovieIds.length} selected
+                          </span>
+                        )}
+                      </label>
+                      {availableMovies.length > 0 ? (
+                        <div
                           style={{
-                            position: 'relative',
-                            cursor: 'pointer',
-                            borderRadius: '10px',
-                            overflow: 'hidden',
-                            border: selectedMovieIds.includes(movie.id)
-                              ? '2px solid #667eea'
-                              : '2px solid transparent',
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))',
+                            gap: '14px',
+                            maxHeight: '280px',
+                            overflow: 'auto',
+                            padding: '12px',
+                            borderRadius: '16px',
+                            background: 'rgba(0,0,0,0.25)',
+                            border: '1px solid rgba(255,255,255,0.05)',
                           }}
                         >
-                          <img
-                            src={getPosterUrl(movie.poster_path, 'w185')}
-                            alt={movie.title}
-                            style={{
-                              width: '100%',
-                              aspectRatio: '2/3',
-                              objectFit: 'cover',
-                            }}
-                          />
-                          {selectedMovieIds.includes(movie.id) && (
-                            <div
+                          {availableMovies.map(movie => (
+                            <motion.div
+                              key={movie.id}
+                              whileHover={{ scale: 1.05, y: -2 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => toggleMovieSelection(movie.id)}
                               style={{
-                                position: 'absolute',
-                                top: '4px',
-                                right: '4px',
-                                width: '24px',
-                                height: '24px',
-                                borderRadius: '50%',
-                                background: '#667eea',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '14px',
+                                position: 'relative',
+                                cursor: 'pointer',
+                                borderRadius: '12px',
+                                overflow: 'hidden',
+                                border: selectedMovieIds.includes(movie.id)
+                                  ? '3px solid #667eea'
+                                  : '3px solid transparent',
+                                boxShadow: selectedMovieIds.includes(movie.id) 
+                                  ? '0 4px 16px rgba(102,126,234,0.4)' 
+                                  : 'none',
+                                transition: 'all 0.2s ease',
                               }}
                             >
-                              ✓
-                            </div>
-                          )}
-                        </motion.div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p style={{ opacity: 0.6, fontSize: '14px' }}>
-                      Add movies to your watchlist or favorites first!
-                    </p>
-                  )}
-                </div>
+                              <img
+                                src={getPosterUrl(movie.poster_path, 'w185')}
+                                alt={movie.title}
+                                style={{
+                                  width: '100%',
+                                  aspectRatio: '2/3',
+                                  objectFit: 'cover',
+                                }}
+                              />
+                            {selectedMovieIds.includes(movie.id) && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                style={{
+                                  position: 'absolute',
+                                  top: '6px',
+                                  right: '6px',
+                                  width: '26px',
+                                  height: '26px',
+                                  borderRadius: '50%',
+                                  background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: '14px',
+                                  fontWeight: 700,
+                                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                                }}
+                              >
+                                ✓
+                              </motion.div>
+                            )}
+                          </motion.div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div
+                        style={{
+                          padding: '40px 24px',
+                          textAlign: 'center',
+                          borderRadius: '16px',
+                          background: 'rgba(255,255,255,0.03)',
+                          border: '2px dashed rgba(255,255,255,0.1)',
+                        }}
+                      >
+                        <span style={{ fontSize: '32px', marginBottom: '12px', display: 'block' }}>📚</span>
+                        <p style={{ opacity: 0.7, fontSize: '14px', marginBottom: '4px' }}>
+                          No movies in your library yet
+                        </p>
+                        <p style={{ opacity: 0.5, fontSize: '13px' }}>
+                          Add movies to your watchlist or favorites first!
+                        </p>
+                      </div>
+                    )}
+                  </div>
 
-                {/* Actions */}
-                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setIsCreating(false)}
-                    style={{
-                      padding: '12px 24px',
-                      borderRadius: '50px',
-                      background: 'rgba(255,255,255,0.1)',
-                      border: 'none',
-                      color: '#fff',
-                      cursor: 'pointer',
-                      fontWeight: 500,
-                    }}
-                  >
-                    Cancel
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={handleCreateParty}
-                    disabled={!newPartyName.trim() || selectedMovieIds.length === 0}
-                    style={{
-                      padding: '12px 24px',
-                      borderRadius: '50px',
-                      background: newPartyName.trim() && selectedMovieIds.length > 0
-                        ? 'linear-gradient(135deg, #667eea, #764ba2)'
-                        : 'rgba(255,255,255,0.1)',
-                      border: 'none',
-                      color: '#fff',
-                      cursor: newPartyName.trim() && selectedMovieIds.length > 0 ? 'pointer' : 'not-allowed',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Create Party ✨
-                  </motion.button>
-                </div>
-              </LiquidSurface>
+                    {/* Actions */}
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: '14px',
+                        justifyContent: 'flex-end',
+                        paddingTop: '8px',
+                        borderTop: '1px solid rgba(255,255,255,0.06)',
+                        marginTop: '8px',
+                      }}
+                    >
+                      <motion.button
+                        whileHover={{ scale: 1.02, background: 'rgba(255,255,255,0.15)' }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setIsCreating(false)}
+                        style={{
+                          padding: '14px 28px',
+                          borderRadius: '50px',
+                          background: 'rgba(255,255,255,0.08)',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          color: '#fff',
+                          cursor: 'pointer',
+                          fontWeight: 500,
+                          fontSize: '15px',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        Cancel
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.02, boxShadow: '0 6px 24px rgba(102,126,234,0.4)' }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={handleCreateParty}
+                        disabled={!newPartyName.trim() || selectedMovieIds.length === 0}
+                        style={{
+                          padding: '14px 32px',
+                          borderRadius: '50px',
+                          background: newPartyName.trim() && selectedMovieIds.length > 0
+                            ? 'linear-gradient(135deg, #667eea, #764ba2)'
+                            : 'rgba(255,255,255,0.08)',
+                          border: 'none',
+                          color: '#fff',
+                          cursor: newPartyName.trim() && selectedMovieIds.length > 0 ? 'pointer' : 'not-allowed',
+                          fontWeight: 600,
+                          fontSize: '15px',
+                          opacity: newPartyName.trim() && selectedMovieIds.length > 0 ? 1 : 0.5,
+                          transition: 'all 0.2s ease',
+                          boxShadow: newPartyName.trim() && selectedMovieIds.length > 0 
+                            ? '0 4px 16px rgba(102,126,234,0.3)' 
+                            : 'none',
+                        }}
+                      >
+                        Create Party ✨
+                      </motion.button>
+                    </div>
+                  </div>
+                </LiquidSurface>
+              </div>
             </motion.div>
           </>
         )}
@@ -661,84 +776,90 @@ export function WatchPartyPage() {
               style={{
                 position: 'fixed',
                 inset: 0,
-                background: 'rgba(0,0,0,0.7)',
+                background: 'rgba(0,0,0,0.8)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
                 zIndex: 1998,
               }}
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
+              exit={{ opacity: 0, scale: 0.85 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               style={{
                 position: 'fixed',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 'min(500px, calc(100vw - 48px))',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '24px',
                 zIndex: 1999,
+                pointerEvents: 'none',
               }}
             >
-              <LiquidSurface variant="modal" cornerRadius={28} padding="32px">
-                <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>
-                  🔗 Share Watch Party
-                </h2>
-                <p style={{ fontSize: '14px', opacity: 0.6, marginBottom: '24px' }}>
-                  Share this link with friends to invite them!
-                </p>
+              <div style={{ width: '100%', maxWidth: '500px', pointerEvents: 'auto' }}>
+                <LiquidSurface variant="modal" cornerRadius={28} padding="32px">
+                  <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>
+                    🔗 Share Watch Party
+                  </h2>
+                  <p style={{ fontSize: '14px', opacity: 0.6, marginBottom: '24px' }}>
+                    Share this link with friends to invite them!
+                  </p>
 
-                {/* Share Link */}
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: '8px',
-                    marginBottom: '20px',
-                  }}
-                >
-                  <input
-                    type="text"
-                    value={shareLink}
-                    readOnly
+                  {/* Share Link */}
+                  <div
                     style={{
-                      flex: 1,
-                      padding: '12px 16px',
-                      borderRadius: '12px',
-                      background: 'rgba(255,255,255,0.08)',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      color: '#fff',
-                      fontSize: '14px',
-                    }}
-                  />
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => copyToClipboard(shareLink)}
-                    style={{
-                      padding: '12px 20px',
-                      borderRadius: '12px',
-                      background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                      border: 'none',
-                      color: '#fff',
-                      cursor: 'pointer',
-                      fontWeight: 500,
+                      display: 'flex',
+                      gap: '8px',
+                      marginBottom: '20px',
                     }}
                   >
-                    Copy
-                  </motion.button>
-                </div>
+                    <input
+                      type="text"
+                      value={shareLink}
+                      readOnly
+                      style={{
+                        flex: 1,
+                        padding: '14px 16px',
+                        borderRadius: '12px',
+                        background: 'rgba(255,255,255,0.06)',
+                        border: '2px solid rgba(255,255,255,0.1)',
+                        color: '#fff',
+                        fontSize: '14px',
+                      }}
+                    />
+                    <motion.button
+                      whileHover={{ scale: 1.05, boxShadow: '0 4px 16px rgba(102,126,234,0.4)' }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => copyToClipboard(shareLink)}
+                      style={{
+                        padding: '14px 24px',
+                        borderRadius: '12px',
+                        background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                        border: 'none',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                      }}
+                    >
+                      Copy
+                    </motion.button>
+                  </div>
 
-                {/* AI Description */}
-                <div
-                  style={{
-                    padding: '16px',
-                    borderRadius: '12px',
-                    background: 'rgba(102, 126, 234, 0.1)',
-                    border: '1px solid rgba(102, 126, 234, 0.2)',
-                  }}
-                >
-                  <p style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>
-                    ✨ AI-Generated Description
-                  </p>
-                  {isGeneratingDesc ? (
+                  {/* AI Description */}
+                  <div
+                    style={{
+                      padding: '20px',
+                      borderRadius: '16px',
+                      background: 'rgba(102, 126, 234, 0.08)',
+                      border: '1px solid rgba(102, 126, 234, 0.15)',
+                    }}
+                  >
+                    <p style={{ fontSize: '12px', fontWeight: 600, color: 'rgba(255,255,255,0.5)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      ✨ AI-Generated Description
+                    </p>
+                    {isGeneratingDesc ? (
                     <div style={{ display: 'flex', gap: '4px' }}>
                       <motion.span animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1, repeat: Infinity }}>●</motion.span>
                       <motion.span animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}>●</motion.span>
@@ -746,47 +867,49 @@ export function WatchPartyPage() {
                     </div>
                   ) : (
                     <>
-                      <p style={{ fontSize: '15px', lineHeight: 1.6 }}>{aiDescription}</p>
+                      <p style={{ fontSize: '15px', lineHeight: 1.7 }}>{aiDescription}</p>
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => copyToClipboard(aiDescription)}
                         style={{
-                          marginTop: '12px',
-                          padding: '8px 16px',
-                          borderRadius: '8px',
+                          marginTop: '14px',
+                          padding: '10px 18px',
+                          borderRadius: '10px',
                           background: 'rgba(255,255,255,0.1)',
                           border: 'none',
                           color: '#fff',
                           cursor: 'pointer',
-                          fontSize: '12px',
+                          fontSize: '13px',
+                          fontWeight: 500,
                         }}
                       >
                         📋 Copy Description
                       </motion.button>
                     </>
                   )}
-                </div>
+                  </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setShowShareModal(false)}
-                  style={{
-                    width: '100%',
-                    marginTop: '20px',
-                    padding: '12px',
-                    borderRadius: '12px',
-                    background: 'rgba(255,255,255,0.1)',
-                    border: 'none',
-                    color: '#fff',
-                    cursor: 'pointer',
-                    fontWeight: 500,
-                  }}
-                >
-                  Close
-                </motion.button>
-              </LiquidSurface>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setShowShareModal(false)}
+                    style={{
+                      width: '100%',
+                      marginTop: '24px',
+                      padding: '14px',
+                      borderRadius: '14px',
+                      background: 'rgba(255,255,255,0.08)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      color: '#fff',
+                      cursor: 'pointer',
+                      fontWeight: 500,
+                    }}
+                  >
+                    Close
+                  </motion.button>
+                </LiquidSurface>
+              </div>
             </motion.div>
           </>
         )}
@@ -804,86 +927,103 @@ export function WatchPartyPage() {
               style={{
                 position: 'fixed',
                 inset: 0,
-                background: 'rgba(0,0,0,0.7)',
+                background: 'rgba(0,0,0,0.8)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
                 zIndex: 1998,
               }}
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
+              exit={{ opacity: 0, scale: 0.85 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               style={{
                 position: 'fixed',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 'min(450px, calc(100vw - 48px))',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '24px',
                 zIndex: 1999,
+                pointerEvents: 'none',
               }}
             >
-              <LiquidSurface variant="modal" cornerRadius={28} padding="32px">
-                <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>
-                  📥 Import Watch Party
-                </h2>
-                <p style={{ fontSize: '14px', opacity: 0.6, marginBottom: '24px' }}>
-                  Paste the share link from a friend
-                </p>
+              <div style={{ width: '100%', maxWidth: '450px', pointerEvents: 'auto' }}>
+                <LiquidSurface variant="modal" cornerRadius={28} padding="32px">
+                  <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>
+                    📥 Import Watch Party
+                  </h2>
+                  <p style={{ fontSize: '14px', opacity: 0.6, marginBottom: '24px' }}>
+                    Paste the share link from a friend
+                  </p>
 
-                <input
-                  type="text"
-                  value={importCode}
-                  onChange={e => setImportCode(e.target.value)}
-                  placeholder="Paste share link here..."
-                  style={{
-                    width: '100%',
-                    padding: '14px 18px',
-                    borderRadius: '12px',
-                    background: 'rgba(255,255,255,0.08)',
-                    border: '1px solid rgba(255,255,255,0.15)',
-                    color: '#fff',
-                    fontSize: '16px',
-                    outline: 'none',
-                    marginBottom: '20px',
-                  }}
-                />
+                  <input
+                    type="text"
+                    value={importCode}
+                    onChange={e => setImportCode(e.target.value)}
+                    placeholder="Paste share link here..."
+                    style={{
+                      width: '100%',
+                      padding: '16px 20px',
+                      borderRadius: '14px',
+                      background: 'rgba(255,255,255,0.06)',
+                      border: '2px solid rgba(255,255,255,0.1)',
+                      color: '#fff',
+                      fontSize: '16px',
+                      outline: 'none',
+                      marginBottom: '24px',
+                      transition: 'all 0.2s ease',
+                    }}
+                    onFocus={e => {
+                      e.target.style.borderColor = 'rgba(102,126,234,0.5)';
+                      e.target.style.background = 'rgba(102,126,234,0.08)';
+                    }}
+                    onBlur={e => {
+                      e.target.style.borderColor = 'rgba(255,255,255,0.1)';
+                      e.target.style.background = 'rgba(255,255,255,0.06)';
+                    }}
+                  />
 
-                <div style={{ display: 'flex', gap: '12px' }}>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setShowImportModal(false)}
-                    style={{
-                      flex: 1,
-                      padding: '12px',
-                      borderRadius: '12px',
-                      background: 'rgba(255,255,255,0.1)',
-                      border: 'none',
-                      color: '#fff',
-                      cursor: 'pointer',
-                      fontWeight: 500,
-                    }}
-                  >
-                    Cancel
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={handleImport}
-                    style={{
-                      flex: 1,
-                      padding: '12px',
-                      borderRadius: '12px',
-                      background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                      border: 'none',
-                      color: '#fff',
-                      cursor: 'pointer',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Import 🎉
-                  </motion.button>
-                </div>
-              </LiquidSurface>
+                  <div style={{ display: 'flex', gap: '14px' }}>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setShowImportModal(false)}
+                      style={{
+                        flex: 1,
+                        padding: '14px',
+                        borderRadius: '50px',
+                        background: 'rgba(255,255,255,0.08)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        fontWeight: 500,
+                      }}
+                    >
+                      Cancel
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02, boxShadow: '0 4px 16px rgba(102,126,234,0.4)' }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={handleImport}
+                      style={{
+                        flex: 1,
+                        padding: '14px',
+                        borderRadius: '50px',
+                        background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                        border: 'none',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                        boxShadow: '0 4px 16px rgba(102,126,234,0.3)',
+                      }}
+                    >
+                      Import 🎉
+                    </motion.button>
+                  </div>
+                </LiquidSurface>
+              </div>
             </motion.div>
           </>
         )}
