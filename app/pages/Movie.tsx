@@ -598,14 +598,28 @@ function MovieNotFound() {
 function TrailerModal({ videos, onClose }: { videos: Video[]; onClose: () => void }) {
   const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
   const selectedVideo = videos[selectedVideoIndex];
-  const modalRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   
   // Lock body scroll when modal is open
   useEffect(() => {
-    const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = 'hidden';
+    // Save current scroll position and body styles
+    const scrollY = window.scrollY;
+    const originalStyle = document.body.style.cssText;
+    
+    // Lock the body
+    document.body.style.cssText = `
+      overflow: hidden !important;
+      position: fixed !important;
+      top: -${scrollY}px;
+      left: 0;
+      right: 0;
+      width: 100%;
+    `;
+    
     return () => {
-      document.body.style.overflow = originalStyle;
+      // Restore body styles and scroll position
+      document.body.style.cssText = originalStyle;
+      window.scrollTo(0, scrollY);
     };
   }, []);
 
@@ -617,6 +631,39 @@ function TrailerModal({ videos, onClose }: { videos: Video[]; onClose: () => voi
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
+
+  // Prevent scroll propagation
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+      const isScrollingUp = e.deltaY < 0;
+      const isScrollingDown = e.deltaY > 0;
+      const isAtTop = scrollTop === 0;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+
+      // Only prevent default at boundaries
+      if ((isScrollingUp && isAtTop) || (isScrollingDown && isAtBottom)) {
+        e.preventDefault();
+      }
+      
+      e.stopPropagation();
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      e.stopPropagation();
+    };
+
+    scrollContainer.addEventListener('wheel', handleWheel, { passive: false });
+    scrollContainer.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    return () => {
+      scrollContainer.removeEventListener('wheel', handleWheel);
+      scrollContainer.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, []);
 
   // Get video type icon
   const getVideoIcon = (type: string) => {
@@ -631,105 +678,128 @@ function TrailerModal({ videos, onClose }: { videos: Video[]; onClose: () => voi
   };
 
   return (
-    <motion.div
-      ref={modalRef}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'radial-gradient(ellipse at center, rgba(10, 10, 10, 0.9) 0%, rgba(0, 0, 0, 0.98) 100%)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        zIndex: 1000,
-        padding: '40px 20px',
-        overflowY: 'auto',
-        overflowX: 'hidden',
-        overscrollBehavior: 'contain',
-      }}
-    >
-      {/* Ambient glow effect behind video */}
+    <>
+      {/* Fixed Backdrop - Blocks all interaction with page behind */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 0.5, scale: 1 }}
-        transition={{ duration: 0.8 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
         style={{
           position: 'fixed',
-          width: '80%',
-          height: '60%',
-          background: 'radial-gradient(ellipse at center, rgba(229, 9, 20, 0.15) 0%, transparent 70%)',
-          filter: 'blur(80px)',
-          pointerEvents: 'none',
+          inset: 0,
+          background: 'radial-gradient(ellipse at center, rgba(10, 10, 10, 0.95) 0%, rgba(0, 0, 0, 0.99) 100%)',
+          zIndex: 9998,
         }}
       />
 
-      {/* Close Button - Liquid Glass Style - Fixed position */}
+      {/* Scrollable Content Container */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.8, y: -20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
+        ref={scrollContainerRef}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         style={{
           position: 'fixed',
-          top: '24px',
-          right: '24px',
-          zIndex: 1001,
+          inset: 0,
+          zIndex: 9999,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehavior: 'contain',
         }}
       >
-        <LiquidSurface
-          variant="button"
-          padding="0"
-          cornerRadius={50}
-          displacementScale={40}
+        {/* Inner content wrapper for centering and padding */}
+        <div
           onClick={onClose}
+          style={{
+            minHeight: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: '60px 20px 100px',
+          }}
         >
-          <motion.div
-            whileHover={{ scale: 1.1, rotate: 90 }}
-            whileTap={{ scale: 0.9 }}
+          {/* Ambient glow effect behind video */}
+          <div
             style={{
-              width: '50px',
-              height: '50px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              color: '#fff',
-              fontSize: '20px',
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '80%',
+              height: '60%',
+              background: 'radial-gradient(ellipse at center, rgba(229, 9, 20, 0.12) 0%, transparent 70%)',
+              filter: 'blur(80px)',
+              pointerEvents: 'none',
+              zIndex: -1,
+            }}
+          />
+
+          {/* Close Button - Fixed at top right */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+            style={{
+              position: 'fixed',
+              top: '20px',
+              right: '20px',
+              zIndex: 10000,
             }}
           >
-            ✕
+            <LiquidSurface
+              variant="button"
+              padding="0"
+              cornerRadius={50}
+              displacementScale={40}
+            >
+              <motion.div
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                style={{
+                  width: '50px',
+                  height: '50px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: '#fff',
+                  fontSize: '20px',
+                }}
+              >
+                ✕
+              </motion.div>
+            </LiquidSurface>
           </motion.div>
-        </LiquidSurface>
-      </motion.div>
 
-      {/* Main Content Container */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1, type: 'spring', stiffness: 200, damping: 25 }}
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          width: '100%',
-          maxWidth: '1100px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '24px',
-        }}
-      >
-        {/* Video Player with Liquid Glass Frame */}
-        <LiquidSurface
-          variant="modal"
-          padding="8px"
-          cornerRadius={28}
-          displacementScale={80}
-          aberrationIntensity={4}
-          mouseContainer={modalRef}
-        >
+          {/* Main Content Container */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, type: 'spring', stiffness: 200, damping: 25 }}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '100%',
+              maxWidth: '1100px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '24px',
+            }}
+          >
+            {/* Video Player with Liquid Glass Frame */}
+            <LiquidSurface
+              variant="modal"
+              padding="8px"
+              cornerRadius={28}
+              displacementScale={80}
+              aberrationIntensity={4}
+              mouseContainer={scrollContainerRef}
+            >
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -767,7 +837,7 @@ function TrailerModal({ videos, onClose }: { videos: Video[]; onClose: () => voi
             padding="20px 28px"
             cornerRadius={20}
             displacementScale={50}
-            mouseContainer={modalRef}
+            mouseContainer={scrollContainerRef}
           >
             <div style={{
               display: 'flex',
@@ -903,7 +973,7 @@ function TrailerModal({ videos, onClose }: { videos: Video[]; onClose: () => voi
                   padding="12px"
                   cornerRadius={16}
                   displacementScale={index === selectedVideoIndex ? 60 : 40}
-                  mouseContainer={modalRef}
+                  mouseContainer={scrollContainerRef}
                 >
                   <div style={{
                     display: 'flex',
@@ -975,6 +1045,8 @@ function TrailerModal({ videos, onClose }: { videos: Video[]; onClose: () => voi
 
         {/* Spacer for bottom padding */}
         <div style={{ height: '60px', flexShrink: 0 }} />
+          </motion.div>
+        </div>
       </motion.div>
 
       {/* Keyboard hint - Fixed at bottom */}
@@ -996,7 +1068,7 @@ function TrailerModal({ videos, onClose }: { videos: Video[]; onClose: () => voi
           padding: '8px 16px',
           borderRadius: '20px',
           backdropFilter: 'blur(10px)',
-          zIndex: 1001,
+          zIndex: 10000,
         }}
       >
         Press <kbd style={{
@@ -1006,7 +1078,7 @@ function TrailerModal({ videos, onClose }: { videos: Video[]; onClose: () => voi
           fontSize: '11px',
         }}>ESC</kbd> to close
       </motion.div>
-    </motion.div>
+    </>
   );
 }
 
