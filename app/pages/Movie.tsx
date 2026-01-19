@@ -8,13 +8,20 @@
  * - Cast cards
  * - Similar movies section
  * - All interactive elements
+ * 
+ * Now includes:
+ * - Add to Watchlist / Favorites
+ * - Personal Rating
+ * - Add to Collection
+ * - Add to Comparison
  */
 
 import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
 import { MovieCard } from '~/components/MovieCard';
+import { useUserData } from '~/contexts/UserDataContext';
 import {
   getMovieDetails,
   getMovieCredits,
@@ -36,6 +43,9 @@ export function MoviePage() {
   const [loading, setLoading] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // User data hooks
+  const { addToViewHistory } = useUserData();
+
   useEffect(() => {
     if (!movieId) return;
     
@@ -50,6 +60,9 @@ export function MoviePage() {
         setMovie(movieData);
         setCredits(creditsData);
         setSimilar(similarData);
+        
+        // Track in view history
+        addToViewHistory(movieId);
       } catch (error) {
         console.error('Failed to fetch movie data:', error);
       } finally {
@@ -59,7 +72,7 @@ export function MoviePage() {
     
     fetchMovieData();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [movieId]);
+  }, [movieId, addToViewHistory]);
 
   if (loading) {
     return <MovieLoadingScreen />;
@@ -283,6 +296,9 @@ export function MoviePage() {
                   <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '12px' }}>Overview</h3>
                   <p style={{ lineHeight: 1.7, opacity: 0.85 }}>{movie.overview}</p>
                 </motion.div>
+
+                {/* Action Buttons */}
+                <MovieActions movie={movie} />
               </div>
             </div>
           </LiquidSurface>
@@ -469,6 +485,276 @@ function MovieNotFound() {
         </div>
       </LiquidSurface>
     </div>
+  );
+}
+
+// ====== Movie Actions Component ======
+function MovieActions({ movie }: { movie: Movie }) {
+  const {
+    isInWatchlist,
+    addToWatchlist,
+    removeFromWatchlist,
+    isFavorite,
+    toggleFavorite,
+    getUserRating,
+    setUserRating,
+    collections,
+    addToCollection,
+    removeFromCollection,
+    isInCollection,
+    addToComparison,
+    isInComparison,
+    comparison,
+  } = useUserData();
+
+  const [showRating, setShowRating] = useState(false);
+  const [showCollections, setShowCollections] = useState(false);
+  const [hoveredRating, setHoveredRating] = useState<number | null>(null);
+  
+  const inWatchlist = isInWatchlist(movie.id);
+  const isFav = isFavorite(movie.id);
+  const userRating = getUserRating(movie.id);
+  const comparisonSlot = isInComparison(movie.id);
+
+  // Find next available comparison slot
+  const getNextComparisonSlot = () => {
+    for (let i = 0; i < 3; i++) {
+      if (!comparison[i].movieId) return i;
+    }
+    return -1;
+  };
+
+  const handleAddToComparison = () => {
+    if (comparisonSlot >= 0) return; // Already in comparison
+    const slot = getNextComparisonSlot();
+    if (slot >= 0) {
+      addToComparison(movie.id, slot);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.8 }}
+      style={{ marginTop: '28px' }}
+    >
+      {/* Primary Actions */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+        {/* Watchlist Button */}
+        <motion.button
+          onClick={() => inWatchlist ? removeFromWatchlist(movie.id) : addToWatchlist(movie)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <LiquidSurface
+            variant="button"
+            cornerRadius={14}
+            padding="12px 20px"
+            style={{
+              background: inWatchlist 
+                ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(6, 182, 212, 0.4))'
+                : undefined,
+            }}
+          >
+            <span style={{ fontWeight: 600, fontSize: '14px' }}>
+              {inWatchlist ? '✓ In Watchlist' : '📋 Add to Watchlist'}
+            </span>
+          </LiquidSurface>
+        </motion.button>
+
+        {/* Favorite Button */}
+        <motion.button
+          onClick={() => toggleFavorite(movie)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <LiquidSurface
+            variant="button"
+            cornerRadius={14}
+            padding="12px 20px"
+            style={{
+              background: isFav 
+                ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(236, 72, 153, 0.4))'
+                : undefined,
+            }}
+          >
+            <span style={{ fontWeight: 600, fontSize: '14px' }}>
+              {isFav ? '❤️ Favorited' : '🤍 Favorite'}
+            </span>
+          </LiquidSurface>
+        </motion.button>
+
+        {/* Rate Button */}
+        <motion.button
+          onClick={() => setShowRating(!showRating)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <LiquidSurface
+            variant="button"
+            cornerRadius={14}
+            padding="12px 20px"
+            style={{
+              background: userRating 
+                ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.4), rgba(249, 115, 22, 0.4))'
+                : undefined,
+            }}
+          >
+            <span style={{ fontWeight: 600, fontSize: '14px' }}>
+              {userRating ? `⭐ ${userRating}/10` : '⭐ Rate'}
+            </span>
+          </LiquidSurface>
+        </motion.button>
+
+        {/* Collection Button */}
+        <motion.button
+          onClick={() => setShowCollections(!showCollections)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <LiquidSurface variant="button" cornerRadius={14} padding="12px 20px">
+            <span style={{ fontWeight: 600, fontSize: '14px' }}>📂 Add to Collection</span>
+          </LiquidSurface>
+        </motion.button>
+
+        {/* Compare Button */}
+        <motion.button
+          onClick={handleAddToComparison}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          disabled={comparisonSlot >= 0 || getNextComparisonSlot() < 0}
+          style={{ opacity: (comparisonSlot >= 0 || getNextComparisonSlot() < 0) ? 0.6 : 1 }}
+        >
+          <LiquidSurface
+            variant="button"
+            cornerRadius={14}
+            padding="12px 20px"
+            style={{
+              background: comparisonSlot >= 0 
+                ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(168, 85, 247, 0.4))'
+                : undefined,
+            }}
+          >
+            <span style={{ fontWeight: 600, fontSize: '14px' }}>
+              {comparisonSlot >= 0 ? '⚖️ In Compare' : '⚖️ Compare'}
+            </span>
+          </LiquidSurface>
+        </motion.button>
+      </div>
+
+      {/* Rating Picker */}
+      <AnimatePresence>
+        {showRating && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            style={{ marginBottom: '16px' }}
+          >
+            <LiquidSurface variant="container" cornerRadius={16} padding="16px">
+              <p style={{ fontSize: '14px', marginBottom: '12px', color: 'rgba(255,255,255,0.7)' }}>
+                How would you rate this movie?
+              </p>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {Array.from({ length: 10 }, (_, i) => i + 1).map((rating) => (
+                  <motion.button
+                    key={rating}
+                    onClick={() => {
+                      setUserRating(movie.id, rating);
+                      setShowRating(false);
+                    }}
+                    onMouseEnter={() => setHoveredRating(rating)}
+                    onMouseLeave={() => setHoveredRating(null)}
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.9 }}
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: (hoveredRating !== null ? rating <= hoveredRating : rating <= (userRating || 0))
+                        ? 'linear-gradient(135deg, #f59e0b, #ef4444)'
+                        : 'rgba(255,255,255,0.1)',
+                      color: '#fff',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                    }}
+                  >
+                    {rating}
+                  </motion.button>
+                ))}
+              </div>
+            </LiquidSurface>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Collection Picker */}
+      <AnimatePresence>
+        {showCollections && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+          >
+            <LiquidSurface variant="container" cornerRadius={16} padding="16px">
+              <p style={{ fontSize: '14px', marginBottom: '12px', color: 'rgba(255,255,255,0.7)' }}>
+                Add to a collection:
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {collections.map((collection) => {
+                  const inCollection = isInCollection(collection.id, movie.id);
+                  return (
+                    <motion.button
+                      key={collection.id}
+                      onClick={() => {
+                        if (inCollection) {
+                          removeFromCollection(collection.id, movie.id);
+                        } else {
+                          addToCollection(collection.id, movie.id);
+                        }
+                      }}
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      <LiquidSurface
+                        variant="button"
+                        cornerRadius={10}
+                        padding="8px 14px"
+                        style={{
+                          background: inCollection 
+                            ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(168, 85, 247, 0.4))'
+                            : undefined,
+                        }}
+                      >
+                        <span style={{ fontSize: '13px' }}>
+                          {collection.emoji} {collection.name}
+                          {inCollection && ' ✓'}
+                        </span>
+                      </LiquidSurface>
+                    </motion.button>
+                  );
+                })}
+              </div>
+              <Link 
+                to="/library" 
+                style={{ 
+                  display: 'inline-block', 
+                  marginTop: '12px', 
+                  fontSize: '13px', 
+                  color: 'rgba(255,255,255,0.5)',
+                  textDecoration: 'underline',
+                }}
+              >
+                Manage collections →
+              </Link>
+            </LiquidSurface>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 

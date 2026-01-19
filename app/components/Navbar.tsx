@@ -129,10 +129,10 @@ export function Navbar() {
 
             {/* Desktop Navigation Links - Hidden on Mobile */}
             {!isMobile && (
-              <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
                 <NavLink to="/" label="Home" />
-                <NavLink to="/?section=trending" label="Trending" />
-                <NavLink to="/?section=new" label="New Releases" />
+                <NavLink to="/discover" label="Discover" />
+                <NavLink to="/library" label="Library" />
                 <Link to="/ai" style={{ textDecoration: 'none' }}>
                   <motion.div
                     whileHover={{ scale: 1.05 }}
@@ -306,8 +306,8 @@ export function Navbar() {
               >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <MobileNavLink to="/" label="🏠 Home" onClick={() => setMobileMenuOpen(false)} />
-                  <MobileNavLink to="/?section=trending" label="🔥 Trending" onClick={() => setMobileMenuOpen(false)} />
-                  <MobileNavLink to="/?section=new" label="🆕 New Releases" onClick={() => setMobileMenuOpen(false)} />
+                  <MobileNavLink to="/discover" label="🎲 Discover" onClick={() => setMobileMenuOpen(false)} />
+                  <MobileNavLink to="/library" label="📚 My Library" onClick={() => setMobileMenuOpen(false)} />
                   <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '8px 0' }} />
                   <Link to="/ai" style={{ textDecoration: 'none' }} onClick={() => setMobileMenuOpen(false)}>
                     <motion.div
