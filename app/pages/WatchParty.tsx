@@ -94,6 +94,18 @@ export function WatchPartyPage() {
     loadPartyMovies();
   }, [selectedParty]);
 
+  // Lock body scroll when any modal is open
+  useEffect(() => {
+    if (isCreating || showShareModal || showImportModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isCreating, showShareModal, showImportModal]);
+
   const showNotification = (message: string) => {
     setNotification(message);
     setTimeout(() => setNotification(null), 3000);
@@ -464,28 +476,26 @@ export function WatchPartyPage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.85, y: 30 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              onClick={(e) => e.target === e.currentTarget && setIsCreating(false)}
               style={{
                 position: 'fixed',
                 inset: 0,
                 display: 'flex',
-                alignItems: 'center',
+                alignItems: 'flex-start',
                 justifyContent: 'center',
-                padding: '20px',
+                padding: '40px 20px',
                 zIndex: 1999,
-                pointerEvents: 'none',
-                overflow: 'auto',
+                overflowY: 'auto',
+                WebkitOverflowScrolling: 'touch',
               }}
             >
               <div
+                onClick={(e) => e.stopPropagation()}
                 style={{
                   width: '100%',
                   maxWidth: '550px',
-                  maxHeight: 'calc(100vh - 40px)',
-                  overflow: 'hidden',
-                  pointerEvents: 'auto',
                   borderRadius: '32px',
-                  display: 'flex',
-                  flexDirection: 'column',
+                  flexShrink: 0,
                 }}
               >
                 <LiquidSurface variant="modal" cornerRadius={32} padding="0">
@@ -528,14 +538,10 @@ export function WatchPartyPage() {
                     </p>
                   </div>
 
-                  {/* Modal Body - Scrollable */}
+                  {/* Modal Body */}
                   <div 
                     style={{ 
                       padding: '24px 32px 32px',
-                      overflowY: 'auto',
-                      maxHeight: 'calc(100vh - 200px)',
-                      scrollbarWidth: 'thin',
-                      scrollbarColor: 'rgba(102,126,234,0.5) transparent',
                     }}
                   >
                     {/* Party Name */}
