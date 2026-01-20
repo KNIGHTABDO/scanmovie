@@ -5,6 +5,7 @@
  * ================
  * USES LIQUIDGLASS for the navigation bar.
  * Mobile-optimized with collapsible navigation.
+ * Includes user profile/sign-in button.
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
@@ -12,6 +13,7 @@ import { Link, useNavigate, useLocation } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LiquidSurface } from './Liquid/LiquidSurface';
 import { searchMovies, type Movie } from '~/services/tmdb';
+import { useAuth } from '~/contexts/AuthContext';
 
 export function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,6 +25,7 @@ export function Navbar() {
   const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, isAuthenticated, isLoading: authLoading, signIn } = useAuth();
 
   // Check if mobile/tablet on mount and resize (hamburger shows until 1024px)
   useEffect(() => {
@@ -153,6 +156,68 @@ export function Navbar() {
                     <span style={{ fontWeight: 500, color: '#a78bfa', fontSize: '14px' }}>AI Assistant</span>
                   </motion.div>
                 </Link>
+                
+                {/* User Profile / Sign In */}
+                {isAuthenticated ? (
+                  <Link to="/profile" style={{ textDecoration: 'none' }}>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.98 }}
+                      style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        border: '2px solid rgba(139, 92, 246, 0.5)',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {user?.photoURL ? (
+                        <img
+                          src={user.photoURL}
+                          alt={user.displayName || 'Profile'}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <div style={{
+                          width: '100%',
+                          height: '100%',
+                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '14px',
+                          color: '#fff',
+                        }}>
+                          {user?.displayName?.[0] || '👤'}
+                        </div>
+                      )}
+                    </motion.div>
+                  </Link>
+                ) : (
+                  <motion.button
+                    onClick={signIn}
+                    disabled={authLoading}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '8px 14px',
+                      borderRadius: '20px',
+                      background: 'rgba(255,255,255,0.1)',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      cursor: 'pointer',
+                      color: '#fff',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                    }}
+                  >
+                    <span>👤</span>
+                    Sign In
+                  </motion.button>
+                )}
               </div>
             )}
 
@@ -306,6 +371,84 @@ export function Navbar() {
                 padding="12px"
               >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {/* User Profile Section */}
+                  {isAuthenticated ? (
+                    <Link to="/profile" style={{ textDecoration: 'none' }} onClick={() => setMobileMenuOpen(false)}>
+                      <motion.div
+                        whileTap={{ scale: 0.98 }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px',
+                          padding: '12px 16px',
+                          borderRadius: '12px',
+                          background: 'linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(168,85,247,0.1) 100%)',
+                          marginBottom: '8px',
+                        }}
+                      >
+                        {user?.photoURL ? (
+                          <img
+                            src={user.photoURL}
+                            alt={user.displayName || 'Profile'}
+                            style={{
+                              width: '40px',
+                              height: '40px',
+                              borderRadius: '50%',
+                              objectFit: 'cover',
+                              border: '2px solid rgba(139, 92, 246, 0.5)',
+                            }}
+                          />
+                        ) : (
+                          <div style={{
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '50%',
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '18px',
+                            color: '#fff',
+                          }}>
+                            {user?.displayName?.[0] || '👤'}
+                          </div>
+                        )}
+                        <div>
+                          <div style={{ fontWeight: 600, color: '#fff', fontSize: '14px' }}>
+                            {user?.displayName || 'Profile'}
+                          </div>
+                          <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>
+                            View Profile
+                          </div>
+                        </div>
+                      </motion.div>
+                    </Link>
+                  ) : (
+                    <motion.button
+                      onClick={() => { signIn(); setMobileMenuOpen(false); }}
+                      disabled={authLoading}
+                      whileTap={{ scale: 0.98 }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '16px',
+                        borderRadius: '12px',
+                        background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(168,85,247,0.15) 100%)',
+                        border: '1px solid rgba(139,92,246,0.2)',
+                        marginBottom: '8px',
+                        width: '100%',
+                        cursor: 'pointer',
+                        color: '#fff',
+                      }}
+                    >
+                      <span style={{ fontSize: '20px' }}>👤</span>
+                      <span style={{ fontWeight: 600, fontSize: '14px' }}>Sign In with Google</span>
+                    </motion.button>
+                  )}
+                  
+                  <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '4px 0' }} />
+                  
                   <MobileNavLink to="/" label="🏠 Home" onClick={() => setMobileMenuOpen(false)} />
                   <MobileNavLink to="/discover" label="🎲 Discover" onClick={() => setMobileMenuOpen(false)} />
                   <MobileNavLink to="/library" label="📚 My Library" onClick={() => setMobileMenuOpen(false)} />

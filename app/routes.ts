@@ -10,4 +10,5 @@ export default [
   route("discover", "routes/discover.tsx"),
   route("watch-party", "routes/watch-party.tsx"),
   route("create-party", "routes/create-party.tsx"),
+  route("profile", "routes/profile.tsx"),
 ] satisfies RouteConfig;

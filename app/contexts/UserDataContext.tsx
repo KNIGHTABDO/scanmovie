@@ -4,12 +4,30 @@
  * User Data Context
  * =================
  * React context and hook for managing user data state.
- * Provides reactive updates when localStorage changes.
+ * Supports both:
+ * - localStorage (offline/anonymous users)
+ * - Firebase Firestore (authenticated users with cloud sync)
  */
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import type { Movie } from '~/services/tmdb';
 import { trackAction } from '~/services/achievements';
+import { useAuth } from '~/contexts/AuthContext';
+import {
+  getUserData,
+  migrateLocalStorageToFirestore,
+  addToWatchlistCloud,
+  removeFromWatchlistCloud,
+  addToFavoritesCloud,
+  removeFromFavoritesCloud,
+  setRatingCloud,
+  removeRatingCloud,
+  createCollectionCloud,
+  addToCollectionCloud,
+  removeFromCollectionCloud,
+  deleteCollectionCloud,
+  type UserMovieData,
+} from '~/services/firestoreUserData';
 import {
   type SavedMovie,
   type MovieCollection,
@@ -55,6 +73,11 @@ interface UserDataContextType {
   lastMood: MoodEntry | null;
   stats: ReturnType<typeof getStats>;
   
+  // Cloud sync status
+  isSyncing: boolean;
+  isCloudEnabled: boolean;
+  lastSyncTime: Date | null;
+  
   // Watchlist
   addToWatchlist: (movie: Movie) => void;
   removeFromWatchlist: (movieId: number) => void;
@@ -94,12 +117,18 @@ interface UserDataContextType {
   // Utils
   refreshData: () => void;
   resetAllData: () => void;
+  syncToCloud: () => Promise<void>;
 }
 
 const UserDataContext = createContext<UserDataContextType | null>(null);
 
 export function UserDataProvider({ children }: { children: ReactNode }) {
+  const { user, isAuthenticated } = useAuth();
   const [data, setData] = useState(() => getAllUserData());
+  const [cloudData, setCloudData] = useState<UserMovieData | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
+  const [hasMigrated, setHasMigrated] = useState(false);
   const [stats, setStats] = useState(() => getStats());
 
   // Refresh data from localStorage
@@ -107,6 +136,58 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
     setData(getAllUserData());
     setStats(getStats());
   }, []);
+
+  // Fetch cloud data when user signs in
+  const fetchCloudData = useCallback(async () => {
+    if (!user) return;
+    
+    setIsSyncing(true);
+    try {
+      const cloudUserData = await getUserData(user.uid);
+      if (cloudUserData) {
+        setCloudData(cloudUserData);
+        setLastSyncTime(new Date());
+      }
+    } catch (error) {
+      console.error('Failed to fetch cloud data:', error);
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [user]);
+
+  // Migrate localStorage to Firebase on first sign-in
+  useEffect(() => {
+    if (user && !hasMigrated) {
+      const migrate = async () => {
+        setIsSyncing(true);
+        try {
+          await migrateLocalStorageToFirestore(user.uid);
+          await fetchCloudData();
+          setHasMigrated(true);
+        } catch (error) {
+          console.error('Migration failed:', error);
+        } finally {
+          setIsSyncing(false);
+        }
+      };
+      migrate();
+    }
+  }, [user, hasMigrated, fetchCloudData]);
+
+  // Sync to cloud manually
+  const syncToCloud = useCallback(async () => {
+    if (!user) return;
+    
+    setIsSyncing(true);
+    try {
+      await migrateLocalStorageToFirestore(user.uid);
+      await fetchCloudData();
+    } catch (error) {
+      console.error('Sync failed:', error);
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [user, fetchCloudData]);
 
   // Listen for storage events from other tabs
   useEffect(() => {
@@ -119,33 +200,66 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [refreshData]);
 
-  // Watchlist
-  const addToWatchlist = useCallback((movie: Movie) => {
+  // Watchlist - with cloud sync
+  const addToWatchlist = useCallback(async (movie: Movie) => {
     storeAddToWatchlist(movie);
     trackAction('add_to_watchlist', { genre_ids: movie.genre_ids });
     refreshData();
-  }, [refreshData]);
+    
+    // Sync to cloud if authenticated
+    if (user) {
+      try {
+        await addToWatchlistCloud(user.uid, movie);
+      } catch (error) {
+        console.error('Failed to sync watchlist to cloud:', error);
+      }
+    }
+  }, [refreshData, user]);
 
-  const removeFromWatchlist = useCallback((movieId: number) => {
+  const removeFromWatchlist = useCallback(async (movieId: number) => {
     storeRemoveFromWatchlist(movieId);
     refreshData();
-  }, [refreshData]);
+    
+    if (user) {
+      try {
+        await removeFromWatchlistCloud(user.uid, movieId);
+      } catch (error) {
+        console.error('Failed to sync watchlist removal to cloud:', error);
+      }
+    }
+  }, [refreshData, user]);
 
   const isInWatchlist = useCallback((movieId: number) => {
     return storeIsInWatchlist(movieId);
   }, []);
 
-  // Favorites
-  const addToFavorites = useCallback((movie: Movie) => {
+  // Favorites - with cloud sync
+  const addToFavorites = useCallback(async (movie: Movie) => {
     storeAddToFavorites(movie);
     trackAction('add_to_favorites');
     refreshData();
-  }, [refreshData]);
+    
+    if (user) {
+      try {
+        await addToFavoritesCloud(user.uid, movie);
+      } catch (error) {
+        console.error('Failed to sync favorites to cloud:', error);
+      }
+    }
+  }, [refreshData, user]);
 
-  const removeFromFavorites = useCallback((movieId: number) => {
+  const removeFromFavorites = useCallback(async (movieId: number) => {
     storeRemoveFromFavorites(movieId);
     refreshData();
-  }, [refreshData]);
+    
+    if (user) {
+      try {
+        await removeFromFavoritesCloud(user.uid, movieId);
+      } catch (error) {
+        console.error('Failed to sync favorites removal to cloud:', error);
+      }
+    }
+  }, [refreshData, user]);
 
   const isFavorite = useCallback((movieId: number) => {
     return storeIsFavorite(movieId);
@@ -154,51 +268,110 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
   const toggleFavorite = useCallback((movie: Movie) => {
     const result = storeToggleFavorite(movie);
     refreshData();
+    
+    // Sync to cloud
+    if (user) {
+      if (result) {
+        addToFavoritesCloud(user.uid, movie).catch(console.error);
+      } else {
+        removeFromFavoritesCloud(user.uid, movie.id).catch(console.error);
+      }
+    }
+    
     return result;
-  }, [refreshData]);
+  }, [refreshData, user]);
 
-  // Collections
-  const createCollection = useCallback((name: string, emoji: string, description?: string) => {
+  // Collections - with cloud sync
+  const createCollection = useCallback(async (name: string, emoji: string, description?: string) => {
     const collection = storeCreateCollection(name, emoji, description || '');
     trackAction('create_collection');
     refreshData();
+    
+    if (user) {
+      try {
+        await createCollectionCloud(user.uid, name, emoji);
+      } catch (error) {
+        console.error('Failed to sync collection to cloud:', error);
+      }
+    }
+    
     return collection;
-  }, [refreshData]);
+  }, [refreshData, user]);
 
-  const deleteCollection = useCallback((collectionId: string) => {
+  const deleteCollection = useCallback(async (collectionId: string) => {
     storeDeleteCollection(collectionId);
     refreshData();
-  }, [refreshData]);
+    
+    if (user) {
+      try {
+        await deleteCollectionCloud(user.uid, collectionId);
+      } catch (error) {
+        console.error('Failed to sync collection deletion to cloud:', error);
+      }
+    }
+  }, [refreshData, user]);
 
-  const addToCollection = useCallback((collectionId: string, movieId: number) => {
+  const addToCollection = useCallback(async (collectionId: string, movieId: number) => {
     storeAddToCollection(collectionId, movieId);
     refreshData();
-  }, [refreshData]);
+    
+    if (user) {
+      try {
+        await addToCollectionCloud(user.uid, collectionId, movieId);
+      } catch (error) {
+        console.error('Failed to sync collection add to cloud:', error);
+      }
+    }
+  }, [refreshData, user]);
 
-  const removeFromCollection = useCallback((collectionId: string, movieId: number) => {
+  const removeFromCollection = useCallback(async (collectionId: string, movieId: number) => {
     storeRemoveFromCollection(collectionId, movieId);
     refreshData();
-  }, [refreshData]);
+    
+    if (user) {
+      try {
+        await removeFromCollectionCloud(user.uid, collectionId, movieId);
+      } catch (error) {
+        console.error('Failed to sync collection removal to cloud:', error);
+      }
+    }
+  }, [refreshData, user]);
 
   const isInCollection = useCallback((collectionId: string, movieId: number) => {
     return storeIsInCollection(collectionId, movieId);
   }, []);
 
-  // Ratings
+  // Ratings - with cloud sync
   const getUserRating = useCallback((movieId: number) => {
     return storeGetUserRating(movieId);
   }, []);
 
-  const setUserRating = useCallback((movieId: number, rating: number) => {
+  const setUserRating = useCallback(async (movieId: number, rating: number) => {
     storeSetUserRating(movieId, rating);
     trackAction('rate_movie');
     refreshData();
-  }, [refreshData]);
+    
+    if (user) {
+      try {
+        await setRatingCloud(user.uid, movieId, rating);
+      } catch (error) {
+        console.error('Failed to sync rating to cloud:', error);
+      }
+    }
+  }, [refreshData, user]);
 
-  const removeUserRating = useCallback((movieId: number) => {
+  const removeUserRating = useCallback(async (movieId: number) => {
     storeRemoveUserRating(movieId);
     refreshData();
-  }, [refreshData]);
+    
+    if (user) {
+      try {
+        await removeRatingCloud(user.uid, movieId);
+      } catch (error) {
+        console.error('Failed to sync rating removal to cloud:', error);
+      }
+    }
+  }, [refreshData, user]);
 
   // History
   const addToViewHistory = useCallback((movieId: number) => {
@@ -252,6 +425,11 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
     comparison: data.comparison,
     lastMood: data.lastMood,
     stats,
+    // Cloud sync status
+    isSyncing,
+    isCloudEnabled: isAuthenticated,
+    lastSyncTime,
+    // Methods
     addToWatchlist,
     removeFromWatchlist,
     isInWatchlist,
@@ -276,6 +454,7 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
     setMood,
     refreshData,
     resetAllData,
+    syncToCloud,
   };
 
   return (
