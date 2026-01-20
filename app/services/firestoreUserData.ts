@@ -147,16 +147,9 @@ export async function migrateLocalStorageToFirestore(uid: string): Promise<void>
     const favorites: Movie[] = favoritesStr ? JSON.parse(favoritesStr) : [];
     const ratings: Record<number, number> = ratingsStr ? JSON.parse(ratingsStr) : {};
     const collections: MovieCollection[] = collectionsStr ? JSON.parse(collectionsStr) : [];
-    
-    // Parse achievements - stored as UserAchievement[] objects { achievementId, unlockedAt, progress }
-    const parsedAchievements = achievementsStr ? JSON.parse(achievementsStr) : [];
-    const unlockedAchievements: string[] = parsedAchievements.map((a: { achievementId: string }) => a.achievementId);
-    
-    // Get achievement stats (the correct key is scanmovie_achievement_stats, not scanmovie_achievement_progress)
-    const statsStr = localStorage.getItem('scanmovie_achievement_stats');
-    const achievementStats = statsStr ? JSON.parse(statsStr) : {};
+    const unlockedAchievements: string[] = achievementsStr ? JSON.parse(achievementsStr) : [];
     const achievementProgress: Record<string, number> = progressStr ? JSON.parse(progressStr) : {};
-    const streakData = { count: achievementStats.currentStreak || 0, lastDate: achievementStats.lastVisitDate || '' };
+    const streakData = streakStr ? JSON.parse(streakStr) : { count: 0, lastDate: '' };
     
     // Check if there's any data to migrate
     const hasData = watchlist.length > 0 || 
@@ -182,58 +175,14 @@ export async function migrateLocalStorageToFirestore(uid: string): Promise<void>
       ...(existingData?.achievements?.unlockedAchievements || []),
       ...unlockedAchievements
     ])];
-    
-    // Merge achievement progress - use achievementStats from localStorage
     const mergedProgress = { 
-      ...(existingData?.achievements?.achievementProgress || {}),
-      watchlistCount: Math.max(
-        existingData?.achievements?.achievementProgress?.watchlistCount || 0,
-        achievementStats.watchlistCount || 0
-      ),
-      favoritesCount: Math.max(
-        existingData?.achievements?.achievementProgress?.favoritesCount || 0,
-        achievementStats.favoritesCount || 0
-      ),
-      ratingsCount: Math.max(
-        existingData?.achievements?.achievementProgress?.ratingsCount || 0,
-        achievementStats.ratingsCount || 0
-      ),
-      collectionsCount: Math.max(
-        existingData?.achievements?.achievementProgress?.collectionsCount || 0,
-        achievementStats.collectionsCount || 0
-      ),
-      partiesCount: Math.max(
-        existingData?.achievements?.achievementProgress?.partiesCount || 0,
-        achievementStats.partiesCount || 0
-      ),
-      aiSearchCount: Math.max(
-        existingData?.achievements?.achievementProgress?.aiSearchCount || 0,
-        achievementStats.aiSearchCount || 0
-      ),
-      genresExplored: [...new Set([
-        ...(existingData?.achievements?.achievementProgress?.genresExplored || []),
-        ...(achievementStats.genresExplored || [])
-      ])],
-      moodsUsed: [...new Set([
-        ...(existingData?.achievements?.achievementProgress?.moodsUsed || []),
-        ...(achievementStats.moodsUsed || [])
-      ])],
+      ...(existingData?.achievements?.achievementProgress || {}), 
+      ...achievementProgress 
     };
     
-    // Calculate total points from actual achievements
-    const achievementPointsMap: Record<string, number> = {
-      'first-movie': 10, 'movie-explorer-10': 25, 'movie-explorer-50': 100, 'movie-explorer-100': 250,
-      'first-favorite': 10, 'favorites-10': 50, 'favorites-25': 100,
-      'first-rating': 10, 'critic-10': 25, 'critic-50': 100, 'critic-100': 250,
-      'first-collection': 15, 'collections-5': 50, 'collections-10': 100,
-      'first-party': 20, 'parties-5': 75,
-      'ai-first': 15, 'ai-power-user': 75,
-      'first-compare': 10, 'genre-explorer': 30, 'genre-master': 75,
-      'streak-3': 25, 'streak-7': 75, 'streak-30': 200,
-      'night-owl': 25, 'early-bird': 25, 'mood-master': 50, 'random-winner': 30,
-    };
-    const totalPoints = mergedAchievements.reduce((sum, id) => sum + (achievementPointsMap[id] || 10), 0);
-    const level = Math.floor(totalPoints / 150) + 1;
+    // Calculate total points from achievements
+    const totalPoints = mergedAchievements.length * 100; // Approximate
+    const level = Math.floor(totalPoints / 500) + 1;
     
     // Update Firestore with merged data
     const userDataRef = getUserDataRef(uid);

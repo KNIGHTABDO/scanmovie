@@ -338,31 +338,9 @@ interface StatsDashboardProps {
 
 export function StatsDashboard({ isMobile = false }: StatsDashboardProps) {
   const { watchlist, favorites, ratings, viewHistory, collections } = useUserData();
-  
-  // Use state for achievement data so it updates after sync
-  const [achievementStats, setAchievementStats] = useState(() => getAchievementStats());
-  const [totalPoints, setTotalPoints] = useState(() => getTotalPoints());
-  const [userLevel, setUserLevel] = useState(() => getUserLevel());
-  
-  // Re-fetch achievement data when it might change
-  useEffect(() => {
-    const updateAchievementData = () => {
-      setAchievementStats(getAchievementStats());
-      setTotalPoints(getTotalPoints());
-      setUserLevel(getUserLevel());
-    };
-    
-    // Listen for storage events
-    window.addEventListener('storage', updateAchievementData);
-    
-    // Poll for changes (in case localStorage updated in same tab)
-    const interval = setInterval(updateAchievementData, 2000);
-    
-    return () => {
-      window.removeEventListener('storage', updateAchievementData);
-      clearInterval(interval);
-    };
-  }, []);
+  const achievementStats = getAchievementStats();
+  const totalPoints = getTotalPoints();
+  const userLevel = getUserLevel();
   
   // Calculate genre distribution from favorites
   const genreDistribution: Record<number, number> = {};

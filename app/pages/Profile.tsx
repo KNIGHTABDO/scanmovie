@@ -33,31 +33,10 @@ export function ProfilePage() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Get achievement data with state for reactivity
-  const [achievements, setAchievements] = useState(() => getAllAchievementProgress());
-  const [totalPoints, setTotalPoints] = useState(() => getTotalPoints());
-  const [userLevel, setUserLevel] = useState(() => getUserLevel());
-  
-  // Re-fetch achievement data when localStorage might change
-  useEffect(() => {
-    const updateAchievementData = () => {
-      setAchievements(getAllAchievementProgress());
-      setTotalPoints(getTotalPoints());
-      setUserLevel(getUserLevel());
-    };
-    
-    // Listen for storage events
-    window.addEventListener('storage', updateAchievementData);
-    
-    // Poll for changes (in case localStorage updated in same tab after sync)
-    const interval = setInterval(updateAchievementData, 2000);
-    
-    return () => {
-      window.removeEventListener('storage', updateAchievementData);
-      clearInterval(interval);
-    };
-  }, []);
-  
+  // Get achievement data
+  const achievements = getAllAchievementProgress();
+  const totalPoints = getTotalPoints();
+  const userLevel = getUserLevel();
   const unlockedCount = achievements.filter(a => a.unlocked).length;
 
   // Redirect to home if not authenticated after loading
