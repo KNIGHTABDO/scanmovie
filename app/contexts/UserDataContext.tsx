@@ -9,6 +9,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import type { Movie } from '~/services/tmdb';
+import { trackAction } from '~/services/achievements';
 import {
   type SavedMovie,
   type MovieCollection,
@@ -121,6 +122,7 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
   // Watchlist
   const addToWatchlist = useCallback((movie: Movie) => {
     storeAddToWatchlist(movie);
+    trackAction('add_to_watchlist', { genre_ids: movie.genre_ids });
     refreshData();
   }, [refreshData]);
 
@@ -136,6 +138,7 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
   // Favorites
   const addToFavorites = useCallback((movie: Movie) => {
     storeAddToFavorites(movie);
+    trackAction('add_to_favorites');
     refreshData();
   }, [refreshData]);
 
@@ -157,6 +160,7 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
   // Collections
   const createCollection = useCallback((name: string, emoji: string, description?: string) => {
     const collection = storeCreateCollection(name, emoji, description || '');
+    trackAction('create_collection');
     refreshData();
     return collection;
   }, [refreshData]);
@@ -187,6 +191,7 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
 
   const setUserRating = useCallback((movieId: number, rating: number) => {
     storeSetUserRating(movieId, rating);
+    trackAction('rate_movie');
     refreshData();
   }, [refreshData]);
 

@@ -16,7 +16,9 @@ import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
 import { MovieCard } from '~/components/MovieCard';
+import { SkeletonHero, SkeletonSection } from '~/components/SkeletonLoading';
 import { getTrending, getNowPlaying, getUpcoming, getBackdropUrl, type Movie } from '~/services/tmdb';
+import { trackAction } from '~/services/achievements';
 
 export function Home() {
   const [trending, setTrending] = useState<Movie[]>([]);
@@ -51,6 +53,9 @@ export function Home() {
         setTrending(trendingData);
         setNowPlaying(nowPlayingData);
         setUpcoming(upcomingData);
+        
+        // Track app visit for streak achievements
+        trackAction('app_visit');
       } catch (error) {
         console.error('Failed to fetch movies:', error);
       } finally {
@@ -72,7 +77,23 @@ export function Home() {
   const featuredMovie = trending[featuredIndex];
 
   if (loading) {
-    return <LoadingScreen />;
+    return (
+      <div style={{ 
+        minHeight: '100vh', 
+        background: 'linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f0f1a 100%)',
+        paddingTop: '120px',
+        paddingLeft: '24px',
+        paddingRight: '24px',
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <SkeletonHero isMobile={isMobile} />
+          <div style={{ marginTop: '60px' }}>
+            <SkeletonSection title={true} cardCount={6} isMobile={isMobile} />
+          </div>
+          <SkeletonSection title={true} cardCount={6} isMobile={isMobile} />
+        </div>
+      </div>
+    );
   }
 
   return (

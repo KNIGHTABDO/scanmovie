@@ -19,8 +19,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
 import { useUserData } from '~/contexts/UserDataContext';
 import { getMovieDetails, getPosterUrl, type Movie } from '~/services/tmdb';
+import { AchievementsPanel } from '~/components/AchievementDisplay';
+import { StatsDashboard } from '~/components/StatsDashboard';
 
-type TabType = 'watchlist' | 'favorites' | 'collections' | 'ratings' | 'history' | 'stats' | 'compare';
+type TabType = 'watchlist' | 'favorites' | 'collections' | 'ratings' | 'history' | 'stats' | 'compare' | 'achievements';
 
 const TABS: { id: TabType; label: string; emoji: string }[] = [
   { id: 'watchlist', label: 'Watchlist', emoji: '📋' },
@@ -29,6 +31,7 @@ const TABS: { id: TabType; label: string; emoji: string }[] = [
   { id: 'ratings', label: 'My Ratings', emoji: '⭐' },
   { id: 'history', label: 'History', emoji: '🕐' },
   { id: 'stats', label: 'Stats', emoji: '📊' },
+  { id: 'achievements', label: 'Achievements', emoji: '🏆' },
   { id: 'compare', label: 'Compare', emoji: '⚖️' },
 ];
 
@@ -170,7 +173,8 @@ export function Library() {
             {activeTab === 'collections' && <CollectionsTab isMobile={isMobile} />}
             {activeTab === 'ratings' && <RatingsTab isMobile={isMobile} />}
             {activeTab === 'history' && <HistoryTab isMobile={isMobile} />}
-            {activeTab === 'stats' && <StatsTab isMobile={isMobile} />}
+            {activeTab === 'stats' && <StatsDashboard isMobile={isMobile} />}
+            {activeTab === 'achievements' && <AchievementsPanel isMobile={isMobile} />}
             {activeTab === 'compare' && <CompareTab isMobile={isMobile} />}
           </motion.div>
         </AnimatePresence>

@@ -6,9 +6,12 @@ import { Link } from 'react-router';
 import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
 import { MovieCard } from '~/components/MovieCard';
 import { AIResponseCard } from '~/components/AIResponseCard';
+import { QuickReplyChips, DEFAULT_QUICK_REPLIES, MOOD_QUICK_REPLIES } from '~/components/QuickReplyChips';
+import { SkeletonMovieGrid, ThinkingDots } from '~/components/SkeletonLoading';
 import { getAIResponse, sendToolResult, type AIMessage } from '~/services/ai';
 import { searchMovies, discoverMovies, type Movie } from '~/services/tmdb';
 import { useVoiceInput } from '~/hooks/useVoiceInput';
+import { trackAction } from '~/services/achievements';
 
 export function AISearch() {
   const [query, setQuery] = useState('');
@@ -101,6 +104,9 @@ export function AISearch() {
         );
 
         setAiResponse(followUp.content || `Here's what I found! 🍿`);
+      
+        // Track AI search for achievements
+        trackAction('ai_search');
       } else {
         setAiResponse(response.content || '');
         setMovies([]);
@@ -111,6 +117,19 @@ export function AISearch() {
     } finally {
       setIsSearching(false);
     }
+  };
+
+  // Handle quick reply selection
+  const handleQuickReply = (queryText: string) => {
+    setQuery(queryText);
+    // Auto-submit after a brief delay
+    setTimeout(() => {
+      const form = document.querySelector('form');
+      if (form) {
+        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+        form.dispatchEvent(submitEvent);
+      }
+    }, 100);
   };
 
   const handleNewSearch = () => {
@@ -419,39 +438,55 @@ export function AISearch() {
                     </div>
                   </motion.form>
 
-                  {/* Quick Suggestions */}
+                  {/* Quick Reply Chips - Enhanced */}
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.6 }}
                     style={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      justifyContent: 'center',
-                      gap: '10px',
                       marginTop: isMobile ? '24px' : '32px',
+                      width: '100%',
                     }}
                   >
-                    {['Action 🔥', 'Sci-Fi 🚀', '80s Classics 📼', 'Thrillers 😱', 'Feel-Good 💖'].map((suggestion) => (
-                      <motion.button
-                        key={suggestion}
-                        whileHover={{ scale: 1.05, background: 'rgba(255,255,255,0.15)' }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setQuery(suggestion.replace(/[🔥🚀📼😱💖]/g, '').trim())}
-                        style={{
-                          padding: '10px 20px',
-                          borderRadius: '50px',
-                          border: '1px solid rgba(255,255,255,0.15)',
-                          background: 'rgba(255,255,255,0.05)',
-                          color: 'rgba(255,255,255,0.7)',
-                          fontSize: '14px',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                        }}
-                      >
-                        {suggestion}
-                      </motion.button>
-                    ))}
+                    <p style={{
+                      fontSize: '12px',
+                      color: 'rgba(255,255,255,0.4)',
+                      textAlign: 'center',
+                      marginBottom: '12px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px',
+                    }}>
+                      ✨ Quick suggestions
+                    </p>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                      <QuickReplyChips
+                        replies={DEFAULT_QUICK_REPLIES.slice(0, isMobile ? 4 : 8)}
+                        onSelect={handleQuickReply}
+                        isMobile={isMobile}
+                        variant="default"
+                      />
+                    </div>
+                    
+                    {/* Mood-based suggestions */}
+                    <p style={{
+                      fontSize: '12px',
+                      color: 'rgba(255,255,255,0.4)',
+                      textAlign: 'center',
+                      marginTop: '20px',
+                      marginBottom: '12px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px',
+                    }}>
+                      😊 By mood
+                    </p>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                      <QuickReplyChips
+                        replies={MOOD_QUICK_REPLIES.slice(0, isMobile ? 3 : 6)}
+                        onSelect={handleQuickReply}
+                        isMobile={isMobile}
+                        variant="default"
+                      />
+                    </div>
                   </motion.div>
                 </LiquidSurface>
               </motion.div>

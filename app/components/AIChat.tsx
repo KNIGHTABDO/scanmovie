@@ -6,6 +6,9 @@ import { AIResponseBubble } from './AIResponseCard';
 import { getAIResponse, sendToolResult, type AIMessage } from '~/services/ai';
 import { searchMovies, discoverMovies, type Movie } from '~/services/tmdb';
 import { useVoiceInput } from '~/hooks/useVoiceInput';
+import { QuickReplyChips, DEFAULT_QUICK_REPLIES } from './QuickReplyChips';
+import { ThinkingDots } from './SkeletonLoading';
+import { trackAction } from '~/services/achievements';
 
 interface ChatMessage {
   id: string;
@@ -151,6 +154,17 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
     }
   };
 
+  // Quick reply handler
+  const handleQuickReply = (text: string) => {
+    setInput(text);
+    trackAction('ai_search');
+    // Submit immediately
+    setTimeout(() => {
+      const event = new Event('submit', { bubbles: true, cancelable: true });
+      inputRef.current?.form?.dispatchEvent(event);
+    }, 100);
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -291,38 +305,7 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                         {/* TEXT CONTENT - Part 1 */}
                         <div className="px-4 py-3 text-white text-[13px] leading-relaxed relative">
                           {message.isLoading ? (
-                            <div className="flex items-center gap-1.5 py-1">
-                              <motion.span 
-                                animate={{ opacity: [0.3, 1, 0.3] }} 
-                                transition={{ duration: 1.2, repeat: Infinity, delay: 0 }} 
-                                style={{ 
-                                  width: '6px', 
-                                  height: '6px', 
-                                  borderRadius: '50%', 
-                                  background: 'linear-gradient(135deg, #667eea, #a855f7)',
-                                }}
-                              />
-                              <motion.span 
-                                animate={{ opacity: [0.3, 1, 0.3] }} 
-                                transition={{ duration: 1.2, repeat: Infinity, delay: 0.2 }} 
-                                style={{ 
-                                  width: '6px', 
-                                  height: '6px', 
-                                  borderRadius: '50%', 
-                                  background: 'linear-gradient(135deg, #a855f7, #ec4899)',
-                                }}
-                              />
-                              <motion.span 
-                                animate={{ opacity: [0.3, 1, 0.3] }} 
-                                transition={{ duration: 1.2, repeat: Infinity, delay: 0.4 }} 
-                                style={{ 
-                                  width: '6px', 
-                                  height: '6px', 
-                                  borderRadius: '50%', 
-                                  background: 'linear-gradient(135deg, #ec4899, #667eea)',
-                                }}
-                              />
-                            </div>
+                            <ThinkingDots size="small" />
                           ) : (
                             message.content
                           )}
@@ -390,6 +373,18 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 ))}
                 <div ref={messagesEndRef} />
               </div>
+
+              {/* Quick Reply Chips - Show when no conversation yet */}
+              {messages.length === 1 && !isLoading && (
+                <div style={{ padding: '0 16px 8px' }}>
+                  <QuickReplyChips
+                    chips={DEFAULT_QUICK_REPLIES.slice(0, 4)}
+                    onChipClick={handleQuickReply}
+                    size="small"
+                    showIcon={false}
+                  />
+                </div>
+              )}
 
               {/* Input - iMessage Style with Voice */}
               <form onSubmit={handleSubmit} style={{

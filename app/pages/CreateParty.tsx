@@ -14,6 +14,7 @@ import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
 import { getPosterUrl } from '~/services/tmdb';
 import { createWatchParty } from '~/services/userDataStore';
 import { useUserData } from '~/contexts/UserDataContext';
+import { trackAction } from '~/services/achievements';
 
 const PARTY_EMOJIS = ['🎬', '🍿', '🎭', '🎪', '🌙', '🎉', '👻', '❤️', '🔥', '✨', '🎮', '🚀'];
 
@@ -38,6 +39,9 @@ export function CreatePartyPage() {
       selectedMovieIds,
       'You'
     );
+    
+    // Track for achievements
+    trackAction('create_party');
     
     // Navigate back to watch party page
     navigate('/watch-party');

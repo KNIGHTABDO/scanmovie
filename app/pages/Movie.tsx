@@ -23,6 +23,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
 import { MovieCard } from '~/components/MovieCard';
 import { AIResponseCard } from '~/components/AIResponseCard';
+import { StreamingAvailability } from '~/components/StreamingAvailability';
+import { SkeletonMovieDetail } from '~/components/SkeletonLoading';
 import { useUserData } from '~/contexts/UserDataContext';
 import { explainMovieConnections } from '~/services/ai';
 import {
@@ -96,7 +98,17 @@ export function MoviePage() {
   }, [movieId, addToViewHistory]);
 
   if (loading) {
-    return <MovieLoadingScreen />;
+    return (
+      <div style={{
+        position: 'relative',
+        minHeight: '100vh',
+        width: '100%',
+        background: '#0a0a0a',
+        color: '#fff',
+      }}>
+        <SkeletonMovieDetail />
+      </div>
+    );
   }
 
   if (!movie) {
@@ -363,6 +375,15 @@ export function MoviePage() {
                     </Link>
                   </motion.div>
                 )}
+
+                {/* Streaming Availability */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.85 }}
+                >
+                  <StreamingAvailability movieId={movieId} variant="default" />
+                </motion.div>
 
                 {/* Action Buttons */}
                 <MovieActions movie={movie} />

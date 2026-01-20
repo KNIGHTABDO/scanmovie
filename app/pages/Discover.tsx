@@ -25,6 +25,7 @@ import {
   type Movie 
 } from '~/services/tmdb';
 import { getAIResponse, GENRES } from '~/services/ai';
+import { trackAction } from '~/services/achievements';
 
 // Mood configurations with genres and descriptions
 const MOODS = [
@@ -238,6 +239,9 @@ function RandomMoviePicker({ isMobile }: { isMobile: boolean }) {
       // Final pick
       const finalIndex = Math.floor(Math.random() * filtered.length);
       setPickedMovie(filtered[finalIndex]);
+      
+      // Track for achievements
+      trackAction('random_picker');
     } catch (error) {
       console.error('Failed to pick movie:', error);
     }
@@ -461,6 +465,9 @@ function MoodDiscovery({ isMobile }: { isMobile: boolean }) {
     try {
       // Save mood to localStorage
       saveMood(mood.id, mood.genreIds);
+      
+      // Track for achievements
+      trackAction('use_mood', mood.id);
 
       // Get AI commentary (non-blocking)
       getAIResponse([{ 
