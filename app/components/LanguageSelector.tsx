@@ -102,7 +102,7 @@ export function LanguageSelector({ variant = 'dropdown' }: LanguageSelectorProps
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  zIndex: 100,
+                  zIndex: 9998,
                 }}
               />
               <motion.div
@@ -114,7 +114,7 @@ export function LanguageSelector({ variant = 'dropdown' }: LanguageSelectorProps
                   top: '100%',
                   right: 0,
                   marginTop: '8px',
-                  zIndex: 101,
+                  zIndex: 9999,
                   minWidth: '160px',
                 }}
               >
@@ -205,7 +205,7 @@ export function LanguageSelector({ variant = 'dropdown' }: LanguageSelectorProps
                 left: 0,
                 right: 0,
                 bottom: 0,
-                zIndex: 100,
+                zIndex: 9998,
               }}
             />
             <motion.div
@@ -218,7 +218,7 @@ export function LanguageSelector({ variant = 'dropdown' }: LanguageSelectorProps
                 left: 0,
                 right: 0,
                 marginTop: '8px',
-                zIndex: 101,
+                zIndex: 9999,
                 maxHeight: '240px',
                 overflowY: 'auto',
               }}

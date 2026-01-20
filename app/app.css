@@ -51,16 +51,31 @@
 
 html,
 body {
-  background-color: #0a0a0f;
-  color-scheme: dark;
-  color: #ffffff;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   min-height: 100vh;
   overflow-x: hidden;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   position: relative;
-  z-index: -1;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light mode specific overrides */
+[data-theme="light"] body {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+[data-theme="light"] .liquid-surface,
+[data-theme="light"] [class*="LiquidSurface"] {
+  background: rgba(255, 255, 255, 0.7) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] input,
+[data-theme="light"] button {
+  color: var(--text-primary);
 }
 
 /* Ensure images don't overflow */
@@ -164,3 +179,45 @@ a {
   }
 }
 
+/* ====== Light Mode Styles ====== */
+[data-theme="light"] {
+  /* Scrollbar for light mode */
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.25);
+  }
+}
+
+/* Light mode text colors */
+[data-theme="light"] span,
+[data-theme="light"] p,
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] div {
+  color: inherit;
+}
+
+/* Light mode glass surfaces */
+[data-theme="light"] .liquid-surface-css {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.6) 100%) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="light"] .liquid-surface-css:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%) !important;
+}
+
+/* Light mode canvas backgrounds */
+[data-theme="light"] canvas {
+  filter: invert(0.9) hue-rotate(180deg);
+}
