@@ -147,9 +147,16 @@ export async function migrateLocalStorageToFirestore(uid: string): Promise<void>
     const favorites: Movie[] = favoritesStr ? JSON.parse(favoritesStr) : [];
     const ratings: Record<number, number> = ratingsStr ? JSON.parse(ratingsStr) : {};
     const collections: MovieCollection[] = collectionsStr ? JSON.parse(collectionsStr) : [];
-    const unlockedAchievements: string[] = achievementsStr ? JSON.parse(achievementsStr) : [];
+    
+    // Parse achievements - stored as UserAchievement[] objects { achievementId, unlockedAt, progress }
+    const parsedAchievements = achievementsStr ? JSON.parse(achievementsStr) : [];
+    const unlockedAchievements: string[] = parsedAchievements.map((a: { achievementId: string }) => a.achievementId);
+    
+    // Get achievement stats (the correct key is scanmovie_achievement_stats, not scanmovie_achievement_progress)
+    const statsStr = localStorage.getItem('scanmovie_achievement_stats');
+    const achievementStats = statsStr ? JSON.parse(statsStr) : {};
     const achievementProgress: Record<string, number> = progressStr ? JSON.parse(progressStr) : {};
-    const streakData = streakStr ? JSON.parse(streakStr) : { count: 0, lastDate: '' };
+    const streakData = { count: achievementStats.currentStreak || 0, lastDate: achievementStats.lastVisitDate || '' };
     
     // Check if there's any data to migrate
     const hasData = watchlist.length > 0 || 
@@ -175,14 +182,58 @@ export async function migrateLocalStorageToFirestore(uid: string): Promise<void>
       ...(existingData?.achievements?.unlockedAchievements || []),
       ...unlockedAchievements
     ])];
+    
+    // Merge achievement progress - use achievementStats from localStorage
     const mergedProgress = { 
-      ...(existingData?.achievements?.achievementProgress || {}), 
-      ...achievementProgress 
+      ...(existingData?.achievements?.achievementProgress || {}),
+      watchlistCount: Math.max(
+        existingData?.achievements?.achievementProgress?.watchlistCount || 0,
+        achievementStats.watchlistCount || 0
+      ),
+      favoritesCount: Math.max(
+        existingData?.achievements?.achievementProgress?.favoritesCount || 0,
+        achievementStats.favoritesCount || 0
+      ),
+      ratingsCount: Math.max(
+        existingData?.achievements?.achievementProgress?.ratingsCount || 0,
+        achievementStats.ratingsCount || 0
+      ),
+      collectionsCount: Math.max(
+        existingData?.achievements?.achievementProgress?.collectionsCount || 0,
+        achievementStats.collectionsCount || 0
+      ),
+      partiesCount: Math.max(
+        existingData?.achievements?.achievementProgress?.partiesCount || 0,
+        achievementStats.partiesCount || 0
+      ),
+      aiSearchCount: Math.max(
+        existingData?.achievements?.achievementProgress?.aiSearchCount || 0,
+        achievementStats.aiSearchCount || 0
+      ),
+      genresExplored: [...new Set([
+        ...(existingData?.achievements?.achievementProgress?.genresExplored || []),
+        ...(achievementStats.genresExplored || [])
+      ])],
+      moodsUsed: [...new Set([
+        ...(existingData?.achievements?.achievementProgress?.moodsUsed || []),
+        ...(achievementStats.moodsUsed || [])
+      ])],
     };
     
-    // Calculate total points from achievements
-    const totalPoints = mergedAchievements.length * 100; // Approximate
-    const level = Math.floor(totalPoints / 500) + 1;
+    // Calculate total points from actual achievements
+    const achievementPointsMap: Record<string, number> = {
+      'first-movie': 10, 'movie-explorer-10': 25, 'movie-explorer-50': 100, 'movie-explorer-100': 250,
+      'first-favorite': 10, 'favorites-10': 50, 'favorites-25': 100,
+      'first-rating': 10, 'critic-10': 25, 'critic-50': 100, 'critic-100': 250,
+      'first-collection': 15, 'collections-5': 50, 'collections-10': 100,
+      'first-party': 20, 'parties-5': 75,
+      'ai-first': 15, 'ai-power-user': 75,
+      'first-compare': 10, 'genre-explorer': 30, 'genre-master': 75,
+      'streak-3': 25, 'streak-7': 75, 'streak-30': 200,
+      'night-owl': 25, 'early-bird': 25, 'mood-master': 50, 'random-winner': 30,
+    };
+    const totalPoints = mergedAchievements.reduce((sum, id) => sum + (achievementPointsMap[id] || 10), 0);
+    const level = Math.floor(totalPoints / 150) + 1;
     
     // Update Firestore with merged data
     const userDataRef = getUserDataRef(uid);
@@ -206,9 +257,81 @@ export async function migrateLocalStorageToFirestore(uid: string): Promise<void>
     console.log('Migration complete! Data synced to cloud.');
     console.log(`Migrated: ${mergedWatchlist.length} watchlist, ${mergedFavorites.length} favorites, ${Object.keys(mergedRatings).length} ratings`);
     
+    // Also sync cloud data BACK to localStorage (for new devices)
+    await syncCloudToLocalStorage(uid);
+    
   } catch (error) {
     console.error('Migration error:', error);
     throw error;
+  }
+}
+
+/**
+ * Sync cloud data TO localStorage
+ * Called when signing in on a new device to download cloud data
+ */
+export async function syncCloudToLocalStorage(uid: string): Promise<void> {
+  if (!isBrowser) return;
+  
+  console.log('Syncing cloud data to localStorage...');
+  
+  try {
+    const cloudData = await getUserData(uid);
+    if (!cloudData) return;
+    
+    // Update localStorage with cloud data
+    if (cloudData.watchlist?.length > 0) {
+      localStorage.setItem('scanmovie_watchlist', JSON.stringify(cloudData.watchlist));
+    }
+    
+    if (cloudData.favorites?.length > 0) {
+      localStorage.setItem('scanmovie_favorites', JSON.stringify(cloudData.favorites));
+    }
+    
+    if (cloudData.ratings && Object.keys(cloudData.ratings).length > 0) {
+      localStorage.setItem('scanmovie_ratings', JSON.stringify(cloudData.ratings));
+    }
+    
+    if (cloudData.collections?.length > 0) {
+      localStorage.setItem('scanmovie_collections', JSON.stringify(cloudData.collections));
+    }
+    
+    // Sync achievements
+    if (cloudData.achievements) {
+      if (cloudData.achievements.unlockedAchievements?.length > 0) {
+        // Convert to UserAchievement format
+        const userAchievements = cloudData.achievements.unlockedAchievements.map(id => ({
+          achievementId: id,
+          unlockedAt: Date.now(),
+          progress: 0,
+        }));
+        localStorage.setItem('scanmovie_achievements', JSON.stringify(userAchievements));
+      }
+      
+      if (cloudData.achievements.achievementProgress) {
+        // Convert achievement progress to stats format
+        const stats = {
+          watchlistCount: cloudData.watchlist?.length || 0,
+          favoritesCount: cloudData.favorites?.length || 0,
+          ratingsCount: Object.keys(cloudData.ratings || {}).length,
+          collectionsCount: cloudData.collections?.length || 0,
+          partiesCount: cloudData.achievements.achievementProgress.partiesCount || 0,
+          aiSearchCount: cloudData.achievements.achievementProgress.aiSearchCount || 0,
+          compareCount: cloudData.achievements.achievementProgress.compareCount || 0,
+          randomPickerCount: cloudData.achievements.achievementProgress.randomPickerCount || 0,
+          genresExplored: cloudData.achievements.achievementProgress.genresExplored || [],
+          moodsUsed: cloudData.achievements.achievementProgress.moodsUsed || [],
+          currentStreak: cloudData.achievements.streakDays || 0,
+          lastVisitDate: cloudData.achievements.lastActiveDate || '',
+        };
+        localStorage.setItem('scanmovie_achievement_stats', JSON.stringify(stats));
+      }
+    }
+    
+    console.log('Cloud data synced to localStorage!');
+    
+  } catch (error) {
+    console.error('Error syncing cloud to localStorage:', error);
   }
 }
 
@@ -474,6 +597,66 @@ export async function unlockAchievementCloud(uid: string, achievementId: string)
         lastSyncedAt: serverTimestamp(),
       });
     }
+  }
+}
+
+/**
+ * Sync achievement stats from localStorage to cloud
+ */
+export async function syncAchievementStatsToCloud(uid: string): Promise<void> {
+  if (!isBrowser) return;
+  
+  try {
+    // Get localStorage achievement data
+    const achievementsStr = localStorage.getItem('scanmovie_achievements');
+    const statsStr = localStorage.getItem('scanmovie_achievement_stats');
+    
+    const unlockedAchievements: { achievementId: string }[] = achievementsStr ? JSON.parse(achievementsStr) : [];
+    const stats = statsStr ? JSON.parse(statsStr) : {};
+    
+    // Calculate points based on actual achievements
+    const achievementPoints: Record<string, number> = {
+      'first-movie': 10, 'movie-explorer-10': 25, 'movie-explorer-50': 100, 'movie-explorer-100': 250,
+      'first-favorite': 10, 'favorites-10': 50, 'favorites-25': 100,
+      'first-rating': 10, 'critic-10': 25, 'critic-50': 100, 'critic-100': 250,
+      'first-collection': 15, 'collections-5': 50, 'collections-10': 100,
+      'first-party': 20, 'parties-5': 75,
+      'ai-first': 15, 'ai-power-user': 75,
+      'first-compare': 10, 'genre-explorer': 30, 'genre-master': 75,
+      'streak-3': 25, 'streak-7': 75, 'streak-30': 200,
+      'night-owl': 25, 'early-bird': 25, 'mood-master': 50, 'random-winner': 30,
+    };
+    
+    const unlockedIds = unlockedAchievements.map(a => a.achievementId);
+    const totalPoints = unlockedIds.reduce((sum, id) => sum + (achievementPoints[id] || 10), 0);
+    const level = Math.floor(totalPoints / 150) + 1;
+    
+    const userDataRef = getUserDataRef(uid);
+    await updateDoc(userDataRef, {
+      'achievements.unlockedAchievements': unlockedIds,
+      'achievements.totalPoints': totalPoints,
+      'achievements.level': level,
+      'achievements.achievementProgress': {
+        watchlistCount: stats.watchlistCount || 0,
+        favoritesCount: stats.favoritesCount || 0,
+        ratingsCount: stats.ratingsCount || 0,
+        collectionsCount: stats.collectionsCount || 0,
+        partiesCount: stats.partiesCount || 0,
+        aiSearchCount: stats.aiSearchCount || 0,
+        compareCount: stats.compareCount || 0,
+        randomPickerCount: stats.randomPickerCount || 0,
+        genresExplored: stats.genresExplored || [],
+        moodsUsed: stats.moodsUsed || [],
+      },
+      'achievements.streakDays': stats.currentStreak || 0,
+      'achievements.lastActiveDate': stats.lastVisitDate || new Date().toISOString().split('T')[0],
+      lastSyncedAt: serverTimestamp(),
+    });
+    
+    console.log('Achievement stats synced to cloud:', { totalPoints, level, unlockedCount: unlockedIds.length });
+    
+  } catch (error) {
+    console.error('Error syncing achievement stats to cloud:', error);
   }
 }
 

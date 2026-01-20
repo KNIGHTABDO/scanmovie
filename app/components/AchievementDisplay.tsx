@@ -259,8 +259,31 @@ export function AchievementCard({ progress, compact = false }: AchievementCardPr
 
 // User Level Badge
 export function UserLevelBadge({ compact = false }: { compact?: boolean }) {
-  const level = getUserLevel();
-  const points = getTotalPoints();
+  // Use state so component can re-render when data changes
+  const [level, setLevel] = useState(() => getUserLevel());
+  const [points, setPoints] = useState(() => getTotalPoints());
+  
+  // Re-fetch data on mount and when localStorage might change
+  useEffect(() => {
+    const updateData = () => {
+      setLevel(getUserLevel());
+      setPoints(getTotalPoints());
+    };
+    
+    // Initial update
+    updateData();
+    
+    // Listen for storage events (triggered by other tabs or our sync)
+    window.addEventListener('storage', updateData);
+    
+    // Also poll periodically in case localStorage was updated in the same tab
+    const interval = setInterval(updateData, 2000);
+    
+    return () => {
+      window.removeEventListener('storage', updateData);
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <LiquidSurface

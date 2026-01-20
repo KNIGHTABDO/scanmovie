@@ -16,6 +16,8 @@ import { useAuth } from '~/contexts/AuthContext';
 import {
   getUserData,
   migrateLocalStorageToFirestore,
+  syncCloudToLocalStorage,
+  syncAchievementStatsToCloud,
   addToWatchlistCloud,
   removeFromWatchlistCloud,
   addToFavoritesCloud,
@@ -155,14 +157,27 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
-  // Migrate localStorage to Firebase on first sign-in
+  // Migrate localStorage to Firebase on first sign-in AND sync cloud to local
   useEffect(() => {
     if (user && !hasMigrated) {
       const migrate = async () => {
         setIsSyncing(true);
         try {
+          // First, sync cloud data TO localStorage (for existing users on new devices)
+          await syncCloudToLocalStorage(user.uid);
+          
+          // Refresh local data state (picks up synced data)
+          refreshData();
+          
+          // Then sync localStorage TO cloud (merges any new local data)
           await migrateLocalStorageToFirestore(user.uid);
+          
+          // Also sync achievement stats to cloud
+          await syncAchievementStatsToCloud(user.uid);
+          
+          // Fetch cloud data for state
           await fetchCloudData();
+          
           setHasMigrated(true);
         } catch (error) {
           console.error('Migration failed:', error);
@@ -172,7 +187,7 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
       };
       migrate();
     }
-  }, [user, hasMigrated, fetchCloudData]);
+  }, [user, hasMigrated, fetchCloudData, refreshData]);
 
   // Sync to cloud manually
   const syncToCloud = useCallback(async () => {
@@ -180,14 +195,22 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
     
     setIsSyncing(true);
     try {
+      // Sync local to cloud
       await migrateLocalStorageToFirestore(user.uid);
+      // Sync achievement stats
+      await syncAchievementStatsToCloud(user.uid);
+      // Then sync cloud back to local (to ensure consistency)
+      await syncCloudToLocalStorage(user.uid);
+      // Fetch latest cloud data
       await fetchCloudData();
+      // Refresh local state
+      refreshData();
     } catch (error) {
       console.error('Sync failed:', error);
     } finally {
       setIsSyncing(false);
     }
-  }, [user, fetchCloudData]);
+  }, [user, fetchCloudData, refreshData]);
 
   // Listen for storage events from other tabs
   useEffect(() => {

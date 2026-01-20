@@ -23,11 +23,41 @@ export function ProfilePage() {
   const { watchlist, favorites, ratings, stats, isSyncing, isCloudEnabled, lastSyncTime, syncToCloud } = useUserData();
   
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Get achievement data
-  const achievements = getAllAchievementProgress();
-  const totalPoints = getTotalPoints();
-  const userLevel = getUserLevel();
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Get achievement data with state for reactivity
+  const [achievements, setAchievements] = useState(() => getAllAchievementProgress());
+  const [totalPoints, setTotalPoints] = useState(() => getTotalPoints());
+  const [userLevel, setUserLevel] = useState(() => getUserLevel());
+  
+  // Re-fetch achievement data when localStorage might change
+  useEffect(() => {
+    const updateAchievementData = () => {
+      setAchievements(getAllAchievementProgress());
+      setTotalPoints(getTotalPoints());
+      setUserLevel(getUserLevel());
+    };
+    
+    // Listen for storage events
+    window.addEventListener('storage', updateAchievementData);
+    
+    // Poll for changes (in case localStorage updated in same tab after sync)
+    const interval = setInterval(updateAchievementData, 2000);
+    
+    return () => {
+      window.removeEventListener('storage', updateAchievementData);
+      clearInterval(interval);
+    };
+  }, []);
+  
   const unlockedCount = achievements.filter(a => a.unlocked).length;
 
   // Redirect to home if not authenticated after loading
@@ -260,17 +290,23 @@ export function ProfilePage() {
               transition={{ delay: 0.1 }}
               style={{ marginBottom: '24px' }}
             >
-              <LiquidSurface variant="card" cornerRadius={24} padding="32px">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <LiquidSurface variant="card" cornerRadius={24} padding={isMobile ? "24px" : "32px"}>
+                <div style={{ 
+                  display: 'flex', 
+                  flexDirection: isMobile ? 'column' : 'row',
+                  alignItems: 'center', 
+                  gap: isMobile ? '16px' : '20px',
+                  textAlign: isMobile ? 'center' : 'left',
+                }}>
                   {/* Profile Photo */}
-                  <div style={{ position: 'relative' }}>
+                  <div style={{ position: 'relative', flexShrink: 0 }}>
                     {user?.photoURL ? (
                       <img
                         src={user.photoURL}
                         alt={user.displayName || 'Profile'}
                         style={{
-                          width: '80px',
-                          height: '80px',
+                          width: isMobile ? '100px' : '80px',
+                          height: isMobile ? '100px' : '80px',
                           borderRadius: '50%',
                           border: '3px solid rgba(139, 92, 246, 0.5)',
                           objectFit: 'cover',
@@ -279,14 +315,14 @@ export function ProfilePage() {
                     ) : (
                       <div
                         style={{
-                          width: '80px',
-                          height: '80px',
+                          width: isMobile ? '100px' : '80px',
+                          height: isMobile ? '100px' : '80px',
                           borderRadius: '50%',
                           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '32px',
+                          fontSize: isMobile ? '40px' : '32px',
                         }}
                       >
                         {user?.displayName?.[0] || '👤'}
@@ -296,10 +332,10 @@ export function ProfilePage() {
                     <div
                       style={{
                         position: 'absolute',
-                        bottom: '4px',
-                        right: '4px',
-                        width: '16px',
-                        height: '16px',
+                        bottom: isMobile ? '6px' : '4px',
+                        right: isMobile ? '6px' : '4px',
+                        width: isMobile ? '20px' : '16px',
+                        height: isMobile ? '20px' : '16px',
                         borderRadius: '50%',
                         background: '#10b981',
                         border: '3px solid #1e1b4b',
@@ -308,9 +344,9 @@ export function ProfilePage() {
                   </div>
 
                   {/* User Info */}
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, width: isMobile ? '100%' : 'auto' }}>
                     <h2 style={{ 
-                      fontSize: '24px', 
+                      fontSize: isMobile ? '22px' : '24px', 
                       fontWeight: 700, 
                       marginBottom: '4px',
                       color: '#fff',
