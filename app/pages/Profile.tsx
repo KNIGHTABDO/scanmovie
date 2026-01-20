@@ -13,7 +13,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
 import { useAuth } from '~/contexts/AuthContext';
 import { useUserData } from '~/contexts/UserDataContext';
+import { useTheme } from '~/contexts/ThemeContext';
+import { useLanguage } from '~/contexts/LanguageContext';
 import { UserLevelBadge } from '~/components/AchievementDisplay';
+import { ThemeToggle } from '~/components/ThemeToggle';
+import { LanguageSelector } from '~/components/LanguageSelector';
+import { ExportImportModal } from '~/components/ExportImportModal';
 import { getAllAchievementProgress, getTotalPoints, getUserLevel } from '~/services/achievements';
 
 export function ProfilePage() {
@@ -23,7 +28,10 @@ export function ProfilePage() {
   const { watchlist, favorites, ratings, stats, isSyncing, isCloudEnabled, lastSyncTime, syncToCloud } = useUserData();
   
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { t } = useLanguage();
 
   // Check if mobile
   useEffect(() => {
@@ -505,6 +513,107 @@ export function ProfilePage() {
               </LiquidSurface>
             </motion.div>
 
+            {/* Settings Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+              style={{ marginBottom: '24px' }}
+            >
+              <LiquidSurface variant="card" cornerRadius={20} padding="24px">
+                <h3 style={{ 
+                  fontSize: '18px', 
+                  fontWeight: 600, 
+                  color: '#fff', 
+                  marginBottom: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}>
+                  <span>⚙️</span> {t('profile.settings')}
+                </h3>
+
+                {/* Theme Setting */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ 
+                    display: 'block', 
+                    fontSize: '14px', 
+                    color: 'rgba(255,255,255,0.7)', 
+                    marginBottom: '10px' 
+                  }}>
+                    {t('profile.theme')}
+                  </label>
+                  <ThemeToggle variant="dropdown" />
+                </div>
+
+                {/* Language Setting */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ 
+                    display: 'block', 
+                    fontSize: '14px', 
+                    color: 'rgba(255,255,255,0.7)', 
+                    marginBottom: '10px' 
+                  }}>
+                    {t('profile.language')}
+                  </label>
+                  <LanguageSelector variant="dropdown" />
+                </div>
+
+                {/* Export/Import */}
+                <div style={{ 
+                  display: 'flex', 
+                  gap: '12px',
+                  paddingTop: '16px',
+                  borderTop: '1px solid rgba(255,255,255,0.1)',
+                }}>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setShowExportModal(true)}
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '12px',
+                      background: 'rgba(139, 92, 246, 0.2)',
+                      border: '1px solid rgba(139, 92, 246, 0.3)',
+                      borderRadius: '12px',
+                      color: '#c4b5fd',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <span>📤</span> {t('library.export')}
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setShowImportModal(true)}
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '12px',
+                      background: 'rgba(16, 185, 129, 0.2)',
+                      border: '1px solid rgba(16, 185, 129, 0.3)',
+                      borderRadius: '12px',
+                      color: '#6ee7b7',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <span>📥</span> {t('library.import')}
+                  </motion.button>
+                </div>
+              </LiquidSurface>
+            </motion.div>
+
             {/* Quick Links */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -658,6 +767,33 @@ export function ProfilePage() {
             </>
           )}
         </AnimatePresence>
+
+        {/* Export Modal */}
+        <ExportImportModal
+          isOpen={showExportModal}
+          onClose={() => setShowExportModal(false)}
+          mode="export"
+          watchlist={watchlist}
+          favorites={favorites}
+          ratings={Object.fromEntries(ratings.map(r => [r.movieId, r.rating]))}
+          collections={[]}
+        />
+
+        {/* Import Modal */}
+        <ExportImportModal
+          isOpen={showImportModal}
+          onClose={() => setShowImportModal(false)}
+          mode="import"
+          watchlist={watchlist}
+          favorites={favorites}
+          ratings={Object.fromEntries(ratings.map(r => [r.movieId, r.rating]))}
+          collections={[]}
+          onImport={(data) => {
+            // Handle imported data
+            console.log('Imported data:', data);
+            setShowImportModal(false);
+          }}
+        />
       </main>
     </div>
   );

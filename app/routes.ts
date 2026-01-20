@@ -11,4 +11,5 @@ export default [
   route("watch-party", "routes/watch-party.tsx"),
   route("create-party", "routes/create-party.tsx"),
   route("profile", "routes/profile.tsx"),
+  route("movie-night", "routes/movie-night.tsx"),
 ] satisfies RouteConfig;

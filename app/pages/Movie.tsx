@@ -24,9 +24,12 @@ import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
 import { MovieCard } from '~/components/MovieCard';
 import { AIResponseCard } from '~/components/AIResponseCard';
 import { StreamingAvailability } from '~/components/StreamingAvailability';
+import { SoundtrackLinks } from '~/components/SoundtrackLinks';
+import { CalendarButton } from '~/components/CalendarButton';
 import { SkeletonMovieDetail } from '~/components/SkeletonLoading';
 import { useUserData } from '~/contexts/UserDataContext';
 import { explainMovieConnections } from '~/services/ai';
+import { getComposerFromCredits } from '~/services/soundtrack';
 import {
   getMovieDetails,
   getMovieCredits,
@@ -384,6 +387,30 @@ export function MoviePage() {
                 >
                   <StreamingAvailability movieId={movieId} variant="default" />
                 </motion.div>
+
+                {/* Soundtrack Links */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.9 }}
+                >
+                  <SoundtrackLinks 
+                    movie={movie} 
+                    composer={credits ? getComposerFromCredits(credits.crew) : undefined}
+                    variant="default" 
+                  />
+                </motion.div>
+
+                {/* Calendar - for upcoming movies */}
+                {movie.release_date && new Date(movie.release_date) > new Date() && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.95 }}
+                  >
+                    <CalendarButton movie={movie} variant="release" />
+                  </motion.div>
+                )}
 
                 {/* Action Buttons */}
                 <MovieActions movie={movie} />

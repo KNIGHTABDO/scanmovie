@@ -137,6 +137,7 @@ export function Navbar() {
                 <NavLink to="/discover" label="Discover" />
                 <NavLink to="/library" label="Library" />
                 <NavLink to="/watch-party" label="Party 🎉" />
+                <NavLink to="/movie-night" label="Movie Night 🎲" />
                 <Link to="/ai" style={{ textDecoration: 'none' }}>
                   <motion.div
                     whileHover={{ scale: 1.05 }}
@@ -453,6 +454,7 @@ export function Navbar() {
                   <MobileNavLink to="/discover" label="🎲 Discover" onClick={() => setMobileMenuOpen(false)} />
                   <MobileNavLink to="/library" label="📚 My Library" onClick={() => setMobileMenuOpen(false)} />
                   <MobileNavLink to="/watch-party" label="🎉 Watch Party" onClick={() => setMobileMenuOpen(false)} />
+                  <MobileNavLink to="/movie-night" label="🎬 Movie Night" onClick={() => setMobileMenuOpen(false)} />
                   <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '8px 0' }} />
                   <Link to="/ai" style={{ textDecoration: 'none' }} onClick={() => setMobileMenuOpen(false)}>
                     <motion.div
