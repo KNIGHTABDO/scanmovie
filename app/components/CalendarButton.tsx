@@ -8,7 +8,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LiquidSurface } from './Liquid/LiquidSurface';
+import { Surface } from './Surface';
 import {
   createMovieReleaseEvent,
   createMovieReminderEvent,
@@ -114,7 +114,7 @@ export function CalendarButton({
                 minWidth: '200px',
               }}
             >
-              <LiquidSurface variant="container" cornerRadius={12} padding="8px">
+              <Surface variant="container" cornerRadius={12} padding="8px">
                 <CalendarOption
                   icon="📆"
                   label="Google Calendar"
@@ -133,7 +133,7 @@ export function CalendarButton({
                   color="#FF2D55"
                   onClick={handleDownloadICS}
                 />
-              </LiquidSurface>
+              </Surface>
             </motion.div>
           </>
         )}
@@ -236,7 +236,7 @@ export function CalendarIconButton({ movie }: { movie: Movie }) {
                 minWidth: '180px',
               }}
             >
-              <LiquidSurface variant="container" cornerRadius={12} padding="8px">
+              <Surface variant="container" cornerRadius={12} padding="8px">
                 <CalendarOption
                   icon="📆"
                   label="Google"
@@ -264,7 +264,7 @@ export function CalendarIconButton({ movie }: { movie: Movie }) {
                     setShowDropdown(false);
                   }}
                 />
-              </LiquidSurface>
+              </Surface>
             </motion.div>
           </>
         )}

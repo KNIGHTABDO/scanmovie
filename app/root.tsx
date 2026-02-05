@@ -39,6 +39,7 @@ import { AuthProvider } from "~/contexts/AuthContext";
 import { UserDataProvider } from "~/contexts/UserDataContext";
 import { ThemeProvider } from "~/contexts/ThemeContext";
 import { LanguageProvider } from "~/contexts/LanguageContext";
+import { StyleProvider } from "~/contexts/StyleContext";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -66,14 +67,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider>
-          <LanguageProvider>
-            <AuthProvider>
-              <UserDataProvider>
-                <Navbar />
-                {children}
-              </UserDataProvider>
-            </AuthProvider>
-          </LanguageProvider>
+          <StyleProvider>
+            <LanguageProvider>
+              <AuthProvider>
+                <UserDataProvider>
+                  <Navbar />
+                  {children}
+                </UserDataProvider>
+              </AuthProvider>
+            </LanguageProvider>
+          </StyleProvider>
         </ThemeProvider>
         <ScrollRestoration />
         <Scripts />

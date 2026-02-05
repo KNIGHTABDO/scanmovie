@@ -741,6 +741,99 @@ img {
   margin-bottom: 24px;
 }
 
+/* ====== Vercel Style Mode ====== */
+/* Dark minimalist design inspired by Vercel */
+
+[data-style="vercel"] {
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #0a0a0a;
+  --color-bg-tertiary: #111111;
+  --color-text-primary: #ededed;
+  --color-text-secondary: rgba(237, 237, 237, 0.7);
+  --color-text-muted: rgba(237, 237, 237, 0.5);
+}
+
+[data-style="vercel"] body {
+  background: linear-gradient(to bottom, #000000 0%, #0a0a0a 100%);
+}
+
+/* Vercel surface styling */
+[data-style="vercel"] .vercel-surface {
+  box-shadow: 
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+[data-style="vercel"] .vercel-surface:hover {
+  box-shadow: 
+    0 0 0 1px rgba(255, 255, 255, 0.15),
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Light borders and subtle highlights for Vercel mode */
+[data-style="vercel"] .nav-link::after {
+  background: linear-gradient(90deg, #fff 0%, rgba(255,255,255,0.5) 100%);
+  height: 1px;
+}
+
+/* Clean, minimal movie cards */
+[data-style="vercel"] .movie-card-wrapper {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-style="vercel"] .movie-card-wrapper:hover {
+  transform: translateY(-4px);
+}
+
+/* Crisp text rendering for Vercel style */
+[data-style="vercel"] * {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Vercel-style animations */
+@keyframes vercel-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+[data-style="vercel"] .movie-card-wrapper,
+[data-style="vercel"] .cast-card-wrapper {
+  animation: vercel-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Staggered animation for grid items */
+[data-style="vercel"] .movie-grid > *:nth-child(1) { animation-delay: 0ms; }
+[data-style="vercel"] .movie-grid > *:nth-child(2) { animation-delay: 50ms; }
+[data-style="vercel"] .movie-grid > *:nth-child(3) { animation-delay: 100ms; }
+[data-style="vercel"] .movie-grid > *:nth-child(4) { animation-delay: 150ms; }
+[data-style="vercel"] .movie-grid > *:nth-child(5) { animation-delay: 200ms; }
+[data-style="vercel"] .movie-grid > *:nth-child(6) { animation-delay: 250ms; }
+
+/* Clean gradients for Vercel mode */
+[data-style="vercel"] .hero-title,
+[data-style="vercel"] .movie-detail-title {
+  background: linear-gradient(180deg, #ffffff 0%, #ededed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-style="vercel"] .logo-text {
+  background: linear-gradient(90deg, #ffffff 0%, rgba(255,255,255,0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* ====== Responsive Design ====== */
 
 /* Extra large devices and desktops */

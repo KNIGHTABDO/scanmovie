@@ -8,7 +8,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { LiquidSurface } from './Liquid/LiquidSurface';
+import { Surface } from './Surface';
 
 export interface QuickReply {
   id: string;

@@ -8,7 +8,7 @@
 
 import { motion } from 'framer-motion';
 import { useTheme } from '~/contexts/ThemeContext';
-import { LiquidSurface } from './Liquid/LiquidSurface';
+import { Surface } from './Surface';
 
 interface ThemeToggleProps {
   variant?: 'button' | 'switch' | 'dropdown';

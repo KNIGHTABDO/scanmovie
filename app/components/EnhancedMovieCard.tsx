@@ -10,7 +10,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LiquidSurface } from './Liquid/LiquidSurface';
+import { Surface } from './Surface';
 import { StreamingBadge } from './StreamingAvailability';
 import { getPosterUrl, getMovieVideos, type Movie, type Video } from '~/services/tmdb';
 import { useUserData } from '~/contexts/UserDataContext';
@@ -140,7 +140,7 @@ export function EnhancedMovieCard({
       }}
     >
       <Link to={`/movie/${movie.id}`} style={{ textDecoration: 'none', display: 'block', width: '100%' }}>
-        <LiquidSurface
+        <Surface
           variant="card"
           cornerRadius={isMobile ? 14 : 20}
           padding="0"
@@ -371,7 +371,7 @@ export function EnhancedMovieCard({
               </div>
             </div>
           </div>
-        </LiquidSurface>
+        </Surface>
       </Link>
     </motion.div>
   );

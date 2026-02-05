@@ -10,13 +10,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
+import { Surface } from '~/components/Surface';
 import { useAuth } from '~/contexts/AuthContext';
 import { useUserData } from '~/contexts/UserDataContext';
 import { useTheme } from '~/contexts/ThemeContext';
 import { useLanguage } from '~/contexts/LanguageContext';
 import { UserLevelBadge } from '~/components/AchievementDisplay';
 import { ThemeToggle } from '~/components/ThemeToggle';
+import { StyleToggle } from '~/components/StyleToggle';
 import { LanguageSelector } from '~/components/LanguageSelector';
 import { ExportImportModal } from '~/components/ExportImportModal';
 import { getAllAchievementProgress, getTotalPoints, getUserLevel } from '~/services/achievements';
@@ -170,7 +171,7 @@ export function ProfilePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <LiquidSurface variant="card" cornerRadius={24} padding="40px">
+            <Surface variant="card" cornerRadius={24} padding="40px">
               <div style={{ textAlign: 'center' }}>
                 {/* Logo */}
                 <motion.div
@@ -265,7 +266,7 @@ export function ProfilePage() {
                   ))}
                 </div>
               </div>
-            </LiquidSurface>
+            </Surface>
           </motion.div>
         ) : (
           /* Authenticated Profile */
@@ -277,7 +278,7 @@ export function ProfilePage() {
               transition={{ delay: 0.1 }}
               style={{ marginBottom: '24px' }}
             >
-              <LiquidSurface variant="card" cornerRadius={24} padding={isMobile ? "24px" : "32px"}>
+              <Surface variant="card" cornerRadius={24} padding={isMobile ? "24px" : "32px"}>
                 <div style={{ 
                   display: 'flex', 
                   flexDirection: isMobile ? 'column' : 'row',
@@ -371,7 +372,7 @@ export function ProfilePage() {
                     </span>
                   </div>
                 )}
-              </LiquidSurface>
+              </Surface>
             </motion.div>
 
             {/* Stats Grid */}
@@ -392,7 +393,7 @@ export function ProfilePage() {
                 { label: 'Ratings', value: ratings.length, icon: '⭐', color: '#f59e0b' },
                 { label: 'Achievements', value: `${unlockedCount}/${achievements.length}`, icon: '🏆', color: '#10b981' },
               ].map((stat) => (
-                <LiquidSurface key={stat.label} variant="card" cornerRadius={16} padding="20px">
+                <Surface key={stat.label} variant="card" cornerRadius={16} padding="20px">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{
                       width: '44px',
@@ -415,7 +416,7 @@ export function ProfilePage() {
                       </div>
                     </div>
                   </div>
-                </LiquidSurface>
+                </Surface>
               ))}
             </motion.div>
 
@@ -426,7 +427,7 @@ export function ProfilePage() {
               transition={{ delay: 0.3 }}
               style={{ marginBottom: '24px' }}
             >
-              <LiquidSurface variant="card" cornerRadius={20} padding="24px">
+              <Surface variant="card" cornerRadius={20} padding="24px">
                 <div style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
@@ -510,7 +511,7 @@ export function ProfilePage() {
                     }}
                   />
                 </div>
-              </LiquidSurface>
+              </Surface>
             </motion.div>
 
             {/* Settings Section */}
@@ -520,7 +521,7 @@ export function ProfilePage() {
               transition={{ delay: 0.35 }}
               style={{ marginBottom: '24px' }}
             >
-              <LiquidSurface variant="card" cornerRadius={20} padding="24px">
+              <Surface variant="card" cornerRadius={20} padding="24px">
                 <h3 style={{ 
                   fontSize: '18px', 
                   fontWeight: 600, 
@@ -546,8 +547,21 @@ export function ProfilePage() {
                   <ThemeToggle variant="dropdown" />
                 </div>
 
-                {/* Language Setting */}
+                {/* Style Mode Setting */}
                 <div style={{ marginBottom: '20px' }}>
+                  <label style={{ 
+                    display: 'block', 
+                    fontSize: '14px', 
+                    color: 'rgba(255,255,255,0.7)', 
+                    marginBottom: '10px' 
+                  }}>
+                    UI Style
+                  </label>
+                  <StyleToggle />
+                </div>
+
+                {/* Language Setting */}
+                <div>
                   <label style={{ 
                     display: 'block', 
                     fontSize: '14px', 
@@ -556,14 +570,15 @@ export function ProfilePage() {
                   }}>
                     {t('profile.language')}
                   </label>
-                  <LanguageSelector variant="dropdown" />
+                  <LanguageSelector variant="grid" />
                 </div>
 
                 {/* Export/Import */}
                 <div style={{ 
                   display: 'flex', 
                   gap: '12px',
-                  paddingTop: '16px',
+                  paddingTop: '20px',
+                  marginTop: '20px',
                   borderTop: '1px solid rgba(255,255,255,0.1)',
                 }}>
                   <motion.button
@@ -611,7 +626,7 @@ export function ProfilePage() {
                     <span>📥</span> {t('library.import')}
                   </motion.button>
                 </div>
-              </LiquidSurface>
+              </Surface>
             </motion.div>
 
             {/* Quick Links */}
@@ -621,7 +636,7 @@ export function ProfilePage() {
               transition={{ delay: 0.4 }}
               style={{ marginBottom: '24px' }}
             >
-              <LiquidSurface variant="card" cornerRadius={20} padding="0">
+              <Surface variant="card" cornerRadius={20} padding="0">
                 {[
                   { label: 'My Library', icon: '📚', to: '/library' },
                   { label: 'Achievements', icon: '🏆', to: '/library?tab=achievements' },
@@ -649,7 +664,7 @@ export function ProfilePage() {
                     <span style={{ color: 'rgba(255,255,255,0.3)' }}>→</span>
                   </Link>
                 ))}
-              </LiquidSurface>
+              </Surface>
             </motion.div>
 
             {/* Sign Out */}
@@ -714,7 +729,7 @@ export function ProfilePage() {
                   width: 'min(400px, 90vw)',
                 }}
               >
-                <LiquidSurface variant="modal" cornerRadius={24} padding="32px">
+                <Surface variant="modal" cornerRadius={24} padding="32px">
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: '48px', marginBottom: '16px' }}>👋</div>
                     <h3 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px', color: '#fff' }}>
@@ -762,7 +777,7 @@ export function ProfilePage() {
                       </motion.button>
                     </div>
                   </div>
-                </LiquidSurface>
+                </Surface>
               </motion.div>
             </>
           )}

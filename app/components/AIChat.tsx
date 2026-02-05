@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router';
-import { LiquidSurface } from './Liquid/LiquidSurface';
+import { Surface } from './Surface';
 import { AIResponseBubble } from './AIResponseCard';
 import { getAIResponse, sendToolResult, type AIMessage } from '~/services/ai';
 import { searchMovies, discoverMovies, type Movie } from '~/services/tmdb';
@@ -216,7 +216,7 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
               flexDirection: 'column',
             }}
           >
-            <LiquidSurface
+            <Surface
               variant="modal"
               cornerRadius={24}
               padding="0"
@@ -510,7 +510,7 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                   </motion.button>
                 </div>
               </form>
-            </LiquidSurface>
+            </Surface>
           </motion.div>
         </>
       )}

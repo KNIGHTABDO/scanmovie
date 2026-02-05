@@ -14,7 +14,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
+import { Surface } from '~/components/Surface';
 import { MovieCard } from '~/components/MovieCard';
 import { SkeletonHero, SkeletonSection } from '~/components/SkeletonLoading';
 import { getTrending, getNowPlaying, getUpcoming, getBackdropUrl, type Movie } from '~/services/tmdb';
@@ -202,7 +202,7 @@ export function Home() {
                 maxWidth: isMobile ? '100%' : (isTablet ? '90%' : '700px'),
               }}
             >
-              <LiquidSurface
+              <Surface
                 variant="container"
                 cornerRadius={isMobile ? 20 : (isTablet ? 28 : 32)}
                 padding={isMobile ? '24px' : (isTablet ? '32px' : '40px')}
@@ -287,7 +287,7 @@ export function Home() {
                       maxWidth: 'fit-content' 
                     }}
                   >
-                    <LiquidSurface
+                    <Surface
                       variant="button"
                       padding={isMobile ? '16px 28px' : '14px 32px'}
                       cornerRadius={50}
@@ -306,10 +306,10 @@ export function Home() {
                       }}>
                         View Details →
                       </span>
-                    </LiquidSurface>
+                    </Surface>
                   </motion.a>
                 </div>
-              </LiquidSurface>
+              </Surface>
             </motion.div>
           </AnimatePresence>
 
@@ -411,7 +411,7 @@ function MovieSection({ title, movies, containerRef, isMobile, isTablet }: Movie
     >
       {/* Section Header - LIQUIDGLASS */}
       <div style={{ marginBottom: isMobile ? '16px' : '24px', display: 'inline-block' }}>
-        <LiquidSurface
+        <Surface
           variant="container"
           cornerRadius={isMobile ? 14 : (isTablet ? 18 : 20)}
           padding={isMobile ? '14px 20px' : (isTablet ? '16px 24px' : '20px 28px')}
@@ -427,7 +427,7 @@ function MovieSection({ title, movies, containerRef, isMobile, isTablet }: Movie
           }}>
             {title}
           </h2>
-        </LiquidSurface>
+        </Surface>
       </div>
 
       {/* Movie Grid - Responsive columns: 2 (mobile) -> 3 (tablet) -> 4+ (desktop) */}
@@ -455,7 +455,7 @@ function LoadingScreen() {
       background: '#0a0a0f',
     }}>
       <div style={{ textAlign: 'center' }}>
-        <LiquidSurface
+        <Surface
           variant="modal"
           cornerRadius={24}
           padding="40px"
@@ -470,7 +470,7 @@ function LoadingScreen() {
           <p style={{ fontSize: '16px', color: 'rgba(255,255,255,0.7)', margin: 0 }}>
             Loading cinematic experience...
           </p>
-        </LiquidSurface>
+        </Surface>
       </div>
     </div>
   );

@@ -12,7 +12,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { LiquidSurface } from './Liquid/LiquidSurface';
+import { Surface } from './Surface';
 import type { RefObject } from 'react';
 
 interface AIResponseCardProps {

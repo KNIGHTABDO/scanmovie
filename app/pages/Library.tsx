@@ -16,7 +16,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { Link } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
+import { Surface } from '~/components/Surface';
 import { useUserData } from '~/contexts/UserDataContext';
 import { getMovieDetails, getPosterUrl, type Movie } from '~/services/tmdb';
 import { AchievementsPanel } from '~/components/AchievementDisplay';
@@ -87,7 +87,7 @@ export function Library() {
           animate={{ opacity: 1, y: 0 }}
           style={{ marginBottom: '32px' }}
         >
-          <LiquidSurface
+          <Surface
             variant="container"
             cornerRadius={24}
             padding={isMobile ? '20px' : '32px'}
@@ -105,7 +105,7 @@ export function Library() {
             <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '16px' }}>
               Your personal movie collection, all in one place
             </p>
-          </LiquidSurface>
+          </Surface>
         </motion.div>
 
         {/* Tab Navigation */}
@@ -133,7 +133,7 @@ export function Library() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <LiquidSurface
+                <Surface
                   variant="button"
                   cornerRadius={16}
                   padding={isMobile ? '10px 16px' : '12px 20px'}
@@ -153,7 +153,7 @@ export function Library() {
                   }}>
                     {tab.emoji} {tab.label}
                   </span>
-                </LiquidSurface>
+                </Surface>
               </motion.button>
             ))}
           </div>
@@ -268,9 +268,9 @@ function CollectionsTab({ isMobile }: { isMobile: boolean }) {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          <LiquidSurface variant="button" cornerRadius={16} padding="14px 24px">
+          <Surface variant="button" cornerRadius={16} padding="14px 24px">
             <span style={{ fontWeight: 600 }}>➕ Create New Collection</span>
-          </LiquidSurface>
+          </Surface>
         </motion.button>
       </div>
 
@@ -283,7 +283,7 @@ function CollectionsTab({ isMobile }: { isMobile: boolean }) {
             exit={{ opacity: 0, height: 0 }}
             style={{ marginBottom: '24px' }}
           >
-            <LiquidSurface variant="container" cornerRadius={20} padding="24px">
+            <Surface variant="container" cornerRadius={20} padding="24px">
               <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
                 <select
                   value={newEmoji}
@@ -321,17 +321,17 @@ function CollectionsTab({ isMobile }: { isMobile: boolean }) {
                   onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
                 />
                 <motion.button onClick={handleCreate} whileTap={{ scale: 0.95 }}>
-                  <LiquidSurface 
+                  <Surface 
                     variant="button" 
                     cornerRadius={12} 
                     padding="12px 20px"
                     style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}
                   >
                     <span style={{ fontWeight: 600 }}>Create</span>
-                  </LiquidSurface>
+                  </Surface>
                 </motion.button>
               </div>
-            </LiquidSurface>
+            </Surface>
           </motion.div>
         )}
       </AnimatePresence>
@@ -356,7 +356,7 @@ function CollectionsTab({ isMobile }: { isMobile: boolean }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <LiquidSurface variant="card" cornerRadius={20} padding="20px">
+              <Surface variant="card" cornerRadius={20} padding="20px">
                 <div 
                   style={{ cursor: 'pointer' }}
                   onClick={() => setSelectedCollection(collection.id)}
@@ -382,27 +382,27 @@ function CollectionsTab({ isMobile }: { isMobile: boolean }) {
                     whileTap={{ scale: 0.95 }}
                     style={{ flex: 1 }}
                   >
-                    <LiquidSurface variant="button" cornerRadius={10} padding="8px 16px">
+                    <Surface variant="button" cornerRadius={10} padding="8px 16px">
                       <span style={{ fontSize: '13px' }}>View →</span>
-                    </LiquidSurface>
+                    </Surface>
                   </motion.button>
                   {!['date-night', 'feel-good', 'movie-marathon'].includes(collection.id) && (
                     <motion.button
                       onClick={(e) => { e.stopPropagation(); deleteCollection(collection.id); }}
                       whileTap={{ scale: 0.95 }}
                     >
-                      <LiquidSurface 
+                      <Surface 
                         variant="button" 
                         cornerRadius={10} 
                         padding="8px 12px"
                         style={{ background: 'rgba(239, 68, 68, 0.2)' }}
                       >
                         <span style={{ fontSize: '13px' }}>🗑️</span>
-                      </LiquidSurface>
+                      </Surface>
                     </motion.button>
                   )}
                 </div>
-              </LiquidSurface>
+              </Surface>
             </motion.div>
           ))}
         </div>
@@ -451,19 +451,19 @@ function CollectionDetail({
         style={{ marginBottom: '20px' }}
         whileTap={{ scale: 0.95 }}
       >
-        <LiquidSurface variant="button" cornerRadius={12} padding="10px 20px">
+        <Surface variant="button" cornerRadius={12} padding="10px 20px">
           <span>← Back to Collections</span>
-        </LiquidSurface>
+        </Surface>
       </motion.button>
 
-      <LiquidSurface variant="container" cornerRadius={24} padding="24px" style={{ marginBottom: '24px' }}>
+      <Surface variant="container" cornerRadius={24} padding="24px" style={{ marginBottom: '24px' }}>
         <h2 style={{ fontSize: '24px', fontWeight: 700 }}>
           {collection.emoji} {collection.name}
         </h2>
         <p style={{ color: 'rgba(255,255,255,0.6)', marginTop: '8px' }}>
           {collection.movieIds.length} movies in this collection
         </p>
-      </LiquidSurface>
+      </Surface>
 
       {loading ? (
         <LoadingState />
@@ -541,7 +541,7 @@ function RatingsTab({ isMobile }: { isMobile: boolean }) {
           transition={{ delay: index * 0.03 }}
         >
           <Link to={`/movie/${movie.id}`} style={{ textDecoration: 'none' }}>
-            <LiquidSurface variant="card" cornerRadius={isMobile ? 14 : 18} padding="0">
+            <Surface variant="card" cornerRadius={isMobile ? 14 : 18} padding="0">
               <div style={{ position: 'relative' }}>
                 <img
                   src={getPosterUrl(movie.poster_path, 'w342')}
@@ -581,7 +581,7 @@ function RatingsTab({ isMobile }: { isMobile: boolean }) {
                   TMDB: {movie.vote_average?.toFixed(1)}
                 </p>
               </div>
-            </LiquidSurface>
+            </Surface>
           </Link>
         </motion.div>
       ))}
@@ -624,14 +624,14 @@ function HistoryTab({ isMobile }: { isMobile: boolean }) {
     <div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
         <motion.button onClick={clearViewHistory} whileTap={{ scale: 0.95 }}>
-          <LiquidSurface 
+          <Surface 
             variant="button" 
             cornerRadius={12} 
             padding="10px 16px"
             style={{ background: 'rgba(239, 68, 68, 0.2)' }}
           >
             <span style={{ fontSize: '14px' }}>🗑️ Clear History</span>
-          </LiquidSurface>
+          </Surface>
         </motion.button>
       </div>
 
@@ -682,7 +682,7 @@ function StatsTab({ isMobile }: { isMobile: boolean }) {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.05 }}
           >
-            <LiquidSurface variant="card" cornerRadius={20} padding="24px">
+            <Surface variant="card" cornerRadius={20} padding="24px">
               <div style={{ textAlign: 'center' }}>
                 <span style={{ fontSize: '40px' }}>{stat.emoji}</span>
                 <h3 style={{ 
@@ -697,14 +697,14 @@ function StatsTab({ isMobile }: { isMobile: boolean }) {
                   {stat.label}
                 </p>
               </div>
-            </LiquidSurface>
+            </Surface>
           </motion.div>
         ))}
       </div>
 
       {/* Rating Distribution */}
       {ratings.length > 0 && (
-        <LiquidSurface variant="container" cornerRadius={24} padding="24px">
+        <Surface variant="container" cornerRadius={24} padding="24px">
           <h3 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '20px' }}>
             📈 Your Rating Distribution
           </h3>
@@ -739,7 +739,7 @@ function StatsTab({ isMobile }: { isMobile: boolean }) {
               );
             })}
           </div>
-        </LiquidSurface>
+        </Surface>
       )}
     </div>
   );
@@ -775,7 +775,7 @@ function CompareTab({ isMobile }: { isMobile: boolean }) {
 
   return (
     <div>
-      <LiquidSurface variant="container" cornerRadius={24} padding="24px" style={{ marginBottom: '24px' }}>
+      <Surface variant="container" cornerRadius={24} padding="24px" style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
           <div>
             <h2 style={{ fontSize: '20px', fontWeight: 600 }}>⚖️ Movie Comparison</h2>
@@ -785,13 +785,13 @@ function CompareTab({ isMobile }: { isMobile: boolean }) {
           </div>
           {filledSlots > 0 && (
             <motion.button onClick={clearComparison} whileTap={{ scale: 0.95 }}>
-              <LiquidSurface variant="button" cornerRadius={12} padding="10px 16px">
+              <Surface variant="button" cornerRadius={12} padding="10px 16px">
                 <span style={{ fontSize: '14px' }}>Clear All</span>
-              </LiquidSurface>
+              </Surface>
             </motion.button>
           )}
         </div>
-      </LiquidSurface>
+      </Surface>
 
       {loading ? (
         <LoadingState />
@@ -809,7 +809,7 @@ function CompareTab({ isMobile }: { isMobile: boolean }) {
               transition={{ delay: index * 0.1 }}
             >
               {movie ? (
-                <LiquidSurface variant="card" cornerRadius={24} padding="20px">
+                <Surface variant="card" cornerRadius={24} padding="20px">
                   <div style={{ position: 'relative' }}>
                     <motion.button
                       onClick={() => removeFromComparison(index)}
@@ -853,9 +853,9 @@ function CompareTab({ isMobile }: { isMobile: boolean }) {
                       <ComparisonRow label="Genres" value={movie.genres?.slice(0, 2).map(g => g.name).join(', ') || 'N/A'} />
                     </div>
                   </div>
-                </LiquidSurface>
+                </Surface>
               ) : (
-                <LiquidSurface 
+                <Surface 
                   variant="card" 
                   cornerRadius={24} 
                   padding="40px"
@@ -871,7 +871,7 @@ function CompareTab({ isMobile }: { isMobile: boolean }) {
                     <p style={{ marginTop: '12px', fontSize: '14px' }}>Slot {index + 1}</p>
                     <p style={{ fontSize: '12px', marginTop: '4px' }}>Add from movie page</p>
                   </div>
-                </LiquidSurface>
+                </Surface>
               )}
             </motion.div>
           ))}
@@ -904,7 +904,7 @@ function MovieGridCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03 }}
     >
-      <LiquidSurface variant="card" cornerRadius={isMobile ? 14 : 18} padding="0">
+      <Surface variant="card" cornerRadius={isMobile ? 14 : 18} padding="0">
         <div style={{ position: 'relative' }}>
           <Link to={`/movie/${movie.id}`}>
             <img
@@ -976,7 +976,7 @@ function MovieGridCard({
             </motion.button>
           )}
         </div>
-      </LiquidSurface>
+      </Surface>
     </motion.div>
   );
 }
@@ -992,24 +992,24 @@ function ComparisonRow({ label, value }: { label: string; value: string }) {
 
 function EmptyState({ emoji, title, subtitle }: { emoji: string; title: string; subtitle: string }) {
   return (
-    <LiquidSurface variant="container" cornerRadius={24} padding="60px 40px">
+    <Surface variant="container" cornerRadius={24} padding="60px 40px">
       <div style={{ textAlign: 'center' }}>
         <span style={{ fontSize: '64px' }}>{emoji}</span>
         <h3 style={{ fontSize: '24px', fontWeight: 600, marginTop: '16px' }}>{title}</h3>
         <p style={{ color: 'rgba(255,255,255,0.6)', marginTop: '8px' }}>{subtitle}</p>
         <Link to="/" style={{ textDecoration: 'none', display: 'inline-block', marginTop: '24px' }}>
-          <LiquidSurface variant="button" cornerRadius={16} padding="14px 28px">
+          <Surface variant="button" cornerRadius={16} padding="14px 28px">
             <span style={{ fontWeight: 600 }}>🎬 Browse Movies</span>
-          </LiquidSurface>
+          </Surface>
         </Link>
       </div>
-    </LiquidSurface>
+    </Surface>
   );
 }
 
 function LoadingState() {
   return (
-    <LiquidSurface variant="container" cornerRadius={24} padding="60px">
+    <Surface variant="container" cornerRadius={24} padding="60px">
       <div style={{ textAlign: 'center' }}>
         <motion.div
           animate={{ rotate: 360 }}
@@ -1020,7 +1020,7 @@ function LoadingState() {
         </motion.div>
         <p style={{ marginTop: '16px', color: 'rgba(255,255,255,0.6)' }}>Loading...</p>
       </div>
-    </LiquidSurface>
+    </Surface>
   );
 }
 

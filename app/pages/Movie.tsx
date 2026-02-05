@@ -20,7 +20,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
+import { Surface } from '~/components/Surface';
 import { MovieCard } from '~/components/MovieCard';
 import { AIResponseCard } from '~/components/AIResponseCard';
 import { StreamingAvailability } from '~/components/StreamingAvailability';
@@ -186,14 +186,14 @@ export function MoviePage() {
           style={{ marginBottom: '32px' }}
         >
           <Link to="/" style={{ textDecoration: 'none', display: 'inline-block' }}>
-            <LiquidSurface
+            <Surface
               variant="button"
               padding="10px 20px"
               cornerRadius={50}
               displacementScale={40}
             >
               <span style={{ color: '#fff', fontWeight: 500 }}>← Back to Home</span>
-            </LiquidSurface>
+            </Surface>
           </Link>
         </motion.div>
 
@@ -204,7 +204,7 @@ export function MoviePage() {
           transition={{ duration: 0.6, delay: 0.3 }}
           style={{ marginBottom: '48px' }}
         >
-          <LiquidSurface
+          <Surface
             variant="modal"
             cornerRadius={32}
             padding="40px"
@@ -226,7 +226,7 @@ export function MoviePage() {
                 transition={{ delay: 0.4 }}
                 style={{ flexShrink: 0 }}
               >
-                <LiquidSurface
+                <Surface
                   variant="card"
                   cornerRadius={20}
                   padding="0"
@@ -241,7 +241,7 @@ export function MoviePage() {
                       display: 'block',
                     }}
                   />
-                </LiquidSurface>
+                </Surface>
               </motion.div>
 
               {/* Movie Info */}
@@ -269,33 +269,33 @@ export function MoviePage() {
                   transition={{ delay: 0.6 }}
                   style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '20px' }}
                 >
-                  <LiquidSurface
+                  <Surface
                     variant="button"
                     padding="8px 16px"
                     cornerRadius={12}
                     displacementScale={35}
                   >
                     <span style={{ fontWeight: 600 }}>⭐ {movie.vote_average?.toFixed(1)}</span>
-                  </LiquidSurface>
+                  </Surface>
                   
-                  <LiquidSurface
+                  <Surface
                     variant="button"
                     padding="8px 16px"
                     cornerRadius={12}
                     displacementScale={35}
                   >
                     <span style={{ fontWeight: 600 }}>📅 {movie.release_date?.split('-')[0]}</span>
-                  </LiquidSurface>
+                  </Surface>
                   
                   {movie.runtime && (
-                    <LiquidSurface
+                    <Surface
                       variant="button"
                       padding="8px 16px"
                       cornerRadius={12}
                       displacementScale={35}
                     >
                       <span style={{ fontWeight: 600 }}>⏱ {movie.runtime} min</span>
-                    </LiquidSurface>
+                    </Surface>
                   )}
                 </motion.div>
 
@@ -416,7 +416,7 @@ export function MoviePage() {
                 <MovieActions movie={movie} />
               </div>
             </div>
-          </LiquidSurface>
+          </Surface>
         </motion.section>
 
         {/* Cast Section - LIQUIDGLASS */}
@@ -429,7 +429,7 @@ export function MoviePage() {
             style={{ marginBottom: '48px' }}
           >
             <div style={{ marginBottom: '24px', display: 'inline-block' }}>
-              <LiquidSurface
+              <Surface
                 variant="container"
                 cornerRadius={20}
                 padding="20px 28px"
@@ -438,7 +438,7 @@ export function MoviePage() {
                 mouseContainer={containerRef}
               >
                 <h2 style={{ fontSize: '24px', fontWeight: 600 }}>🎭 Top Cast</h2>
-              </LiquidSurface>
+              </Surface>
             </div>
 
             <div
@@ -462,7 +462,7 @@ export function MoviePage() {
                     whileHover={{ scale: 1.05, y: -5 }}
                     style={{ cursor: 'pointer' }}
                   >
-                    <LiquidSurface
+                    <Surface
                       variant="card"
                       cornerRadius={16}
                       padding="12px"
@@ -494,7 +494,7 @@ export function MoviePage() {
                         <p style={{ fontWeight: 600, fontSize: '14px', marginBottom: '4px', color: '#fff' }}>{member.name}</p>
                         <p style={{ fontSize: '12px', opacity: 0.6, color: '#fff' }}>{member.character}</p>
                       </div>
-                    </LiquidSurface>
+                    </Surface>
                   </motion.div>
                 </Link>
               ))}
@@ -511,7 +511,7 @@ export function MoviePage() {
             transition={{ duration: 0.6 }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
-              <LiquidSurface
+              <Surface
                 variant="container"
                 cornerRadius={20}
                 padding="20px 28px"
@@ -520,7 +520,7 @@ export function MoviePage() {
                 mouseContainer={containerRef}
               >
                 <h2 style={{ fontSize: '24px', fontWeight: 600 }}>🤖 More Like This</h2>
-              </LiquidSurface>
+              </Surface>
             </div>
 
             {/* AI Insight Card */}
@@ -566,7 +566,7 @@ function MovieLoadingScreen() {
         background: '#0a0a0a',
       }}
     >
-      <LiquidSurface
+      <Surface
         variant="modal"
         cornerRadius={24}
         padding="40px"
@@ -581,7 +581,7 @@ function MovieLoadingScreen() {
           </motion.div>
           <p style={{ color: '#fff', fontSize: '18px' }}>Loading movie details...</p>
         </div>
-      </LiquidSurface>
+      </Surface>
     </div>
   );
 }
@@ -597,7 +597,7 @@ function MovieNotFound() {
         background: '#0a0a0a',
       }}
     >
-      <LiquidSurface
+      <Surface
         variant="modal"
         cornerRadius={24}
         padding="40px"
@@ -609,16 +609,16 @@ function MovieNotFound() {
             We couldn't find the movie you're looking for.
           </p>
           <Link to="/" style={{ textDecoration: 'none', display: 'inline-block' }}>
-            <LiquidSurface
+            <Surface
               variant="button"
               padding="12px 24px"
               cornerRadius={50}
             >
               <span style={{ color: '#fff', fontWeight: 500 }}>← Back to Home</span>
-            </LiquidSurface>
+            </Surface>
           </Link>
         </div>
-      </LiquidSurface>
+      </Surface>
     </div>
   );
 }
@@ -645,11 +645,20 @@ function MovieActions({ movie }: { movie: Movie }) {
   const [showRating, setShowRating] = useState(false);
   const [showCollections, setShowCollections] = useState(false);
   const [hoveredRating, setHoveredRating] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   
   const inWatchlist = isInWatchlist(movie.id);
   const isFav = isFavorite(movie.id);
   const userRating = getUserRating(movie.id);
   const comparisonSlot = isInComparison(movie.id);
+
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Find next available comparison slot
   const getNextComparisonSlot = () => {
@@ -675,27 +684,36 @@ function MovieActions({ movie }: { movie: Movie }) {
       style={{ marginTop: '28px' }}
     >
       {/* Primary Actions */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(160px, 1fr))', 
+        gap: '12px', 
+        marginBottom: '16px' 
+      }}>
         {/* Watchlist Button */}
         <motion.button
           onClick={() => inWatchlist ? removeFromWatchlist(movie.id) : addToWatchlist(movie)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <LiquidSurface
+          <Surface
             variant="button"
             cornerRadius={14}
-            padding="12px 20px"
+            padding="14px 20px"
             style={{
               background: inWatchlist 
                 ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(6, 182, 212, 0.4))'
                 : undefined,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             <span style={{ fontWeight: 600, fontSize: '14px' }}>
               {inWatchlist ? '✓ In Watchlist' : '📋 Add to Watchlist'}
             </span>
-          </LiquidSurface>
+          </Surface>
         </motion.button>
 
         {/* Favorite Button */}
@@ -704,20 +722,24 @@ function MovieActions({ movie }: { movie: Movie }) {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <LiquidSurface
+          <Surface
             variant="button"
             cornerRadius={14}
-            padding="12px 20px"
+            padding="14px 20px"
             style={{
               background: isFav 
                 ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(236, 72, 153, 0.4))'
                 : undefined,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             <span style={{ fontWeight: 600, fontSize: '14px' }}>
               {isFav ? '❤️ Favorited' : '🤍 Favorite'}
             </span>
-          </LiquidSurface>
+          </Surface>
         </motion.button>
 
         {/* Rate Button */}
@@ -726,20 +748,24 @@ function MovieActions({ movie }: { movie: Movie }) {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <LiquidSurface
+          <Surface
             variant="button"
             cornerRadius={14}
-            padding="12px 20px"
+            padding="14px 20px"
             style={{
               background: userRating 
                 ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.4), rgba(249, 115, 22, 0.4))'
                 : undefined,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             <span style={{ fontWeight: 600, fontSize: '14px' }}>
               {userRating ? `⭐ ${userRating}/10` : '⭐ Rate'}
             </span>
-          </LiquidSurface>
+          </Surface>
         </motion.button>
 
         {/* Collection Button */}
@@ -748,9 +774,19 @@ function MovieActions({ movie }: { movie: Movie }) {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <LiquidSurface variant="button" cornerRadius={14} padding="12px 20px">
+          <Surface 
+            variant="button" 
+            cornerRadius={14} 
+            padding="14px 20px"
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             <span style={{ fontWeight: 600, fontSize: '14px' }}>📂 Add to Collection</span>
-          </LiquidSurface>
+          </Surface>
         </motion.button>
 
         {/* Compare Button */}
@@ -761,20 +797,24 @@ function MovieActions({ movie }: { movie: Movie }) {
           disabled={comparisonSlot >= 0 || getNextComparisonSlot() < 0}
           style={{ opacity: (comparisonSlot >= 0 || getNextComparisonSlot() < 0) ? 0.6 : 1 }}
         >
-          <LiquidSurface
+          <Surface
             variant="button"
             cornerRadius={14}
-            padding="12px 20px"
+            padding="14px 20px"
             style={{
               background: comparisonSlot >= 0 
                 ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(168, 85, 247, 0.4))'
                 : undefined,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             <span style={{ fontWeight: 600, fontSize: '14px' }}>
               {comparisonSlot >= 0 ? '⚖️ In Compare' : '⚖️ Compare'}
             </span>
-          </LiquidSurface>
+          </Surface>
         </motion.button>
       </div>
 
@@ -787,7 +827,7 @@ function MovieActions({ movie }: { movie: Movie }) {
             exit={{ opacity: 0, height: 0 }}
             style={{ marginBottom: '16px' }}
           >
-            <LiquidSurface variant="container" cornerRadius={16} padding="16px">
+            <Surface variant="container" cornerRadius={16} padding="16px">
               <p style={{ fontSize: '14px', marginBottom: '12px', color: 'rgba(255,255,255,0.7)' }}>
                 How would you rate this movie?
               </p>
@@ -821,7 +861,7 @@ function MovieActions({ movie }: { movie: Movie }) {
                   </motion.button>
                 ))}
               </div>
-            </LiquidSurface>
+            </Surface>
           </motion.div>
         )}
       </AnimatePresence>
@@ -834,7 +874,7 @@ function MovieActions({ movie }: { movie: Movie }) {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
           >
-            <LiquidSurface variant="container" cornerRadius={16} padding="16px">
+            <Surface variant="container" cornerRadius={16} padding="16px">
               <p style={{ fontSize: '14px', marginBottom: '12px', color: 'rgba(255,255,255,0.7)' }}>
                 Add to a collection:
               </p>
@@ -854,7 +894,7 @@ function MovieActions({ movie }: { movie: Movie }) {
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
                     >
-                      <LiquidSurface
+                      <Surface
                         variant="button"
                         cornerRadius={10}
                         padding="8px 14px"
@@ -868,7 +908,7 @@ function MovieActions({ movie }: { movie: Movie }) {
                           {collection.emoji} {collection.name}
                           {inCollection && ' ✓'}
                         </span>
-                      </LiquidSurface>
+                      </Surface>
                     </motion.button>
                   );
                 })}
@@ -885,7 +925,7 @@ function MovieActions({ movie }: { movie: Movie }) {
               >
                 Manage collections →
               </Link>
-            </LiquidSurface>
+            </Surface>
           </motion.div>
         )}
       </AnimatePresence>

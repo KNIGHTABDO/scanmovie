@@ -9,7 +9,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { LiquidSurface } from './Liquid/LiquidSurface';
+import { Surface } from './Surface';
 import { useUserData } from '~/contexts/UserDataContext';
 import { getAchievementStats, getTotalPoints, getUserLevel } from '~/services/achievements';
 
@@ -277,7 +277,7 @@ interface StatCardProps {
 
 export function StatCard({ title, value, subtitle, emoji, trend, color = '#8b5cf6' }: StatCardProps) {
   return (
-    <LiquidSurface variant="container" cornerRadius={16} padding="16px">
+    <Surface variant="container" cornerRadius={16} padding="16px">
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
         <div>
           <p style={{ 
@@ -327,7 +327,7 @@ export function StatCard({ title, value, subtitle, emoji, trend, color = '#8b5cf
           </span>
         )}
       </div>
-    </LiquidSurface>
+    </Surface>
   );
 }
 
@@ -406,7 +406,7 @@ export function StatsDashboard({ isMobile = false }: StatsDashboardProps) {
         transition={{ delay: 0.4 }}
         style={{ marginBottom: '24px' }}
       >
-        <LiquidSurface variant="container" cornerRadius={24} padding="24px">
+        <Surface variant="container" cornerRadius={24} padding="24px">
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -462,7 +462,7 @@ export function StatsDashboard({ isMobile = false }: StatsDashboardProps) {
               <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>days</p>
             </div>
           </div>
-        </LiquidSurface>
+        </Surface>
       </motion.div>
       
       {/* Charts Row */}
@@ -478,7 +478,7 @@ export function StatsDashboard({ isMobile = false }: StatsDashboardProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <LiquidSurface variant="container" cornerRadius={20} padding="20px">
+          <Surface variant="container" cornerRadius={20} padding="20px">
             <h3 style={{ 
               fontSize: '14px', 
               fontWeight: 600, 
@@ -499,7 +499,7 @@ export function StatsDashboard({ isMobile = false }: StatsDashboardProps) {
             }}>
               Average Rating: <span style={{ color: '#fbbf24', fontWeight: 600 }}>{avgRating}</span>
             </p>
-          </LiquidSurface>
+          </Surface>
         </motion.div>
         
         {/* Weekly Activity */}
@@ -508,7 +508,7 @@ export function StatsDashboard({ isMobile = false }: StatsDashboardProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <LiquidSurface variant="container" cornerRadius={20} padding="20px">
+          <Surface variant="container" cornerRadius={20} padding="20px">
             <h3 style={{ 
               fontSize: '14px', 
               fontWeight: 600, 
@@ -529,7 +529,7 @@ export function StatsDashboard({ isMobile = false }: StatsDashboardProps) {
             }}>
               Movies viewed this week
             </p>
-          </LiquidSurface>
+          </Surface>
         </motion.div>
       </div>
       
@@ -540,7 +540,7 @@ export function StatsDashboard({ isMobile = false }: StatsDashboardProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
         >
-          <LiquidSurface variant="container" cornerRadius={20} padding="20px">
+          <Surface variant="container" cornerRadius={20} padding="20px">
             <h3 style={{ 
               fontSize: '14px', 
               fontWeight: 600, 
@@ -578,7 +578,7 @@ export function StatsDashboard({ isMobile = false }: StatsDashboardProps) {
                 </p>
               )}
             </div>
-          </LiquidSurface>
+          </Surface>
         </motion.div>
       )}
       
@@ -589,7 +589,7 @@ export function StatsDashboard({ isMobile = false }: StatsDashboardProps) {
         transition={{ delay: 0.8 }}
         style={{ marginTop: '16px' }}
       >
-        <LiquidSurface variant="container" cornerRadius={20} padding="20px">
+        <Surface variant="container" cornerRadius={20} padding="20px">
           <h3 style={{ 
             fontSize: '14px', 
             fontWeight: 600, 
@@ -625,7 +625,7 @@ export function StatsDashboard({ isMobile = false }: StatsDashboardProps) {
               <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>Random Picks</p>
             </div>
           </div>
-        </LiquidSurface>
+        </Surface>
       </motion.div>
     </div>
   );

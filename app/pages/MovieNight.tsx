@@ -14,7 +14,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router';
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
-import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
+import { Surface } from '~/components/Surface';
 import { useUserData } from '~/contexts/UserDataContext';
 import { getPosterUrl, getBackdropUrl, type Movie } from '~/services/tmdb';
 import { useLanguage } from '~/contexts/LanguageContext';
@@ -227,7 +227,7 @@ export function MovieNight() {
             animate={{ opacity: 1 }}
           >
             {/* Mode Selection */}
-            <LiquidSurface variant="container" cornerRadius={20} padding={isMobile ? '16px' : '24px'}>
+            <Surface variant="container" cornerRadius={20} padding={isMobile ? '16px' : '24px'}>
               <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '16px', color: '#fff' }}>
                 Choose a Mode
               </h2>
@@ -257,7 +257,7 @@ export function MovieNight() {
                   color="#f59e0b"
                 />
               </div>
-            </LiquidSurface>
+            </Surface>
 
             {/* Movie Selection */}
             <motion.div
@@ -266,7 +266,7 @@ export function MovieNight() {
               transition={{ delay: 0.1 }}
               style={{ marginTop: '24px' }}
             >
-              <LiquidSurface variant="container" cornerRadius={20} padding={isMobile ? '16px' : '24px'}>
+              <Surface variant="container" cornerRadius={20} padding={isMobile ? '16px' : '24px'}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                   <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#fff' }}>
                     Select Movies ({selectedMovies.length} selected)
@@ -320,7 +320,7 @@ export function MovieNight() {
                     ))}
                   </div>
                 )}
-              </LiquidSurface>
+              </Surface>
             </motion.div>
           </motion.div>
         )}
@@ -528,7 +528,7 @@ function SwipeMode({
         }}
         whileDrag={{ cursor: 'grabbing' }}
       >
-        <LiquidSurface variant="container" cornerRadius={24} padding="0" style={{ overflow: 'hidden' }}>
+        <Surface variant="container" cornerRadius={24} padding="0" style={{ overflow: 'hidden' }}>
           <div style={{ position: 'relative' }}>
             <img
               src={getPosterUrl(movie.poster_path, 'w500')}
@@ -559,7 +559,7 @@ function SwipeMode({
               </div>
             </div>
           </div>
-        </LiquidSurface>
+        </Surface>
       </motion.div>
 
       {/* Swipe Buttons */}
@@ -633,7 +633,7 @@ function VoteMode({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <LiquidSurface variant="container" cornerRadius={20} padding={isMobile ? '16px' : '24px'}>
+      <Surface variant="container" cornerRadius={20} padding={isMobile ? '16px' : '24px'}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h2 style={{ color: '#fff', fontSize: '20px', fontWeight: 600 }}>
             {t('movieNight.vote')} ({totalVotes} votes)
@@ -718,7 +718,7 @@ function VoteMode({
             );
           })}
         </div>
-      </LiquidSurface>
+      </Surface>
     </div>
   );
 }
@@ -840,7 +840,7 @@ function ResultMode({
         {t('movieNight.winner')}
       </h2>
 
-      <LiquidSurface variant="container" cornerRadius={24} padding="0" style={{ overflow: 'hidden', maxWidth: '320px' }}>
+      <Surface variant="container" cornerRadius={24} padding="0" style={{ overflow: 'hidden', maxWidth: '320px' }}>
         <img
           src={getPosterUrl(winner.poster_path, 'w500')}
           alt={winner.title}
@@ -861,7 +861,7 @@ function ResultMode({
             <span>{winner.release_date?.split('-')[0]}</span>
           </div>
         </div>
-      </LiquidSurface>
+      </Surface>
 
       <div style={{ display: 'flex', gap: '12px' }}>
         <Link to={`/movie/${winner.id}`}>

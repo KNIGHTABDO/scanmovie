@@ -7,7 +7,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { LiquidSurface } from './Liquid/LiquidSurface';
+import { Surface } from './Surface';
 import { getSoundtrackUrls, MUSIC_SERVICES, type SoundtrackInfo } from '~/services/soundtrack';
 import type { Movie } from '~/services/tmdb';
 import { useLanguage } from '~/contexts/LanguageContext';
@@ -62,7 +62,7 @@ export function SoundtrackLinks({ movie, composer, variant = 'default' }: Soundt
   }
 
   return (
-    <LiquidSurface 
+    <Surface 
       variant="container" 
       cornerRadius={isCompact ? 12 : 16} 
       padding={isCompact ? '12px' : '16px'}
@@ -95,8 +95,8 @@ export function SoundtrackLinks({ movie, composer, variant = 'default' }: Soundt
 
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: isCompact ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', 
-        gap: '8px' 
+        gridTemplateColumns: isCompact ? 'repeat(auto-fit, minmax(100px, 1fr))' : 'repeat(auto-fit, minmax(120px, 1fr))', 
+        gap: '10px' 
       }}>
         {MUSIC_SERVICES.map(service => {
           const url = soundtrackInfo[service.urlKey] as string;
@@ -136,6 +136,6 @@ export function SoundtrackLinks({ movie, composer, variant = 'default' }: Soundt
           );
         })}
       </div>
-    </LiquidSurface>
+    </Surface>
   );
 }

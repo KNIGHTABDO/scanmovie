@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router';
-import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
+import { Surface } from '~/components/Surface';
 import { MovieCard } from '~/components/MovieCard';
 import { AIResponseCard } from '~/components/AIResponseCard';
 import { QuickReplyChips, DEFAULT_QUICK_REPLIES, MOOD_QUICK_REPLIES } from '~/components/QuickReplyChips';
@@ -263,7 +263,7 @@ export function AISearch() {
                 transition={{ duration: 0.6, ease: 'easeOut' }}
                 style={{ width: '100%', maxWidth: '900px' }}
               >
-                <LiquidSurface
+                <Surface
                   variant="container"
                   cornerRadius={isMobile ? 24 : 32}
                   padding={isMobile ? '40px 24px' : '60px 48px'}
@@ -488,7 +488,7 @@ export function AISearch() {
                       />
                     </div>
                   </motion.div>
-                </LiquidSurface>
+                </Surface>
               </motion.div>
 
               {/* Back Link */}
@@ -577,7 +577,7 @@ export function AISearch() {
                       padding: '80px 0',
                     }}
                   >
-                    <LiquidSurface
+                    <Surface
                       variant="container"
                       cornerRadius={24}
                       padding="48px 64px"
@@ -593,7 +593,7 @@ export function AISearch() {
                       <p style={{ color: 'rgba(255,255,255,0.6)', textAlign: 'center', margin: 0 }}>
                         Finding the perfect movies for you...
                       </p>
-                    </LiquidSurface>
+                    </Surface>
                   </motion.div>
                 )}
 
@@ -605,7 +605,7 @@ export function AISearch() {
                     transition={{ delay: 0.2 }}
                   >
                     <div style={{ marginBottom: '24px', display: 'inline-block' }}>
-                      <LiquidSurface
+                      <Surface
                         variant="container"
                         cornerRadius={16}
                         padding="16px 24px"
@@ -619,7 +619,7 @@ export function AISearch() {
                         }}>
                           🎯 Top Picks for You
                         </h2>
-                      </LiquidSurface>
+                      </Surface>
                     </div>
 
                     <div style={{
@@ -650,7 +650,7 @@ export function AISearch() {
                     animate={{ opacity: 1 }}
                     style={{ textAlign: 'center', padding: '80px 0' }}
                   >
-                    <LiquidSurface
+                    <Surface
                       variant="container"
                       cornerRadius={24}
                       padding="48px"
@@ -659,7 +659,7 @@ export function AISearch() {
                       <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '18px', margin: 0 }}>
                         No movie results for this query. Try a different search!
                       </p>
-                    </LiquidSurface>
+                    </Surface>
                   </motion.div>
                 )}
               </div>
@@ -683,7 +683,7 @@ export function AISearch() {
                 }}
               >
                 <form onSubmit={handleSearch} style={{ maxWidth: '700px', margin: '0 auto' }}>
-                  <LiquidSurface
+                  <Surface
                     variant="navbar"
                     cornerRadius={50}
                     padding="8px 8px 8px 24px"
@@ -767,7 +767,7 @@ export function AISearch() {
                         )}
                       </motion.button>
                     </div>
-                  </LiquidSurface>
+                  </Surface>
                 </form>
               </motion.div>
             </motion.div>

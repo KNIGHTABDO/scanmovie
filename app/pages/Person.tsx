@@ -10,7 +10,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router';
 import { motion } from 'framer-motion';
-import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
+import { Surface } from '~/components/Surface';
 import { MovieCard } from '~/components/MovieCard';
 import {
   getPersonDetails,
@@ -185,14 +185,14 @@ export function PersonPage() {
             onClick={() => window.history.back()}
             style={{ background: 'none', border: 'none', cursor: 'pointer' }}
           >
-            <LiquidSurface
+            <Surface
               variant="button"
               padding="10px 20px"
               cornerRadius={50}
               displacementScale={40}
             >
               <span style={{ color: '#fff', fontWeight: 500 }}>← Go Back</span>
-            </LiquidSurface>
+            </Surface>
           </button>
         </motion.div>
 
@@ -203,7 +203,7 @@ export function PersonPage() {
           transition={{ duration: 0.6, delay: 0.3 }}
           style={{ marginBottom: '48px' }}
         >
-          <LiquidSurface
+          <Surface
             variant="modal"
             cornerRadius={32}
             padding="40px"
@@ -225,7 +225,7 @@ export function PersonPage() {
                 transition={{ delay: 0.4 }}
                 style={{ flexShrink: 0 }}
               >
-                <LiquidSurface variant="card" cornerRadius={20} padding="0">
+                <Surface variant="card" cornerRadius={20} padding="0">
                   <img
                     src={getProfileUrl(person.profile_path, 'h632')}
                     alt={person.name}
@@ -241,7 +241,7 @@ export function PersonPage() {
                         'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 420"><rect fill="%23222" width="280" height="420"/><text x="140" y="220" font-size="80" text-anchor="middle" fill="%23555">👤</text></svg>';
                     }}
                   />
-                </LiquidSurface>
+                </Surface>
               </motion.div>
 
               {/* Person Info */}
@@ -267,17 +267,17 @@ export function PersonPage() {
                   transition={{ delay: 0.6 }}
                   style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '24px' }}
                 >
-                  <LiquidSurface variant="button" padding="10px 18px" cornerRadius={12} displacementScale={35}>
+                  <Surface variant="button" padding="10px 18px" cornerRadius={12} displacementScale={35}>
                     <span style={{ fontWeight: 600 }}>🎬 {totalMovies} Movies</span>
-                  </LiquidSurface>
+                  </Surface>
 
-                  <LiquidSurface variant="button" padding="10px 18px" cornerRadius={12} displacementScale={35}>
+                  <Surface variant="button" padding="10px 18px" cornerRadius={12} displacementScale={35}>
                     <span style={{ fontWeight: 600 }}>⭐ {avgRating} Avg</span>
-                  </LiquidSurface>
+                  </Surface>
 
-                  <LiquidSurface variant="button" padding="10px 18px" cornerRadius={12} displacementScale={35}>
+                  <Surface variant="button" padding="10px 18px" cornerRadius={12} displacementScale={35}>
                     <span style={{ fontWeight: 600 }}>📅 {careerSpan}</span>
-                  </LiquidSurface>
+                  </Surface>
                 </motion.div>
 
                 {/* Personal Info */}
@@ -361,7 +361,7 @@ export function PersonPage() {
                 )}
               </div>
             </div>
-          </LiquidSurface>
+          </Surface>
         </motion.section>
 
         {/* Filmography Tabs */}
@@ -378,7 +378,7 @@ export function PersonPage() {
                 onClick={() => setActiveTab('acting')}
                 style={{ background: 'none', border: 'none', cursor: 'pointer' }}
               >
-                <LiquidSurface
+                <Surface
                   variant={activeTab === 'acting' ? 'modal' : 'button'}
                   padding="14px 24px"
                   cornerRadius={20}
@@ -387,7 +387,7 @@ export function PersonPage() {
                   <span style={{ fontWeight: 600, fontSize: '16px' }}>
                     🎭 Acting ({processedCastCredits.length})
                   </span>
-                </LiquidSurface>
+                </Surface>
               </button>
             )}
 
@@ -396,7 +396,7 @@ export function PersonPage() {
                 onClick={() => setActiveTab('directing')}
                 style={{ background: 'none', border: 'none', cursor: 'pointer' }}
               >
-                <LiquidSurface
+                <Surface
                   variant={activeTab === 'directing' ? 'modal' : 'button'}
                   padding="14px 24px"
                   cornerRadius={20}
@@ -405,7 +405,7 @@ export function PersonPage() {
                   <span style={{ fontWeight: 600, fontSize: '16px' }}>
                     🎬 Directing ({processedCrewCredits.length})
                   </span>
-                </LiquidSurface>
+                </Surface>
               </button>
             )}
 
@@ -413,7 +413,7 @@ export function PersonPage() {
               onClick={() => setActiveTab('all')}
               style={{ background: 'none', border: 'none', cursor: 'pointer' }}
             >
-              <LiquidSurface
+              <Surface
                 variant={activeTab === 'all' ? 'modal' : 'button'}
                 padding="14px 24px"
                 cornerRadius={20}
@@ -422,7 +422,7 @@ export function PersonPage() {
                 <span style={{ fontWeight: 600, fontSize: '16px' }}>
                   📚 All Credits ({allCredits.length})
                 </span>
-              </LiquidSurface>
+              </Surface>
             </button>
           </div>
         </motion.section>
@@ -464,11 +464,11 @@ export function PersonPage() {
               viewport={{ once: true }}
               style={{ textAlign: 'center', marginTop: '32px' }}
             >
-              <LiquidSurface variant="button" padding="14px 32px" cornerRadius={50}>
+              <Surface variant="button" padding="14px 32px" cornerRadius={50}>
                 <span style={{ fontWeight: 500 }}>
                   +{displayCredits.length - 24} more credits
                 </span>
-              </LiquidSurface>
+              </Surface>
             </motion.div>
           )}
         </motion.section>
@@ -488,7 +488,7 @@ function FilmographyCard({
   return (
     <Link to={`/movie/${credit.id}`} style={{ textDecoration: 'none' }}>
       <motion.div whileHover={{ scale: 1.05, y: -8 }} transition={{ type: 'spring', stiffness: 300 }}>
-        <LiquidSurface variant="card" cornerRadius={16} padding="0" displacementScale={50}>
+        <Surface variant="card" cornerRadius={16} padding="0" displacementScale={50}>
           <div style={{ position: 'relative' }}>
             {/* Poster */}
             <div
@@ -585,7 +585,7 @@ function FilmographyCard({
               )}
             </div>
           </div>
-        </LiquidSurface>
+        </Surface>
       </motion.div>
     </Link>
   );
@@ -632,9 +632,9 @@ function PersonNotFound() {
       <span style={{ fontSize: '64px' }}>😕</span>
       <h1>Person Not Found</h1>
       <Link to="/">
-        <LiquidSurface variant="button" padding="12px 24px" cornerRadius={50}>
+        <Surface variant="button" padding="12px 24px" cornerRadius={50}>
           <span style={{ color: '#fff' }}>Go Home</span>
-        </LiquidSurface>
+        </Surface>
       </Link>
     </div>
   );
