@@ -1,21 +1,4 @@
 {
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
-  "framework": null,
-  "outputDirectory": "build/client",
-  "regions": ["iad1"],
-  "functions": {
-    "build/server/index.js": {
-      "maxDuration": 10
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/build/server/index.js"
-    }
-  ],
   "headers": [
     {
       "source": "/sw.js",
@@ -48,7 +31,7 @@
       ]
     },
     {
-      "source": "/assets/(.*)",
+      "source": "/build/client/assets/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
