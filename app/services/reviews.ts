@@ -19,7 +19,7 @@ import {
   Timestamp,
   type DocumentData,
 } from 'firebase/firestore';
-import { app } from './firebase';
+import { db } from './firebase';
 
 export interface MovieReview {
   id: string;
@@ -34,8 +34,6 @@ export interface MovieReview {
   createdAt: number;
   updatedAt: number;
 }
-
-const db = getFirestore(app);
 
 /**
  * Add or update a review
