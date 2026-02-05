@@ -920,3 +920,45 @@ img {
     gap: 8px;
   }
 }
+
+/* ====== iPhone-Specific Optimizations ====== */
+
+/* iPhone X, XS, 11 Pro, 12, 12 Pro, 13, 13 Pro, 14, 14 Pro (with notch) */
+@media only screen 
+  and (device-width: 375px) 
+  and (device-height: 812px) 
+  and (-webkit-device-pixel-ratio: 3) {
+  :root {
+    --nav-height: calc(80px + env(safe-area-inset-top));
+  }
+}
+
+/* iPhone 12 Pro Max, 13 Pro Max, 14 Plus */
+@media only screen 
+  and (device-width: 428px) 
+  and (device-height: 926px) 
+  and (-webkit-device-pixel-ratio: 3) {
+  :root {
+    --nav-height: calc(80px + env(safe-area-inset-top));
+  }
+}
+
+/* Landscape mode optimizations for iPhones */
+@media (max-height: 450px) and (orientation: landscape) {
+  .hero-title {
+    font-size: 20px !important;
+  }
+  
+  .movie-detail-title {
+    font-size: 24px !important;
+  }
+  
+  .navbar-container {
+    padding: 8px 16px !important;
+  }
+  
+  :root {
+    --content-padding: 16px;
+    --section-gap: 24px;
+  }
+}

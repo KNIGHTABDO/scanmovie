@@ -295,7 +295,7 @@ export function CreatePartyPage() {
                     <div
                       style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(min(100px, 30vw), 1fr))',
                         gap: '16px',
                       }}
                     >

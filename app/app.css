@@ -286,3 +286,50 @@ input[type="search"]::-webkit-search-cancel-button {
 [data-theme="light"] canvas {
   filter: invert(0.9) hue-rotate(180deg);
 }
+
+/* ====== Mobile Utility Classes ====== */
+
+/* Hide on mobile */
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* Show only on mobile */
+.show-mobile {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .show-mobile {
+    display: block !important;
+  }
+}
+
+/* Responsive text sizing */
+.text-responsive {
+  font-size: clamp(14px, 2.5vw, 18px);
+}
+
+.heading-responsive {
+  font-size: clamp(24px, 5vw, 48px);
+}
+
+/* Safe scrolling for iOS */
+.safe-scroll {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Prevent text size adjustment on iOS */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Better tap highlight for iOS */
+a, button {
+  -webkit-tap-highlight-color: rgba(139, 92, 246, 0.2);
+}
