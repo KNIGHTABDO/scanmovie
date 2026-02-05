@@ -269,8 +269,7 @@ export function Navbar() {
                         position: 'absolute',
                         top: 'calc(100% + 12px)',
                         right: 0,
-                        width: isMobile ? 'min(320px, calc(100vw - 32px))' : '320px',
-                        maxWidth: isMobile ? 'calc(100vw - 32px)' : '320px',
+                        width: isMobile ? 'calc(100vw - 32px)' : '320px',
                         zIndex: 100,
                       }}
                     >

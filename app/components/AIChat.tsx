@@ -205,7 +205,7 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             style={{
               position: 'fixed',
-              bottom: isMobile ? 'max(20px, env(safe-area-inset-bottom))' : 'max(100px, calc(100px + env(safe-area-inset-bottom)))',
+              bottom: isMobile ? 'max(20px, env(safe-area-inset-bottom))' : 'calc(100px + env(safe-area-inset-bottom))',
               right: isMobile ? '16px' : '24px',
               left: isMobile ? '16px' : 'auto',
               width: isMobile ? 'auto' : 'min(420px, calc(100vw - 48px))',
