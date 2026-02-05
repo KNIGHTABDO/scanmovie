@@ -142,9 +142,6 @@ button {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  /* Prevent text selection on buttons */
-  -webkit-user-select: none;
-  user-select: none;
 }
 
 /* Re-enable text selection for inputs */
@@ -164,13 +161,9 @@ a,
 }
 
 /* Minimum touch target size for iOS (44x44px recommended) */
-button,
-a[href],
-[role="button"] {
+button:not([class*="unstyled"]),
+a[href]:not([class*="unstyled"]) {
   min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   padding: 8px 12px;
 }
 
