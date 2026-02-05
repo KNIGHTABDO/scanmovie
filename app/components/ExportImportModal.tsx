@@ -214,9 +214,9 @@ export function ExportImportModal({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           onClick={e => e.stopPropagation()}
-          style={{ width: '100%', maxWidth: '480px' }}
+          style={{ width: '100%', maxWidth: 'min(480px, calc(100vw - 40px))' }}
         >
-          <LiquidSurface variant="container" cornerRadius={24} padding="24px">
+          <LiquidSurface variant="container" cornerRadius={24} padding="min(24px, 5vw)">
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h2 style={{ color: '#fff', fontSize: '20px', fontWeight: 700 }}>

@@ -10,6 +10,10 @@ import { QuickReplyChips, DEFAULT_QUICK_REPLIES } from './QuickReplyChips';
 import { ThinkingDots } from './SkeletonLoading';
 import { trackAction } from '~/services/achievements';
 
+// Focus delay constants - prevents keyboard layout issues on mobile browsers
+const FOCUS_DELAY_MOBILE = 300; // ms - allows mobile browser to finish opening modal
+const FOCUS_DELAY_DESKTOP = 100; // ms - quick focus for desktop
+
 interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
@@ -28,8 +32,17 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Detect mobile
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   // Voice input
   const { isListening, transcript, isSupported: voiceSupported, startListening, stopListening } = useVoiceInput();
@@ -46,12 +59,13 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Focus input when opened
+  // Focus input when opened (delayed for mobile to prevent keyboard issues)
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 100);
+      const delay = isMobile ? FOCUS_DELAY_MOBILE : FOCUS_DELAY_DESKTOP;
+      setTimeout(() => inputRef.current?.focus(), delay);
     }
-  }, [isOpen]);
+  }, [isOpen, isMobile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -191,10 +205,12 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             style={{
               position: 'fixed',
-              bottom: '100px',
-              right: '24px',
-              width: 'min(420px, calc(100vw - 48px))',
-              height: 'min(600px, calc(100vh - 160px))',
+              bottom: isMobile ? 'max(20px, env(safe-area-inset-bottom))' : 'calc(100px + env(safe-area-inset-bottom))',
+              right: isMobile ? '16px' : '24px',
+              left: isMobile ? '16px' : 'auto',
+              width: isMobile ? 'auto' : 'min(420px, calc(100vw - 48px))',
+              height: isMobile ? 'calc(100vh - 140px)' : 'min(600px, calc(100vh - 200px))',
+              maxHeight: isMobile ? '80vh' : '600px',
               zIndex: 1999,
               display: 'flex',
               flexDirection: 'column',

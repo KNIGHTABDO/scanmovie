@@ -178,14 +178,14 @@ export function Home() {
       <main style={{
         position: 'relative',
         zIndex: 10,
-        paddingTop: isMobile ? '100px' : '120px',
-        paddingBottom: isMobile ? '40px' : '80px',
+        paddingTop: isMobile ? 'max(100px, calc(100px + env(safe-area-inset-top)))' : '120px',
+        paddingBottom: isMobile ? 'max(40px, calc(40px + env(safe-area-inset-bottom)))' : '80px',
         width: '100%',
         maxWidth: '1200px',
         marginLeft: 'auto',
         marginRight: 'auto',
-        paddingLeft: isMobile ? '16px' : (isTablet ? '32px' : '24px'),
-        paddingRight: isMobile ? '16px' : (isTablet ? '32px' : '24px'),
+        paddingLeft: isMobile ? 'max(16px, env(safe-area-inset-left))' : (isTablet ? '32px' : '24px'),
+        paddingRight: isMobile ? 'max(16px, env(safe-area-inset-right))' : (isTablet ? '32px' : '24px'),
         boxSizing: 'border-box',
       }}>
         {/* Hero Section - LIQUIDGLASS CONTAINER */}
@@ -326,6 +326,7 @@ export function Home() {
             {trending.slice(0, 5).map((_, idx) => (
               <motion.button
                 key={idx}
+                className="no-touch-target"
                 onClick={() => setFeaturedIndex(idx)}
                 whileHover={{ scale: 1.3 }}
                 whileTap={{ scale: 0.9 }}

@@ -369,7 +369,7 @@ export function WatchPartyPage() {
                   <div
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 45vw), 1fr))',
                       gap: '20px',
                     }}
                   >

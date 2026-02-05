@@ -131,9 +131,9 @@ export function ProfilePage() {
           position: 'relative',
           zIndex: 10,
           paddingTop: '100px',
-          paddingBottom: '120px',
-          paddingLeft: '20px',
-          paddingRight: '20px',
+          paddingBottom: 'max(120px, calc(120px + env(safe-area-inset-bottom)))',
+          paddingLeft: 'max(20px, env(safe-area-inset-left))',
+          paddingRight: 'max(20px, env(safe-area-inset-right))',
           maxWidth: '800px',
           margin: '0 auto',
         }}

@@ -94,6 +94,9 @@ export function Navbar() {
         right: 0,
         zIndex: 1000,
         padding: isMobile ? '12px 16px' : '16px 24px',
+        paddingTop: isMobile ? 'max(12px, env(safe-area-inset-top))' : '16px',
+        paddingLeft: isMobile ? 'max(16px, env(safe-area-inset-left))' : '24px',
+        paddingRight: isMobile ? 'max(16px, env(safe-area-inset-right))' : '24px',
       }}
     >
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
@@ -246,7 +249,8 @@ export function Navbar() {
                         outline: 'none',
                         color: '#fff',
                         fontSize: '14px',
-                        width: isMobile ? '140px' : '200px',
+                        width: isMobile ? '100%' : '200px',
+                        minWidth: isMobile ? '120px' : '200px',
                       }}
                     />
                     {isSearching && <span style={{ fontSize: '14px' }}>⏳</span>}
@@ -265,7 +269,7 @@ export function Navbar() {
                         position: 'absolute',
                         top: 'calc(100% + 12px)',
                         right: 0,
-                        width: isMobile ? '280px' : '320px',
+                        width: isMobile ? 'calc(100vw - 32px)' : '320px',
                         zIndex: 100,
                       }}
                     >

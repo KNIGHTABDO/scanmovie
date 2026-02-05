@@ -171,9 +171,9 @@ export function MoviePage() {
           position: 'relative',
           zIndex: 10,
           paddingTop: '120px',
-          paddingBottom: '80px',
-          paddingLeft: '24px',
-          paddingRight: '24px',
+          paddingBottom: 'max(80px, calc(80px + env(safe-area-inset-bottom)))',
+          paddingLeft: 'max(24px, env(safe-area-inset-left))',
+          paddingRight: 'max(24px, env(safe-area-inset-right))',
           maxWidth: '1400px',
           margin: '0 auto',
         }}
@@ -444,7 +444,7 @@ export function MoviePage() {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 45vw), 1fr))',
                 gap: '20px',
               }}
             >
@@ -540,7 +540,7 @@ export function MoviePage() {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 45vw), 1fr))',
                 gap: '24px',
               }}
             >

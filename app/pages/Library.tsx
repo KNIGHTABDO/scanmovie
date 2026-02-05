@@ -194,7 +194,7 @@ function WatchlistTab({ isMobile }: { isMobile: boolean }) {
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(180px, 1fr))',
+      gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(min(180px, 45vw), 1fr))',
       gap: isMobile ? '12px' : '20px',
     }}>
       {watchlist.map((movie, index) => (
@@ -222,7 +222,7 @@ function FavoritesTab({ isMobile }: { isMobile: boolean }) {
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(180px, 1fr))',
+      gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(min(180px, 45vw), 1fr))',
       gap: isMobile ? '12px' : '20px',
     }}>
       {favorites.map((movie, index) => (
@@ -346,7 +346,7 @@ function CollectionsTab({ isMobile }: { isMobile: boolean }) {
       ) : (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(min(280px, 90vw), 1fr))',
           gap: '16px',
         }}>
           {collections.map((collection, index) => (
@@ -472,7 +472,7 @@ function CollectionDetail({
       ) : (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(180px, 1fr))',
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(min(180px, 45vw), 1fr))',
           gap: isMobile ? '12px' : '20px',
         }}>
           {movies.map((movie, index) => (
@@ -530,7 +530,7 @@ function RatingsTab({ isMobile }: { isMobile: boolean }) {
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(180px, 1fr))',
+      gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(min(180px, 45vw), 1fr))',
       gap: isMobile ? '12px' : '20px',
     }}>
       {movies.map((movie, index) => (
@@ -637,7 +637,7 @@ function HistoryTab({ isMobile }: { isMobile: boolean }) {
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(180px, 1fr))',
+        gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(min(180px, 45vw), 1fr))',
         gap: isMobile ? '12px' : '20px',
       }}>
         {movies.map((movie, index) => (

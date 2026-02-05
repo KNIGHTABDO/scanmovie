@@ -675,6 +675,9 @@ export function AISearch() {
                   left: 0,
                   right: 0,
                   padding: isMobile ? '16px' : '24px',
+                  paddingBottom: isMobile ? 'max(16px, env(safe-area-inset-bottom))' : '24px',
+                  paddingLeft: isMobile ? 'max(16px, env(safe-area-inset-left))' : '24px',
+                  paddingRight: isMobile ? 'max(16px, env(safe-area-inset-right))' : '24px',
                   background: 'linear-gradient(to top, rgba(10,10,15,0.98) 0%, rgba(10,10,15,0.9) 60%, transparent 100%)',
                   zIndex: 100,
                 }}

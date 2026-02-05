@@ -614,7 +614,7 @@ function MoodDiscovery({ isMobile }: { isMobile: boolean }) {
             </h3>
             <div style={{
               display: 'grid',
-              gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(160px, 1fr))',
+              gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(min(160px, 45vw), 1fr))',
               gap: isMobile ? '12px' : '16px',
             }}>
               {movies.map((movie, index) => (
