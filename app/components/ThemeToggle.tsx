@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Theme Toggle Component

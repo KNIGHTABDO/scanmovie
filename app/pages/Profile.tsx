@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Profile Page

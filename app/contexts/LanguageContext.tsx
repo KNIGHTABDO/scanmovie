@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Language Context (i18n)
