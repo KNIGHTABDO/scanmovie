@@ -24,11 +24,11 @@ interface WatchProviderData {
   free?: WatchProvider[];     // Free with ads
 }
 
-// TMDB API for watch providers
+// TMDB API for watch providers - uses secure server-side proxy
 async function getWatchProviders(movieId: number, region: string = 'US'): Promise<WatchProviderData | null> {
   try {
     const response = await fetch(
-      `https://api.themoviedb.org/3/movie/${movieId}/watch/providers?api_key=926f46968b21a2856b40b4bf9af55847`
+      `/api/tmdb?endpoint=/movie/${movieId}/watch/providers`
     );
     
     if (!response.ok) return null;

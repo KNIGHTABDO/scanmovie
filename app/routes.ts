@@ -8,6 +8,7 @@ export default [
   route("ai", "routes/ai.tsx"),
   route("library", "routes/library.tsx"),
   route("discover", "routes/discover.tsx"),
+  route("recommendations", "routes/recommendations.tsx"),
   route("watch-party", "routes/watch-party.tsx"),
   route("create-party", "routes/create-party.tsx"),
   route("profile", "routes/profile.tsx"),

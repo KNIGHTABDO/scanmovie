@@ -26,6 +26,7 @@ import { AIResponseCard } from '~/components/AIResponseCard';
 import { StreamingAvailability } from '~/components/StreamingAvailability';
 import { SoundtrackLinks } from '~/components/SoundtrackLinks';
 import { CalendarButton } from '~/components/CalendarButton';
+import { MovieReviews } from '~/components/MovieReviews';
 import { SkeletonMovieDetail } from '~/components/SkeletonLoading';
 import { useUserData } from '~/contexts/UserDataContext';
 import { explainMovieConnections } from '~/services/ai';
@@ -499,6 +500,19 @@ export function MoviePage() {
                 </Link>
               ))}
             </div>
+          </motion.section>
+        )}
+
+        {/* Movie Reviews Section */}
+        {movie && (
+          <motion.section
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            style={{ marginBottom: '60px' }}
+          >
+            <MovieReviews movieId={movieId} movieTitle={movie.title} />
           </motion.section>
         )}
 

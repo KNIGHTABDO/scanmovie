@@ -13,7 +13,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router';
-import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { Surface } from '~/components/Surface';
 import { useUserData } from '~/contexts/UserDataContext';
 import { getPosterUrl, getBackdropUrl, type Movie } from '~/services/tmdb';
