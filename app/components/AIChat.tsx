@@ -10,6 +10,10 @@ import { QuickReplyChips, DEFAULT_QUICK_REPLIES } from './QuickReplyChips';
 import { ThinkingDots } from './SkeletonLoading';
 import { trackAction } from '~/services/achievements';
 
+// Focus delay constants - prevents keyboard layout issues on mobile browsers
+const FOCUS_DELAY_MOBILE = 300; // ms - allows mobile browser to finish opening modal
+const FOCUS_DELAY_DESKTOP = 100; // ms - quick focus for desktop
+
 interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
@@ -31,10 +35,6 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
   const [isMobile, setIsMobile] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  
-  // Focus delay constants - mobile needs longer delay to prevent keyboard layout issues
-  const FOCUS_DELAY_MOBILE = 300; // ms - allows mobile browser to finish opening modal
-  const FOCUS_DELAY_DESKTOP = 100; // ms - quick focus for desktop
   
   // Detect mobile
   useEffect(() => {

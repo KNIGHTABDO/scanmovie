@@ -182,7 +182,11 @@ input[type="search"],
 input[type="email"],
 input[type="password"],
 textarea {
-  font-size: 16px; /* Prevents zoom on iOS when focusing */
+  /* Prevents zoom on iOS when focusing inputs
+   * Reference: https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/AdjustingtheTextSize/AdjustingtheTextSize.html
+   * iOS Safari zooms in when font-size < 16px to make text readable
+   */
+  font-size: 16px;
   border-radius: 0; /* Removes iOS default rounded corners */
 }
 
