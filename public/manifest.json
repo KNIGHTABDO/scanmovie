@@ -1,0 +1,22 @@
+{
+  "name": "ScanMovie - Movie Discovery & Tracking",
+  "short_name": "ScanMovie",
+  "description": "Discover trending movies, manage your watchlist, and experience cinema like never before",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["entertainment", "lifestyle"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "scope": "/",
+  "prefer_related_applications": false
+}

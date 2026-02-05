@@ -15,7 +15,9 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Surface } from '~/components/Surface';
+import { OptimizedImage } from '~/components/OptimizedImage';
 import { useUserData } from '~/contexts/UserDataContext';
+import { useInfiniteScroll } from '~/hooks/useInfiniteScroll';
 import { 
   discoverMovies, 
   getTopRated, 
@@ -395,13 +397,15 @@ function RandomMoviePicker({ isMobile }: { isMobile: boolean }) {
                     flexDirection: isMobile ? 'column' : 'row',
                     alignItems: isMobile ? 'center' : 'flex-start',
                   }}>
-                    <img
+                    <OptimizedImage
                       src={getPosterUrl(pickedMovie.poster_path, 'w342')}
                       alt={pickedMovie.title}
                       style={{
                         width: isMobile ? '120px' : '140px',
                         borderRadius: '12px',
+                        aspectRatio: '2/3',
                       }}
+                      priority={true}
                     />
                     <div style={{ textAlign: isMobile ? 'center' : 'left' }}>
                       <h3 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>
@@ -450,10 +454,45 @@ function MoodDiscovery({ isMobile }: { isMobile: boolean }) {
   const [loading, setLoading] = useState(false);
   const [aiMessage, setAiMessage] = useState<string>('');
 
+  // Infinite scroll for mood-based discovery
+  const loadMoreMovies = async (page: number): Promise<boolean> => {
+    if (!selectedMood) return false;
+
+    try {
+      const primaryGenre = selectedMood.genreIds[0].toString();
+      const fetchedMovies = await discoverMovies(
+        primaryGenre,
+        selectedMood.id === 'nostalgic' ? '1995' : undefined,
+        undefined,
+        'vote_average.desc',
+        page.toString()
+      );
+
+      if (fetchedMovies.length > 0) {
+        setMovies((prev) => [...prev, ...fetchedMovies]);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Failed to load more movies:', error);
+      return false;
+    }
+  };
+
+  const {
+    page,
+    hasMore,
+    isLoadingMore,
+    reset: resetPagination,
+    observerRef,
+  } = useInfiniteScroll(loadMoreMovies, { enabled: !!selectedMood && !loading });
+
   const handleMoodSelect = async (mood: typeof MOODS[0]) => {
     setSelectedMood(mood);
     setLoading(true);
     setAiMessage('');
+    setMovies([]); // Clear previous movies
+    resetPagination(); // Reset pagination
 
     try {
       // Save mood to localStorage
@@ -472,21 +511,17 @@ function MoodDiscovery({ isMobile }: { isMobile: boolean }) {
         }
       }).catch(() => {});
 
-      // Fetch movies for this mood
+      // Fetch initial movies for this mood
       const primaryGenre = mood.genreIds[0].toString();
       let fetchedMovies = await discoverMovies(
         primaryGenre, 
         mood.id === 'nostalgic' ? '1995' : undefined,
-        'vote_average.desc'
+        undefined,
+        'vote_average.desc',
+        '1'
       );
 
-      // If not enough results, try second genre
-      if (fetchedMovies.length < 8 && mood.genreIds.length > 1) {
-        const moreMovies = await discoverMovies(mood.genreIds[1].toString());
-        fetchedMovies = [...fetchedMovies, ...moreMovies].slice(0, 20);
-      }
-
-      setMovies(fetchedMovies.slice(0, 12));
+      setMovies(fetchedMovies);
     } catch (error) {
       console.error('Failed to fetch mood movies:', error);
     }
@@ -619,15 +654,15 @@ function MoodDiscovery({ isMobile }: { isMobile: boolean }) {
             }}>
               {movies.map((movie, index) => (
                 <motion.div
-                  key={movie.id}
+                  key={`${movie.id}-${index}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.03 }}
+                  transition={{ delay: Math.min(index * 0.03, 0.5) }}
                 >
                   <Link to={`/movie/${movie.id}`} style={{ textDecoration: 'none' }}>
                     <Surface variant="card" cornerRadius={14} padding="0">
                       <div style={{ position: 'relative' }}>
-                        <img
+                        <OptimizedImage
                           src={getPosterUrl(movie.poster_path, 'w342')}
                           alt={movie.title}
                           style={{
@@ -673,6 +708,41 @@ function MoodDiscovery({ isMobile }: { isMobile: boolean }) {
                 </motion.div>
               ))}
             </div>
+
+            {/* Infinite scroll trigger and loading indicator */}
+            {hasMore && (
+              <div 
+                ref={observerRef} 
+                style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  padding: '40px 0',
+                  minHeight: '100px',
+                }}
+              >
+                {isLoadingMore && (
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+                    style={{ fontSize: '32px' }}
+                  >
+                    {selectedMood?.emoji || '🎬'}
+                  </motion.div>
+                )}
+              </div>
+            )}
+
+            {/* End of results message */}
+            {!hasMore && movies.length > 20 && (
+              <div style={{ 
+                textAlign: 'center', 
+                padding: '40px 0',
+                color: 'rgba(255,255,255,0.5)',
+                fontSize: '14px',
+              }}>
+                ✨ That's all the {selectedMood?.label.toLowerCase()} movies we found!
+              </div>
+            )}
           </motion.div>
         )}
       </Surface>
