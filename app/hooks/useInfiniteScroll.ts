@@ -20,7 +20,7 @@ interface UseInfiniteScrollReturn {
   loadMore: () => void;
   setHasMore: (hasMore: boolean) => void;
   reset: () => void;
-  observerRef: React.RefObject<HTMLDivElement>;
+  observerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 /**
