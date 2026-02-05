@@ -1,5 +1,8 @@
 {
   "name": "scanmovie-app",
+  "version": "1.0.0",
+  "description": "A modern movie discovery and tracking application with AI-powered search, cloud sync, and elegant Liquid Glass UI design",
+  "author": "KNIGHTABDO",
   "private": true,
   "type": "module",
   "scripts": {

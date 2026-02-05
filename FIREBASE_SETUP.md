@@ -1,10 +1,12 @@
-# 🔥 Firebase Setup Guide for ScanMovie
+# Firebase Setup Guide for ScanMovie
 
-Complete step-by-step guide to set up Firebase authentication and cloud sync.
+Complete step-by-step guide to configure Firebase authentication and cloud synchronization for ScanMovie.
 
 ---
 
-## 📋 Prerequisites
+## Prerequisites
+
+Before you begin, ensure you have:
 
 - A Google account
 - Access to [Firebase Console](https://console.firebase.google.com/)
@@ -229,7 +231,7 @@ After adding environment variables, you need to redeploy:
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### "Popup closed by user" error
 - The user closed the Google sign-in popup
@@ -255,7 +257,7 @@ After adding environment variables, you need to redeploy:
 
 ---
 
-## 📁 Local Development
+## Local Development Setup
 
 For local development, create a `.env` file in your project root:
 
@@ -279,7 +281,7 @@ VITE_FIREBASE_APP_ID=1:123456789012:web:abc123
 
 ---
 
-## 🎯 Summary Checklist
+## Setup Summary Checklist
 
 - [ ] Created Firebase project
 - [ ] Registered web app and copied config
@@ -293,9 +295,9 @@ VITE_FIREBASE_APP_ID=1:123456789012:web:abc123
 
 ---
 
-## 🔐 Security Notes
+## Security Notes
 
-1. **API Key Exposure**: The Firebase API key is meant to be public (it's in client-side code). Security comes from:
+1. **API Key Exposure**: The Firebase API key is meant to be public (it's in client-side code). Security is provided by:
    - Firestore security rules
    - Authorized domains in Firebase Console
    - Authentication requirements
