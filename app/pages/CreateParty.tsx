@@ -7,7 +7,7 @@
  * Uses LiquidGlass styling consistent with the app.
  */
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { motion } from 'framer-motion';
 import { Surface } from '~/components/Surface';
@@ -21,6 +21,7 @@ const PARTY_EMOJIS = ['🎬', '🍿', '🎭', '🎪', '🌙', '🎉', '👻', '�
 export function CreatePartyPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(false);
   
   // Form state
   const [newPartyName, setNewPartyName] = useState('');
@@ -29,6 +30,13 @@ export function CreatePartyPage() {
   
   // User data for movie selection
   const { watchlist, favorites } = useUserData();
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleCreateParty = async () => {
     if (!newPartyName.trim() || selectedMovieIds.length === 0) return;
@@ -91,7 +99,7 @@ export function CreatePartyPage() {
         style={{
           position: 'relative',
           zIndex: 10,
-          paddingTop: '100px',
+          paddingTop: isMobile ? '80px' : '100px',
           paddingBottom: '120px',
           paddingLeft: '20px',
           paddingRight: '20px',

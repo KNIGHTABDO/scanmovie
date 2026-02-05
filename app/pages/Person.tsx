@@ -34,7 +34,15 @@ export function PersonPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'acting' | 'directing' | 'all'>('acting');
   const [showFullBio, setShowFullBio] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     if (!personId) return;
@@ -166,7 +174,7 @@ export function PersonPage() {
         style={{
           position: 'relative',
           zIndex: 10,
-          paddingTop: '120px',
+          paddingTop: isMobile ? '80px' : '120px',
           paddingBottom: '80px',
           paddingLeft: '24px',
           paddingRight: '24px',

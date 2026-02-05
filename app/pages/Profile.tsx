@@ -131,7 +131,7 @@ export function ProfilePage() {
         style={{
           position: 'relative',
           zIndex: 10,
-          paddingTop: '100px',
+          paddingTop: isMobile ? '80px' : '100px',
           paddingBottom: 'max(120px, calc(120px + env(safe-area-inset-bottom)))',
           paddingLeft: 'max(20px, env(safe-area-inset-left))',
           paddingRight: 'max(20px, env(safe-area-inset-right))',

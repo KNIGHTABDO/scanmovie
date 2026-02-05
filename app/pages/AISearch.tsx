@@ -555,7 +555,7 @@ export function AISearch() {
               animate={{ opacity: 1 }}
               style={{
                 minHeight: '100vh',
-                paddingTop: isMobile ? '100px' : '120px',
+                paddingTop: isMobile ? '80px' : '120px',
                 paddingBottom: '120px',
                 paddingLeft: isMobile ? '16px' : '24px',
                 paddingRight: isMobile ? '16px' : '24px',
