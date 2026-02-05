@@ -645,11 +645,20 @@ function MovieActions({ movie }: { movie: Movie }) {
   const [showRating, setShowRating] = useState(false);
   const [showCollections, setShowCollections] = useState(false);
   const [hoveredRating, setHoveredRating] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   
   const inWatchlist = isInWatchlist(movie.id);
   const isFav = isFavorite(movie.id);
   const userRating = getUserRating(movie.id);
   const comparisonSlot = isInComparison(movie.id);
+
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Find next available comparison slot
   const getNextComparisonSlot = () => {
@@ -675,7 +684,12 @@ function MovieActions({ movie }: { movie: Movie }) {
       style={{ marginTop: '28px' }}
     >
       {/* Primary Actions */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(160px, 1fr))', 
+        gap: '12px', 
+        marginBottom: '16px' 
+      }}>
         {/* Watchlist Button */}
         <motion.button
           onClick={() => inWatchlist ? removeFromWatchlist(movie.id) : addToWatchlist(movie)}
@@ -685,11 +699,15 @@ function MovieActions({ movie }: { movie: Movie }) {
           <Surface
             variant="button"
             cornerRadius={14}
-            padding="12px 20px"
+            padding="14px 20px"
             style={{
               background: inWatchlist 
                 ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(6, 182, 212, 0.4))'
                 : undefined,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             <span style={{ fontWeight: 600, fontSize: '14px' }}>
@@ -707,11 +725,15 @@ function MovieActions({ movie }: { movie: Movie }) {
           <Surface
             variant="button"
             cornerRadius={14}
-            padding="12px 20px"
+            padding="14px 20px"
             style={{
               background: isFav 
                 ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(236, 72, 153, 0.4))'
                 : undefined,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             <span style={{ fontWeight: 600, fontSize: '14px' }}>
@@ -729,11 +751,15 @@ function MovieActions({ movie }: { movie: Movie }) {
           <Surface
             variant="button"
             cornerRadius={14}
-            padding="12px 20px"
+            padding="14px 20px"
             style={{
               background: userRating 
                 ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.4), rgba(249, 115, 22, 0.4))'
                 : undefined,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             <span style={{ fontWeight: 600, fontSize: '14px' }}>
@@ -748,7 +774,17 @@ function MovieActions({ movie }: { movie: Movie }) {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <Surface variant="button" cornerRadius={14} padding="12px 20px">
+          <Surface 
+            variant="button" 
+            cornerRadius={14} 
+            padding="14px 20px"
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             <span style={{ fontWeight: 600, fontSize: '14px' }}>📂 Add to Collection</span>
           </Surface>
         </motion.button>
@@ -764,11 +800,15 @@ function MovieActions({ movie }: { movie: Movie }) {
           <Surface
             variant="button"
             cornerRadius={14}
-            padding="12px 20px"
+            padding="14px 20px"
             style={{
               background: comparisonSlot >= 0 
                 ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(168, 85, 247, 0.4))'
                 : undefined,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             <span style={{ fontWeight: 600, fontSize: '14px' }}>
