@@ -230,6 +230,138 @@ scanmovie/
 
 ---
 
+## 📋 TODO & Roadmap
+
+### 🔴 Critical Priority (Security & Stability)
+
+- [ ] **Move TMDB API Key to Server-Side** - Currently hardcoded in client, should be proxied through backend
+- [ ] **Secure AI API Calls** - Remove `dangerouslyAllowBrowser: true` and proxy GitHub Models API through backend
+- [ ] **Complete ScanMovie Import Feature** - Import callback is not implemented in `ExportImportModal.tsx`
+- [ ] **Add React Error Boundaries** - Implement error boundaries to gracefully handle crashes
+- [ ] **Implement Rate Limiting** - Add protection against API abuse and excessive requests
+- [ ] **Add Input Validation & Sanitization** - Sanitize all user inputs before processing (AI queries, search terms)
+- [ ] **Environment Variables Validation** - Add startup checks to ensure all required env vars are configured
+
+### 🟡 High Priority (Features & UX)
+
+#### Performance & Optimization
+- [ ] **Implement Image Caching Strategy** - Add service worker for offline image caching
+- [ ] **Lazy Load Components** - Code-split routes and heavy components for faster initial load
+- [ ] **Add Pagination UI** - Implement infinite scroll or pagination for Discover page
+- [ ] **Optimize Images** - Support WebP/AVIF formats with responsive srcset
+- [ ] **Request Debouncing** - Add debouncing for search and filter inputs
+- [ ] **Bundle Size Optimization** - Analyze and reduce bundle size (check liquid-glass-react impact)
+
+#### Core Features
+- [ ] **Personalized Recommendations** - Build "For You" feed based on watch history and ratings
+- [ ] **Search History** - Persist and display recent searches for better UX
+- [ ] **Streaming Availability** - Complete integration of `StreamingAvailability.tsx` component
+- [ ] **Real-time Watch Party Sync** - Implement synchronized playback and live updates
+- [ ] **User Reviews System** - Allow users to write detailed reviews (not just ratings)
+- [ ] **Advanced Discovery Filters**:
+  - Date range filters (release date, added to watchlist)
+  - Budget and revenue filters
+  - Original language filter
+  - Runtime range filter
+  - Certification/rating filter (G, PG, R, etc.)
+
+#### Social Features
+- [ ] **User Profiles** - Public user profiles with stats and favorite movies
+- [ ] **Follow System** - Follow friends and see their activity
+- [ ] **Activity Feed** - Real-time feed of friends' ratings, reviews, and watchlist additions
+- [ ] **Collaborative Lists** - Shared lists that multiple users can edit
+- [ ] **Movie Ratings Comparison** - Compare your ratings with friends
+- [ ] **Email/SMS Watch Party Invites** - Alternative to link-only sharing
+- [ ] **Watch Party History** - Keep track of past watch parties
+
+#### UI/UX Enhancements
+- [ ] **Loading Skeletons** - Add skeleton screens for all async data loading
+- [ ] **Toast Notifications** - Real-time notifications for achievements, party updates
+- [ ] **Accessibility Improvements**:
+  - Add ARIA labels throughout the app
+  - Improve keyboard navigation
+  - Add screen reader support
+  - Ensure color contrast meets WCAG standards
+- [ ] **Onboarding Flow** - Guided tour for new users
+- [ ] **Empty States** - Better empty state designs for lists, search results
+- [ ] **Advanced Voice Input** - Expand `useVoiceInput` hook integration across the app
+
+### 🟢 Medium Priority (Quality & Developer Experience)
+
+#### Testing & Quality
+- [ ] **Add Unit Tests** - Jest + React Testing Library for components
+- [ ] **Add Integration Tests** - Test critical user flows (login, add to watchlist, etc.)
+- [ ] **Add E2E Tests** - Playwright/Cypress for end-to-end testing
+- [ ] **Setup CI/CD Pipeline** - Automated testing and deployment
+- [ ] **Code Coverage Reports** - Aim for >80% coverage on critical paths
+- [ ] **TypeScript Strict Mode** - Remove `as any` type coercions, enable strict checks
+- [ ] **Implement Logging Service** - Replace console statements with centralized logging
+- [ ] **Add Monitoring & Analytics** - Track errors and user behavior (Sentry, Mixpanel)
+
+#### Developer Experience
+- [ ] **API Response Caching** - Implement caching layer for TMDB API responses
+- [ ] **Add Storybook** - Component library documentation and visual testing
+- [ ] **Setup ESLint & Prettier** - Enforce code style consistency
+- [ ] **Improve Error Handling** - Standardize error handling across services
+- [ ] **Add JSDoc Comments** - Document complex functions and components
+- [ ] **Setup Pre-commit Hooks** - Husky + lint-staged for quality gates
+
+### 🔵 Low Priority (Nice to Have)
+
+#### Additional Features
+- [ ] **Custom Movie Lists** - User-curated thematic lists (Top 10, By Decade, By Director)
+- [ ] **Movie Trivia** - Fun facts and trivia for each movie
+- [ ] **Similar Users** - Discover users with similar taste
+- [ ] **Export to Other Services** - Export watchlist to Letterboxd, IMDb, Trakt
+- [ ] **Browser Extension** - Quick-add movies from TMDB/IMDb pages
+- [ ] **Mobile Apps** - React Native apps for iOS and Android
+- [ ] **Offline Mode** - Full offline support with service workers
+- [ ] **Multi-language Subtitles** - Info about available subtitle languages
+- [ ] **Box Office Data** - Display box office performance
+- [ ] **Awards & Nominations** - Show Oscar/Golden Globe wins and nominations
+
+#### Advanced Analytics
+- [ ] **Personal Statistics Dashboard**:
+  - Most-watched director/actor/genre
+  - Favorite decade
+  - Average movie length
+  - Total watch time
+  - Rating distribution
+  - Mood-based viewing patterns
+- [ ] **Year in Review** - Annual viewing summary (Spotify Wrapped style)
+- [ ] **Predictive Ratings** - ML model to predict if you'll like a movie
+
+#### Gamification Enhancements
+- [ ] **More Achievement Badges**:
+  - Genre explorer (watched 10+ movies in every genre)
+  - Marathon viewer (3+ movies in one day)
+  - Early bird (watched movie on release day)
+  - Critic (100+ ratings submitted)
+  - Social butterfly (10+ watch parties hosted)
+- [ ] **Leaderboards** - Compare stats with friends
+- [ ] **Streaks** - Encourage daily/weekly movie watching habits
+- [ ] **Challenges** - Monthly/weekly viewing challenges
+
+#### Content Enhancements
+- [ ] **TV Shows Support** - Expand beyond movies to include TV series
+- [ ] **Podcast Integration** - Link to movie-related podcasts
+- [ ] **Behind the Scenes** - Production trivia, filming locations
+- [ ] **Film Festival Integration** - Track festival screenings and availability
+- [ ] **Indie Film Discovery** - Curated independent film recommendations
+
+### 🛠️ Technical Debt
+
+- [ ] **Remove Console Statements** - Clean up 30+ console.log/error statements in production
+- [ ] **Fix Placeholder Images** - Commit actual placeholder images or use data URIs
+- [ ] **Standardize Component Structure** - Consistent file organization and naming
+- [ ] **Reduce Prop Drilling** - Consider Zustand or Jotai for state management
+- [ ] **Extract Magic Numbers** - Move hardcoded values to constants
+- [ ] **Deduplicate Error Handling** - Create reusable error handling utilities
+- [ ] **Improve Firebase Security Rules** - Review and tighten Firestore security rules
+- [ ] **Add API Response Types** - Properly type all TMDB and OpenAI responses
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
@@ -239,6 +371,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+**Working on a TODO item?** Please check the TODO list above and consider tackling one of the listed improvements. Mark it as in-progress in your PR description!
 
 ---
 
