@@ -138,6 +138,7 @@ export function Navbar() {
               <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
                 <NavLink to="/" label="Home" />
                 <NavLink to="/discover" label="Discover" />
+                <NavLink to="/recommendations" label="For You ✨" />
                 <NavLink to="/library" label="Library" />
                 <NavLink to="/watch-party" label="Party 🎉" />
                 <NavLink to="/movie-night" label="Movie Night 🎲" />
@@ -471,6 +472,7 @@ export function Navbar() {
                   
                   <MobileNavLink to="/" label="🏠 Home" onClick={() => setMobileMenuOpen(false)} />
                   <MobileNavLink to="/discover" label="🎲 Discover" onClick={() => setMobileMenuOpen(false)} />
+                  <MobileNavLink to="/recommendations" label="✨ For You" onClick={() => setMobileMenuOpen(false)} />
                   <MobileNavLink to="/library" label="📚 My Library" onClick={() => setMobileMenuOpen(false)} />
                   <MobileNavLink to="/watch-party" label="🎉 Watch Party" onClick={() => setMobileMenuOpen(false)} />
                   <MobileNavLink to="/movie-night" label="🎬 Movie Night" onClick={() => setMobileMenuOpen(false)} />

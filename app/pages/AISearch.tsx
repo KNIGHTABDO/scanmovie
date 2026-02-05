@@ -7,11 +7,13 @@ import { Surface } from '~/components/Surface';
 import { MovieCard } from '~/components/MovieCard';
 import { AIResponseCard } from '~/components/AIResponseCard';
 import { QuickReplyChips, DEFAULT_QUICK_REPLIES, MOOD_QUICK_REPLIES } from '~/components/QuickReplyChips';
+import { SearchHistory } from '~/components/SearchHistory';
 import { SkeletonMovieGrid, ThinkingDots } from '~/components/SkeletonLoading';
 import { getAIResponse, sendToolResult, type AIMessage } from '~/services/ai';
 import { searchMovies, discoverMovies, type Movie } from '~/services/tmdb';
 import { useVoiceInput } from '~/hooks/useVoiceInput';
 import { trackAction } from '~/services/achievements';
+import { addToSearchHistory } from '~/services/searchHistory';
 
 export function AISearch() {
   const [query, setQuery] = useState('');
@@ -54,6 +56,9 @@ export function AISearch() {
     setIsSearching(true);
     setError('');
     setHasSearched(true);
+
+    // Add to search history
+    addToSearchHistory(query.trim(), 'ai');
 
     try {
       const messages: AIMessage[] = [{ role: 'user', content: query.trim() }];
@@ -304,6 +309,29 @@ export function AISearch() {
                   >
                     Describe the vibe, genre, or mood — I'll find the perfect movies for you
                   </motion.p>
+
+                  {/* Search History */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.35 }}
+                    style={{ width: '100%', maxWidth: '700px', margin: '0 auto 24px auto' }}
+                  >
+                    <SearchHistory 
+                      onSelectSearch={(selectedQuery) => {
+                        setQuery(selectedQuery);
+                        setTimeout(() => {
+                          const form = document.querySelector('form');
+                          if (form) {
+                            const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                            form.dispatchEvent(submitEvent);
+                          }
+                        }, 100);
+                      }}
+                      maxItems={8}
+                      variant="compact"
+                    />
+                  </motion.div>
 
                   {/* Premium Search Input */}
                   <motion.form
