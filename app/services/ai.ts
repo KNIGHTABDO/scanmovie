@@ -1,15 +1,8 @@
-import OpenAI from 'openai';
-import type { ChatCompletionMessageParam, ChatCompletionTool } from 'openai/resources/chat/completions';
+import type { ChatCompletionTool } from 'openai/resources/chat/completions';
+import { sanitizeAIPrompt } from './validation';
 
-// GitHub Models configuration
-const client = new OpenAI({
-  baseURL: 'https://models.github.ai/inference',
-  apiKey: import.meta.env.VITE_GITHUB_TOKEN,
-  dangerouslyAllowBrowser: true,
-  defaultHeaders: {
-    'X-GitHub-Api-Version': '2022-11-28',
-  },
-});
+// Note: OpenAI client now used server-side only (in api.ai.ts route)
+// This removes the need for dangerouslyAllowBrowser flag
 
 // Internal Genre Map - TMDB Genre IDs
 export const GENRES: Record<string, number> = {
@@ -202,22 +195,37 @@ export interface AIResponse {
   toolCalls?: ToolCall[];
 }
 
+/**
+ * Get AI response through server-side proxy
+ * Removes need for dangerouslyAllowBrowser flag
+ */
 export async function getAIResponse(messages: AIMessage[]): Promise<AIResponse> {
   try {
-    // Prepend system message
-    const fullMessages: ChatCompletionMessageParam[] = [
-      { role: 'system', content: SYSTEM_PROMPT },
-      ...messages.map(m => ({ role: m.role, content: m.content })),
-    ];
+    // Sanitize user messages to prevent prompt injection
+    const sanitizedMessages = messages.map(m => ({
+      role: m.role,
+      content: m.role === 'user' ? sanitizeAIPrompt(m.content) : m.content,
+    }));
 
-    const response = await client.chat.completions.create({
-      model: 'openai/gpt-4o',
-      messages: fullMessages,
-      tools,
-      tool_choice: 'auto',
+    const response = await fetch('/api/ai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messages: sanitizedMessages,
+        tools,
+        toolChoice: 'auto',
+      }),
     });
 
-    const message = response.choices[0]?.message;
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'AI request failed');
+    }
+
+    const data = await response.json();
+    const message = data.choices[0]?.message;
 
     if (message?.tool_calls && message.tool_calls.length > 0) {
       // Extract function tool calls
@@ -225,14 +233,12 @@ export async function getAIResponse(messages: AIMessage[]): Promise<AIResponse> 
       
       for (const tc of message.tool_calls) {
         if (tc.type === 'function') {
-          // Access function properties safely using any to bypass strict typing
-          const toolCall = tc as { id: string; type: 'function'; function: { name: string; arguments: string } };
           functionCalls.push({
-            id: toolCall.id,
+            id: tc.id,
             type: 'function',
             function: {
-              name: toolCall.function.name,
-              arguments: toolCall.function.arguments,
+              name: tc.function.name,
+              arguments: tc.function.arguments,
             },
           });
         }
@@ -251,7 +257,7 @@ export async function getAIResponse(messages: AIMessage[]): Promise<AIResponse> 
     };
   } catch (error) {
     console.error('AI API Error:', error);
-    throw new Error('Failed to get AI response. Please check your GitHub token.');
+    throw new Error('Failed to get AI response. Please check your configuration.');
   }
 }
 
@@ -263,34 +269,41 @@ export async function sendToolResult(
   result: string
 ): Promise<AIResponse> {
   try {
-    const fullMessages: ChatCompletionMessageParam[] = [
-      { role: 'system', content: SYSTEM_PROMPT },
-      ...messages.map(m => ({ role: m.role, content: m.content })),
-      {
-        role: 'assistant',
-        content: null,
-        tool_calls: [
+    const response = await fetch('/api/ai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messages: [
+          ...messages.map(m => ({ role: m.role, content: m.content })),
           {
-            id: toolCallId,
-            type: 'function',
-            function: { name: toolName, arguments: '{}' },
+            role: 'assistant',
+            content: null,
+            tool_calls: [
+              {
+                id: toolCallId,
+                type: 'function',
+                function: { name: toolName, arguments: '{}' },
+              },
+            ],
+          },
+          {
+            role: 'tool',
+            tool_call_id: toolCallId,
+            content: result,
           },
         ],
-      },
-      {
-        role: 'tool',
-        tool_call_id: toolCallId,
-        content: result,
-      },
-    ];
-
-    const response = await client.chat.completions.create({
-      model: 'openai/gpt-4o',
-      messages: fullMessages,
+      }),
     });
 
+    if (!response.ok) {
+      throw new Error('AI request failed');
+    }
+
+    const data = await response.json();
     return {
-      content: response.choices[0]?.message?.content || '',
+      content: data.choices[0]?.message?.content || '',
     };
   } catch (error) {
     console.error('AI Tool Result Error:', error);
@@ -330,13 +343,19 @@ SIMILAR MOVIES: ${similarMovies.slice(0, 4).map(m => m.title).join(', ')}
 Be specific about themes, tone, directors, or genre elements they share. Use 1-2 emojis. Keep it SHORT and insightful!`;
 
   try {
-    const response = await client.chat.completions.create({
-      model: 'openai/gpt-4o-mini',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: 150,
+    const response = await fetch('/api/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: prompt }],
+        model: 'openai/gpt-4o-mini',
+        max_tokens: 150,
+      }),
     });
     
-    return response.choices[0]?.message?.content || '';
+    if (!response.ok) return '';
+    const data = await response.json();
+    return data.choices[0]?.message?.content || '';
   } catch (error) {
     console.error('explainMovieConnections error:', error);
     return '';
@@ -365,13 +384,19 @@ ${movie.overview ? `About: ${movie.overview.slice(0, 150)}...` : ''}
 Keep it SHORT (1 sentence), personal, and use 1-2 emojis!`;
 
   try {
-    const response = await client.chat.completions.create({
-      model: 'openai/gpt-4o-mini',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: 80,
+    const response = await fetch('/api/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: prompt }],
+        model: 'openai/gpt-4o-mini',
+        max_tokens: 80,
+      }),
     });
     
-    return response.choices[0]?.message?.content || "Great pick! 🎬";
+    if (!response.ok) return "Great pick! 🎬";
+    const data = await response.json();
+    return data.choices[0]?.message?.content || "Great pick! 🎬";
   } catch (error) {
     console.error('whyYoullLoveThis error:', error);
     return "Great pick! 🎬";
@@ -394,13 +419,19 @@ ${partyName ? `Party theme: ${partyName}` : ''}
 Make it exciting and use 2-3 emojis! Keep it social media friendly.`;
 
   try {
-    const response = await client.chat.completions.create({
-      model: 'openai/gpt-4o-mini',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: 100,
+    const response = await fetch('/api/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: prompt }],
+        model: 'openai/gpt-4o-mini',
+        max_tokens: 100,
+      }),
     });
     
-    return response.choices[0]?.message?.content || `Movie night featuring ${movies.length} amazing films! 🎬🍿`;
+    if (!response.ok) return `Movie night featuring ${movies.length} amazing films! 🎬🍿`;
+    const data = await response.json();
+    return data.choices[0]?.message?.content || `Movie night featuring ${movies.length} amazing films! 🎬🍿`;
   } catch (error) {
     console.error('generateWatchPartyDescription error:', error);
     return `Movie night featuring ${movies.length} amazing films! 🎬🍿`;

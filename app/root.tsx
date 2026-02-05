@@ -40,6 +40,8 @@ import { UserDataProvider } from "~/contexts/UserDataContext";
 import { ThemeProvider } from "~/contexts/ThemeContext";
 import { LanguageProvider } from "~/contexts/LanguageContext";
 import { StyleProvider } from "~/contexts/StyleContext";
+import { useEffect } from "react";
+import { validateEnvironment } from "~/services/validation";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -86,6 +88,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  // Validate environment variables on mount
+  useEffect(() => {
+    validateEnvironment(true);
+  }, []);
+  
   return <Outlet />;
 }
 
@@ -95,7 +102,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
+    message = error.status === 404 ? "404 - Page Not Found" : "Error";
     details =
       error.status === 404
         ? "The requested page could not be found."
@@ -106,14 +113,86 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
+    <div
+      style={{
+        padding: '60px 20px',
+        textAlign: 'center',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(to bottom, #0a0a0a, #1a1a2e)',
+      }}
+    >
+      <div
+        style={{
+          background: 'rgba(30, 30, 46, 0.8)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(139, 92, 246, 0.3)',
+          borderRadius: '24px',
+          padding: '48px',
+          maxWidth: '600px',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+        }}
+      >
+        <div style={{ fontSize: '64px', marginBottom: '24px' }}>
+          {isRouteErrorResponse(error) && error.status === 404 ? '🎬' : '⚠️'}
+        </div>
+        <h1 style={{ color: '#fff', fontSize: '32px', marginBottom: '16px', fontWeight: 700 }}>
+          {message}
+        </h1>
+        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '16px', marginBottom: '24px', lineHeight: 1.6 }}>
+          {details}
+        </p>
+        {stack && (
+          <pre style={{
+            background: 'rgba(0,0,0,0.3)',
+            padding: '16px',
+            borderRadius: '8px',
+            fontSize: '12px',
+            color: '#f87171',
+            textAlign: 'left',
+            overflow: 'auto',
+            marginBottom: '24px',
+            maxHeight: '200px',
+          }}>
+            <code>{stack}</code>
+          </pre>
+        )}
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '14px 28px',
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+              border: 'none',
+              color: '#fff',
+              fontSize: '15px',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            Reload Page
+          </button>
+          <button
+            onClick={() => (window.location.href = '/')}
+            style={{
+              padding: '14px 28px',
+              borderRadius: '12px',
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              color: '#fff',
+              fontSize: '15px',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            Go Home
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
