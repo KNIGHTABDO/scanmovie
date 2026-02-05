@@ -8,7 +8,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LiquidSurface } from './Liquid/LiquidSurface';
+import { Surface } from './Surface';
 import {
   type Achievement,
   type AchievementProgress,
@@ -44,7 +44,7 @@ export function AchievementToast({ achievement, onClose }: AchievementToastProps
         zIndex: 9999,
       }}
     >
-      <LiquidSurface
+      <Surface
         variant="modal"
         cornerRadius={20}
         padding="0"
@@ -138,7 +138,7 @@ export function AchievementToast({ achievement, onClose }: AchievementToastProps
             ✕
           </motion.button>
         </div>
-      </LiquidSurface>
+      </Surface>
     </motion.div>
   );
 }
@@ -263,7 +263,7 @@ export function UserLevelBadge({ compact = false }: { compact?: boolean }) {
   const points = getTotalPoints();
 
   return (
-    <LiquidSurface
+    <Surface
       variant="container"
       cornerRadius={compact ? 16 : 24}
       padding={compact ? '12px 16px' : '20px 24px'}
@@ -347,7 +347,7 @@ export function UserLevelBadge({ compact = false }: { compact?: boolean }) {
           )}
         </div>
       </div>
-    </LiquidSurface>
+    </Surface>
   );
 }
 
@@ -399,7 +399,7 @@ export function AchievementsPanel({ isMobile = false }: AchievementsPanelProps) 
         transition={{ delay: 0.1 }}
         style={{ marginBottom: '24px' }}
       >
-        <LiquidSurface variant="container" cornerRadius={16} padding="16px 20px">
+        <Surface variant="container" cornerRadius={16} padding="16px 20px">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>Achievements Unlocked</p>
@@ -431,7 +431,7 @@ export function AchievementsPanel({ isMobile = false }: AchievementsPanelProps) 
               </div>
             </div>
           </div>
-        </LiquidSurface>
+        </Surface>
       </motion.div>
       
       {/* Category Filter */}

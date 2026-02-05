@@ -9,7 +9,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router';
 import { motion } from 'framer-motion';
-import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
+import { Surface } from '~/components/Surface';
 import {
   getMovieDetails,
   getMovieVideos,
@@ -73,7 +73,7 @@ export function TrailerPage() {
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-        <LiquidSurface variant="modal" cornerRadius={24} padding="40px">
+        <Surface variant="modal" cornerRadius={24} padding="40px">
           <div style={{ textAlign: 'center' }}>
             <motion.div
               animate={{ rotate: 360 }}
@@ -84,7 +84,7 @@ export function TrailerPage() {
             </motion.div>
             <p style={{ color: '#fff', fontSize: '18px' }}>Loading trailers...</p>
           </div>
-        </LiquidSurface>
+        </Surface>
       </div>
     );
   }
@@ -98,7 +98,7 @@ export function TrailerPage() {
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-        <LiquidSurface variant="modal" cornerRadius={24} padding="40px">
+        <Surface variant="modal" cornerRadius={24} padding="40px">
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>🎬</div>
             <h2 style={{ color: '#fff', fontSize: '24px', marginBottom: '8px' }}>No Videos Found</h2>
@@ -106,12 +106,12 @@ export function TrailerPage() {
               No trailers or clips are available for this movie.
             </p>
             <Link to={`/movie/${movieId}`} style={{ textDecoration: 'none' }}>
-              <LiquidSurface variant="button" padding="12px 24px" cornerRadius={50}>
+              <Surface variant="button" padding="12px 24px" cornerRadius={50}>
                 <span style={{ color: '#fff', fontWeight: 500 }}>← Back to Movie</span>
-              </LiquidSurface>
+              </Surface>
             </Link>
           </div>
-        </LiquidSurface>
+        </Surface>
       </div>
     );
   }
@@ -160,9 +160,9 @@ export function TrailerPage() {
           }}
         >
           <Link to={`/movie/${movieId}`} style={{ textDecoration: 'none' }}>
-            <LiquidSurface variant="button" padding="10px 20px" cornerRadius={50} displacementScale={40}>
+            <Surface variant="button" padding="10px 20px" cornerRadius={50} displacementScale={40}>
               <span style={{ color: '#fff', fontWeight: 500 }}>← Back to {movie.title}</span>
-            </LiquidSurface>
+            </Surface>
           </Link>
 
           <h1 style={{ fontSize: '24px', fontWeight: 600 }}>
@@ -177,7 +177,7 @@ export function TrailerPage() {
           transition={{ delay: 0.1 }}
           style={{ marginBottom: '24px' }}
         >
-          <LiquidSurface
+          <Surface
             variant="modal"
             padding="12px"
             cornerRadius={28}
@@ -203,7 +203,7 @@ export function TrailerPage() {
                 }}
               />
             </div>
-          </LiquidSurface>
+          </Surface>
         </motion.div>
 
         {/* Current Video Info */}
@@ -213,7 +213,7 @@ export function TrailerPage() {
           transition={{ delay: 0.2 }}
           style={{ marginBottom: '32px' }}
         >
-          <LiquidSurface
+          <Surface
             variant="container"
             padding="24px"
             cornerRadius={20}
@@ -298,7 +298,7 @@ export function TrailerPage() {
                 </div>
               )}
             </div>
-          </LiquidSurface>
+          </Surface>
         </motion.div>
 
         {/* Video List */}
@@ -327,7 +327,7 @@ export function TrailerPage() {
                   onClick={() => setSelectedVideoIndex(index)}
                   style={{ cursor: 'pointer' }}
                 >
-                  <LiquidSurface
+                  <Surface
                     variant="card"
                     padding="16px"
                     cornerRadius={20}
@@ -420,7 +420,7 @@ export function TrailerPage() {
                         </p>
                       </div>
                     </div>
-                  </LiquidSurface>
+                  </Surface>
                 </motion.div>
               ))}
             </div>

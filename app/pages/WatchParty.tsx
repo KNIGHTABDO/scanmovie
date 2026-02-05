@@ -10,7 +10,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
+import { Surface } from '~/components/Surface';
 import { MovieCard } from '~/components/MovieCard';
 import { generateWatchPartyDescription } from '~/services/ai';
 import {
@@ -194,9 +194,9 @@ export function WatchPartyPage() {
               zIndex: 2000,
             }}
           >
-            <LiquidSurface variant="button" padding="12px 24px" cornerRadius={50}>
+            <Surface variant="button" padding="12px 24px" cornerRadius={50}>
               <span style={{ fontSize: '14px', fontWeight: 500 }}>{notification}</span>
-            </LiquidSurface>
+            </Surface>
           </motion.div>
         )}
       </AnimatePresence>
@@ -221,7 +221,7 @@ export function WatchPartyPage() {
           style={{ marginBottom: '40px' }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
-            <LiquidSurface
+            <Surface
               variant="container"
               cornerRadius={24}
               padding="24px 32px"
@@ -234,7 +234,7 @@ export function WatchPartyPage() {
               <p style={{ fontSize: '16px', opacity: 0.7 }}>
                 Create movie nights and share with friends
               </p>
-            </LiquidSurface>
+            </Surface>
 
             <div style={{ display: 'flex', gap: '12px' }}>
               <motion.div
@@ -243,9 +243,9 @@ export function WatchPartyPage() {
                 onClick={() => setShowImportModal(true)}
                 style={{ cursor: 'pointer' }}
               >
-                <LiquidSurface variant="button" padding="12px 20px" cornerRadius={50}>
+                <Surface variant="button" padding="12px 20px" cornerRadius={50}>
                   <span style={{ fontWeight: 500 }}>📥 Import</span>
-                </LiquidSurface>
+                </Surface>
               </motion.div>
 
               <Link to="/create-party" style={{ textDecoration: 'none' }}>
@@ -253,9 +253,9 @@ export function WatchPartyPage() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <LiquidSurface variant="modal" padding="12px 24px" cornerRadius={50}>
+                  <Surface variant="modal" padding="12px 24px" cornerRadius={50}>
                     <span style={{ fontWeight: 600 }}>✨ Create Party</span>
-                  </LiquidSurface>
+                  </Surface>
                 </motion.div>
               </Link>
             </div>
@@ -270,7 +270,7 @@ export function WatchPartyPage() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <LiquidSurface
+              <Surface
                 variant="card"
                 cornerRadius={24}
                 padding="20px"
@@ -309,7 +309,7 @@ export function WatchPartyPage() {
                     </motion.div>
                   ))}
                 </div>
-              </LiquidSurface>
+              </Surface>
             </motion.div>
           )}
 
@@ -320,7 +320,7 @@ export function WatchPartyPage() {
           >
             {selectedParty ? (
               // Selected Party View
-              <LiquidSurface
+              <Surface
                 variant="modal"
                 cornerRadius={28}
                 padding="32px"
@@ -346,9 +346,9 @@ export function WatchPartyPage() {
                       onClick={() => handleShare(selectedParty)}
                       style={{ cursor: 'pointer' }}
                     >
-                      <LiquidSurface variant="button" padding="10px 16px" cornerRadius={50}>
+                      <Surface variant="button" padding="10px 16px" cornerRadius={50}>
                         <span>🔗 Share</span>
-                      </LiquidSurface>
+                      </Surface>
                     </motion.div>
                     
                     <motion.div
@@ -357,9 +357,9 @@ export function WatchPartyPage() {
                       onClick={() => handleDeleteParty(selectedParty.id)}
                       style={{ cursor: 'pointer' }}
                     >
-                      <LiquidSurface variant="button" padding="10px 16px" cornerRadius={50}>
+                      <Surface variant="button" padding="10px 16px" cornerRadius={50}>
                         <span>🗑️</span>
-                      </LiquidSurface>
+                      </Surface>
                     </motion.div>
                   </div>
                 </div>
@@ -383,10 +383,10 @@ export function WatchPartyPage() {
                     <p style={{ marginTop: '12px' }}>Loading movies...</p>
                   </div>
                 )}
-              </LiquidSurface>
+              </Surface>
             ) : (
               // Empty State
-              <LiquidSurface
+              <Surface
                 variant="card"
                 cornerRadius={28}
                 padding="60px 40px"
@@ -407,13 +407,13 @@ export function WatchPartyPage() {
                       whileTap={{ scale: 0.95 }}
                       style={{ display: 'inline-block' }}
                     >
-                      <LiquidSurface variant="modal" padding="14px 28px" cornerRadius={50}>
+                      <Surface variant="modal" padding="14px 28px" cornerRadius={50}>
                         <span style={{ fontWeight: 600 }}>✨ Create Your First Party</span>
-                      </LiquidSurface>
+                      </Surface>
                     </motion.div>
                   </Link>
                 </div>
-              </LiquidSurface>
+              </Surface>
             )}
           </motion.div>
         </div>
@@ -453,7 +453,7 @@ export function WatchPartyPage() {
                 zIndex: 9999,
               }}
             >
-              <LiquidSurface variant="modal" cornerRadius={28} padding="32px">
+              <Surface variant="modal" cornerRadius={28} padding="32px">
                 <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>
                   🔗 Share Watch Party
                 </h2>
@@ -560,7 +560,7 @@ export function WatchPartyPage() {
                 >
                   Close
                 </motion.button>
-              </LiquidSurface>
+              </Surface>
             </motion.div>
           </>
         )}
@@ -598,7 +598,7 @@ export function WatchPartyPage() {
                 zIndex: 9999,
               }}
             >
-              <LiquidSurface variant="modal" cornerRadius={28} padding="32px">
+              <Surface variant="modal" cornerRadius={28} padding="32px">
                 <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>
                   📥 Import Watch Party
                 </h2>
@@ -661,7 +661,7 @@ export function WatchPartyPage() {
                     Import 🎉
                   </motion.button>
                 </div>
-              </LiquidSurface>
+              </Surface>
             </motion.div>
           </>
         )}

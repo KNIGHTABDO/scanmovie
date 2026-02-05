@@ -9,7 +9,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage, LANGUAGES, type Language } from '~/contexts/LanguageContext';
-import { LiquidSurface } from './Liquid/LiquidSurface';
+import { Surface } from './Surface';
 
 interface LanguageSelectorProps {
   variant?: 'dropdown' | 'grid' | 'compact';
@@ -118,7 +118,7 @@ export function LanguageSelector({ variant = 'dropdown' }: LanguageSelectorProps
                   minWidth: '160px',
                 }}
               >
-                <LiquidSurface variant="container" cornerRadius={12} padding="8px">
+                <Surface variant="container" cornerRadius={12} padding="8px">
                   {LANGUAGES.map(lang => (
                     <motion.button
                       key={lang.code}
@@ -149,7 +149,7 @@ export function LanguageSelector({ variant = 'dropdown' }: LanguageSelectorProps
                       </span>
                     </motion.button>
                   ))}
-                </LiquidSurface>
+                </Surface>
               </motion.div>
             </>
           )}
@@ -223,7 +223,7 @@ export function LanguageSelector({ variant = 'dropdown' }: LanguageSelectorProps
                 overflowY: 'auto',
               }}
             >
-              <LiquidSurface variant="container" cornerRadius={12} padding="8px">
+              <Surface variant="container" cornerRadius={12} padding="8px">
                 {LANGUAGES.map(lang => (
                   <motion.button
                     key={lang.code}
@@ -266,7 +266,7 @@ export function LanguageSelector({ variant = 'dropdown' }: LanguageSelectorProps
                     )}
                   </motion.button>
                 ))}
-              </LiquidSurface>
+              </Surface>
             </motion.div>
           </>
         )}

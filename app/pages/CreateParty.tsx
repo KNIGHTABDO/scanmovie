@@ -10,7 +10,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { motion } from 'framer-motion';
-import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
+import { Surface } from '~/components/Surface';
 import { getPosterUrl } from '~/services/tmdb';
 import { createWatchParty } from '~/services/userDataStore';
 import { useUserData } from '~/contexts/UserDataContext';
@@ -129,7 +129,7 @@ export function CreatePartyPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <LiquidSurface
+          <Surface
             variant="modal"
             cornerRadius={32}
             padding="0"
@@ -216,7 +216,7 @@ export function CreatePartyPage() {
                 }}>
                   Choose an Emoji
                 </label>
-                <LiquidSurface
+                <Surface
                   variant="card"
                   cornerRadius={20}
                   padding="20px"
@@ -251,7 +251,7 @@ export function CreatePartyPage() {
                       </motion.button>
                     ))}
                   </div>
-                </LiquidSurface>
+                </Surface>
               </div>
 
               {/* Movie Selection */}
@@ -285,7 +285,7 @@ export function CreatePartyPage() {
                 </label>
                 
                 {availableMovies.length > 0 ? (
-                  <LiquidSurface
+                  <Surface
                     variant="card"
                     cornerRadius={20}
                     padding="16px"
@@ -376,9 +376,9 @@ export function CreatePartyPage() {
                         </motion.div>
                       ))}
                     </div>
-                  </LiquidSurface>
+                  </Surface>
                 ) : (
-                  <LiquidSurface
+                  <Surface
                     variant="card"
                     cornerRadius={20}
                     padding="48px 24px"
@@ -411,7 +411,7 @@ export function CreatePartyPage() {
                         </motion.button>
                       </Link>
                     </div>
-                  </LiquidSurface>
+                  </Surface>
                 )}
               </div>
 
@@ -472,7 +472,7 @@ export function CreatePartyPage() {
                 </motion.button>
               </div>
             </div>
-          </LiquidSurface>
+          </Surface>
         </motion.div>
       </main>
     </div>

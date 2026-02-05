@@ -14,7 +14,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
+import { Surface } from '~/components/Surface';
 import { useUserData } from '~/contexts/UserDataContext';
 import { 
   discoverMovies, 
@@ -161,7 +161,7 @@ export function Discover() {
           animate={{ opacity: 1, y: 0 }}
           style={{ marginBottom: '40px' }}
         >
-          <LiquidSurface
+          <Surface
             variant="container"
             cornerRadius={24}
             padding={isMobile ? '24px' : '32px'}
@@ -179,7 +179,7 @@ export function Discover() {
             <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '16px' }}>
               Let fate decide your next favorite film, or explore by mood
             </p>
-          </LiquidSurface>
+          </Surface>
         </motion.div>
 
         {/* Random Movie Picker */}
@@ -249,7 +249,7 @@ function RandomMoviePicker({ isMobile }: { isMobile: boolean }) {
       transition={{ delay: 0.1 }}
       style={{ marginBottom: '60px' }}
     >
-      <LiquidSurface variant="modal" cornerRadius={28} padding={isMobile ? '24px' : '40px'}>
+      <Surface variant="modal" cornerRadius={28} padding={isMobile ? '24px' : '40px'}>
         <h2 style={{ fontSize: isMobile ? '22px' : '28px', fontWeight: 700, marginBottom: '24px' }}>
           🎰 Random Movie Picker
         </h2>
@@ -269,7 +269,7 @@ function RandomMoviePicker({ isMobile }: { isMobile: boolean }) {
               onClick={() => setSelectedGenre(null)}
               whileTap={{ scale: 0.95 }}
             >
-              <LiquidSurface 
+              <Surface 
                 variant="button" 
                 cornerRadius={12} 
                 padding="10px 16px"
@@ -280,7 +280,7 @@ function RandomMoviePicker({ isMobile }: { isMobile: boolean }) {
                 }}
               >
                 <span style={{ fontSize: '13px', fontWeight: 500 }}>🎬 Any</span>
-              </LiquidSurface>
+              </Surface>
             </motion.button>
             {GENRE_FILTERS.map((genre) => (
               <motion.button
@@ -288,7 +288,7 @@ function RandomMoviePicker({ isMobile }: { isMobile: boolean }) {
                 onClick={() => setSelectedGenre(genre.id)}
                 whileTap={{ scale: 0.95 }}
               >
-                <LiquidSurface 
+                <Surface 
                   variant="button" 
                   cornerRadius={12} 
                   padding="10px 16px"
@@ -301,7 +301,7 @@ function RandomMoviePicker({ isMobile }: { isMobile: boolean }) {
                   <span style={{ fontSize: '13px', fontWeight: 500 }}>
                     {genre.emoji} {genre.label}
                   </span>
-                </LiquidSurface>
+                </Surface>
               </motion.button>
             ))}
           </div>
@@ -344,7 +344,7 @@ function RandomMoviePicker({ isMobile }: { isMobile: boolean }) {
             whileTap={!isSpinning ? { scale: 0.95 } : {}}
             style={{ flexShrink: 0 }}
           >
-            <LiquidSurface
+            <Surface
               variant="button"
               cornerRadius={100}
               padding="0"
@@ -375,7 +375,7 @@ function RandomMoviePicker({ isMobile }: { isMobile: boolean }) {
                   {isSpinning ? 'Spinning...' : 'SPIN!'}
                 </p>
               </motion.div>
-            </LiquidSurface>
+            </Surface>
           </motion.button>
 
           {/* Result */}
@@ -388,7 +388,7 @@ function RandomMoviePicker({ isMobile }: { isMobile: boolean }) {
                 exit={{ opacity: 0, scale: 0.8, x: -50 }}
                 style={{ flex: 1, width: '100%' }}
               >
-                <LiquidSurface variant="card" cornerRadius={20} padding="16px">
+                <Surface variant="card" cornerRadius={20} padding="16px">
                   <div style={{ 
                     display: 'flex', 
                     gap: '16px',
@@ -426,18 +426,18 @@ function RandomMoviePicker({ isMobile }: { isMobile: boolean }) {
                         to={`/movie/${pickedMovie.id}`}
                         style={{ textDecoration: 'none', display: 'inline-block', marginTop: '16px' }}
                       >
-                        <LiquidSurface variant="button" cornerRadius={12} padding="10px 20px">
+                        <Surface variant="button" cornerRadius={12} padding="10px 20px">
                           <span style={{ fontWeight: 600 }}>View Details →</span>
-                        </LiquidSurface>
+                        </Surface>
                       </Link>
                     </div>
                   </div>
-                </LiquidSurface>
+                </Surface>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
-      </LiquidSurface>
+      </Surface>
     </motion.section>
   );
 }
@@ -500,7 +500,7 @@ function MoodDiscovery({ isMobile }: { isMobile: boolean }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
-      <LiquidSurface variant="modal" cornerRadius={28} padding={isMobile ? '24px' : '40px'}>
+      <Surface variant="modal" cornerRadius={28} padding={isMobile ? '24px' : '40px'}>
         <h2 style={{ fontSize: isMobile ? '22px' : '28px', fontWeight: 700, marginBottom: '8px' }}>
           😊 How Are You Feeling?
         </h2>
@@ -526,7 +526,7 @@ function MoodDiscovery({ isMobile }: { isMobile: boolean }) {
               whileTap={{ scale: 0.97 }}
               disabled={loading}
             >
-              <LiquidSurface 
+              <Surface 
                 variant="card" 
                 cornerRadius={16} 
                 padding="20px"
@@ -557,7 +557,7 @@ function MoodDiscovery({ isMobile }: { isMobile: boolean }) {
                     {mood.description}
                   </p>
                 </div>
-              </LiquidSurface>
+              </Surface>
             </motion.button>
           ))}
         </div>
@@ -571,7 +571,7 @@ function MoodDiscovery({ isMobile }: { isMobile: boolean }) {
               exit={{ opacity: 0 }}
               style={{ marginBottom: '24px' }}
             >
-              <LiquidSurface variant="container" cornerRadius={16} padding="16px 20px">
+              <Surface variant="container" cornerRadius={16} padding="16px 20px">
                 <p style={{ 
                   fontSize: '15px', 
                   fontStyle: 'italic',
@@ -581,7 +581,7 @@ function MoodDiscovery({ isMobile }: { isMobile: boolean }) {
                 }}>
                   ✨ {aiMessage}
                 </p>
-              </LiquidSurface>
+              </Surface>
             </motion.div>
           )}
         </AnimatePresence>
@@ -625,7 +625,7 @@ function MoodDiscovery({ isMobile }: { isMobile: boolean }) {
                   transition={{ delay: index * 0.03 }}
                 >
                   <Link to={`/movie/${movie.id}`} style={{ textDecoration: 'none' }}>
-                    <LiquidSurface variant="card" cornerRadius={14} padding="0">
+                    <Surface variant="card" cornerRadius={14} padding="0">
                       <div style={{ position: 'relative' }}>
                         <img
                           src={getPosterUrl(movie.poster_path, 'w342')}
@@ -668,14 +668,14 @@ function MoodDiscovery({ isMobile }: { isMobile: boolean }) {
                           {movie.release_date?.split('-')[0]}
                         </p>
                       </div>
-                    </LiquidSurface>
+                    </Surface>
                   </Link>
                 </motion.div>
               ))}
             </div>
           </motion.div>
         )}
-      </LiquidSurface>
+      </Surface>
     </motion.section>
   );
 }

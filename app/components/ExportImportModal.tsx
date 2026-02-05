@@ -8,7 +8,7 @@
 
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LiquidSurface } from './Liquid/LiquidSurface';
+import { Surface } from './Surface';
 import {
   exportAsJSON,
   exportAsCSV,
@@ -216,7 +216,7 @@ export function ExportImportModal({
           onClick={e => e.stopPropagation()}
           style={{ width: '100%', maxWidth: 'min(480px, calc(100vw - 40px))' }}
         >
-          <LiquidSurface variant="container" cornerRadius={24} padding="min(24px, 5vw)">
+          <Surface variant="container" cornerRadius={24} padding="min(24px, 5vw)">
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h2 style={{ color: '#fff', fontSize: '20px', fontWeight: 700 }}>
@@ -509,7 +509,7 @@ export function ExportImportModal({
                 </div>
               </>
             )}
-          </LiquidSurface>
+          </Surface>
         </motion.div>
       </motion.div>
     </AnimatePresence>

@@ -10,7 +10,7 @@
 import { useState, useEffect, memo } from 'react';
 import { Link } from 'react-router';
 import { motion } from 'framer-motion';
-import { LiquidSurface } from './Liquid/LiquidSurface';
+import { Surface } from './Surface';
 import { getPosterUrl, type Movie } from '~/services/tmdb';
 
 interface MovieCardProps {
@@ -54,7 +54,7 @@ export const MovieCard = memo(function MovieCard({ movie, index = 0 }: MovieCard
     >
       <Link to={`/movie/${movie.id}`} style={{ textDecoration: 'none', display: 'block', width: '100%' }}>
         {/* LIQUIDGLASS MOVIE CARD SURFACE */}
-        <LiquidSurface
+        <Surface
           variant="card"
           cornerRadius={isMobile ? 14 : 20}
           padding="0"
@@ -110,7 +110,7 @@ export const MovieCard = memo(function MovieCard({ movie, index = 0 }: MovieCard
                 top: isMobile ? '8px' : '12px',
                 right: isMobile ? '8px' : '12px',
               }}>
-                <LiquidSurface
+                <Surface
                   variant="button"
                   cornerRadius={isMobile ? 8 : 12}
                   padding={isMobile ? '3px 8px' : '4px 10px'}
@@ -121,7 +121,7 @@ export const MovieCard = memo(function MovieCard({ movie, index = 0 }: MovieCard
                     <span style={{ fontSize: isMobile ? '10px' : '12px' }}>⭐</span>
                     <span style={{ fontSize: isMobile ? '11px' : '13px', fontWeight: 600 }}>{rating}</span>
                   </span>
-                </LiquidSurface>
+                </Surface>
               </div>
             </div>
 
@@ -176,7 +176,7 @@ export const MovieCard = memo(function MovieCard({ movie, index = 0 }: MovieCard
               )}
             </div>
           </div>
-        </LiquidSurface>
+        </Surface>
       </Link>
     </motion.div>
   );
