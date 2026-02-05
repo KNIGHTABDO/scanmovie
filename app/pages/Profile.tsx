@@ -561,7 +561,7 @@ export function ProfilePage() {
                 </div>
 
                 {/* Language Setting */}
-                <div style={{ marginBottom: '20px' }}>
+                <div>
                   <label style={{ 
                     display: 'block', 
                     fontSize: '14px', 
@@ -570,14 +570,15 @@ export function ProfilePage() {
                   }}>
                     {t('profile.language')}
                   </label>
-                  <LanguageSelector variant="dropdown" />
+                  <LanguageSelector variant="grid" />
                 </div>
 
                 {/* Export/Import */}
                 <div style={{ 
                   display: 'flex', 
                   gap: '12px',
-                  paddingTop: '16px',
+                  paddingTop: '20px',
+                  marginTop: '20px',
                   borderTop: '1px solid rgba(255,255,255,0.1)',
                 }}>
                   <motion.button

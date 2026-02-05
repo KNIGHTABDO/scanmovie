@@ -328,6 +328,8 @@ export function Navbar() {
                     minHeight: '44px',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    position: 'relative',
+                    overflow: 'hidden',
                   }}
                 >
                   <span style={{ 
@@ -335,14 +337,21 @@ export function Navbar() {
                     height: '2px', 
                     background: '#fff',
                     borderRadius: '1px',
-                    transform: mobileMenuOpen ? 'rotate(45deg) translateY(6px)' : 'none',
-                    transition: 'transform 0.2s ease',
+                    position: 'absolute',
+                    top: mobileMenuOpen ? '50%' : 'calc(50% - 6px)',
+                    left: '50%',
+                    transform: mobileMenuOpen ? 'translate(-50%, -50%) rotate(45deg)' : 'translate(-50%, -50%)',
+                    transition: 'all 0.2s ease',
                   }} />
                   <span style={{ 
                     width: '18px', 
                     height: '2px', 
                     background: '#fff',
                     borderRadius: '1px',
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
                     opacity: mobileMenuOpen ? 0 : 1,
                     transition: 'opacity 0.2s ease',
                   }} />
@@ -351,8 +360,11 @@ export function Navbar() {
                     height: '2px', 
                     background: '#fff',
                     borderRadius: '1px',
-                    transform: mobileMenuOpen ? 'rotate(-45deg) translateY(-6px)' : 'none',
-                    transition: 'transform 0.2s ease',
+                    position: 'absolute',
+                    top: mobileMenuOpen ? '50%' : 'calc(50% + 6px)',
+                    left: '50%',
+                    transform: mobileMenuOpen ? 'translate(-50%, -50%) rotate(-45deg)' : 'translate(-50%, -50%)',
+                    transition: 'all 0.2s ease',
                   }} />
                 </motion.button>
               )}
