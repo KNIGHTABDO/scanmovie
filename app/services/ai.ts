@@ -437,4 +437,3 @@ Make it exciting and use 2-3 emojis! Keep it social media friendly.`;
     return `Movie night featuring ${movies.length} amazing films! 🎬🍿`;
   }
 }
-}
