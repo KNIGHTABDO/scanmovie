@@ -1,17 +1,33 @@
 /**
  * TMDB API Service
  * Handles all movie data fetching from The Movie Database API
+ * Uses server-side proxy to keep API key secure
  */
 
-// Using API key directly as query parameter (most reliable method)
-const TMDB_API_KEY = '926f46968b21a2856b40b4bf9af55847';
-const BASE_URL = 'https://api.themoviedb.org/3';
 export const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
 
-// Helper to append API key to URLs
-function withApiKey(url: string): string {
-  const separator = url.includes('?') ? '&' : '?';
-  return `${url}${separator}api_key=${TMDB_API_KEY}`;
+// Check if we're running in browser or server
+const isBrowser = typeof window !== 'undefined';
+
+/**
+ * Helper to make TMDB API requests through our proxy
+ * In browser: uses /api/tmdb proxy route
+ * On server: direct TMDB call (for SSR)
+ */
+async function tmdbFetch(endpoint: string, params?: Record<string, string>): Promise<Response> {
+  if (isBrowser) {
+    // Browser: use proxy to protect API key
+    const queryParams = new URLSearchParams(params);
+    queryParams.set('endpoint', endpoint);
+    return fetch(`/api/tmdb?${queryParams.toString()}`);
+  } else {
+    // Server: direct call (for SSR loaders)
+    const TMDB_API_KEY = process.env.VITE_TMDB_API_KEY || '926f46968b21a2856b40b4bf9af55847';
+    const BASE_URL = 'https://api.themoviedb.org/3';
+    const queryParams = new URLSearchParams(params);
+    queryParams.set('api_key', TMDB_API_KEY);
+    return fetch(`${BASE_URL}${endpoint}?${queryParams.toString()}`);
+  }
 }
 
 export interface Movie {
@@ -92,8 +108,7 @@ export interface Credits {
  * Fetch trending movies (daily or weekly)
  */
 export async function getTrending(timeWindow: 'day' | 'week' = 'week'): Promise<Movie[]> {
-  const url = withApiKey(`${BASE_URL}/trending/movie/${timeWindow}?language=en-US`);
-  const response = await fetch(url);
+  const response = await tmdbFetch(`/trending/movie/${timeWindow}`, { language: 'en-US' });
   if (!response.ok) {
     console.error('getTrending failed:', response.status, await response.text());
     throw new Error('Failed to fetch trending movies');
@@ -106,8 +121,7 @@ export async function getTrending(timeWindow: 'day' | 'week' = 'week'): Promise<
  * Fetch now playing movies (new releases)
  */
 export async function getNowPlaying(): Promise<Movie[]> {
-  const url = withApiKey(`${BASE_URL}/movie/now_playing?language=en-US&page=1`);
-  const response = await fetch(url);
+  const response = await tmdbFetch('/movie/now_playing', { language: 'en-US', page: '1' });
   if (!response.ok) {
     console.error('getNowPlaying failed:', response.status, await response.text());
     throw new Error('Failed to fetch now playing movies');
@@ -120,8 +134,7 @@ export async function getNowPlaying(): Promise<Movie[]> {
  * Fetch upcoming movies
  */
 export async function getUpcoming(): Promise<Movie[]> {
-  const url = withApiKey(`${BASE_URL}/movie/upcoming?language=en-US&page=1`);
-  const response = await fetch(url);
+  const response = await tmdbFetch('/movie/upcoming', { language: 'en-US', page: '1' });
   if (!response.ok) {
     console.error('getUpcoming failed:', response.status, await response.text());
     throw new Error('Failed to fetch upcoming movies');
@@ -134,8 +147,7 @@ export async function getUpcoming(): Promise<Movie[]> {
  * Fetch top rated movies
  */
 export async function getTopRated(): Promise<Movie[]> {
-  const url = withApiKey(`${BASE_URL}/movie/top_rated?language=en-US&page=1`);
-  const response = await fetch(url);
+  const response = await tmdbFetch('/movie/top_rated', { language: 'en-US', page: '1' });
   if (!response.ok) {
     console.error('getTopRated failed:', response.status, await response.text());
     throw new Error('Failed to fetch top rated movies');
@@ -149,8 +161,11 @@ export async function getTopRated(): Promise<Movie[]> {
  */
 export async function searchMovies(query: string): Promise<Movie[]> {
   if (!query.trim()) return [];
-  const url = withApiKey(`${BASE_URL}/search/movie?query=${encodeURIComponent(query)}&language=en-US&page=1`);
-  const response = await fetch(url);
+  const response = await tmdbFetch('/search/movie', { 
+    query: encodeURIComponent(query), 
+    language: 'en-US', 
+    page: '1' 
+  });
   if (!response.ok) {
     console.error('searchMovies failed:', response.status, await response.text());
     throw new Error('Failed to search movies');
@@ -173,28 +188,27 @@ export async function discoverMovies(
   voteCountGte?: string,
   voteCountLte?: string
 ): Promise<Movie[]> {
-  const params = new URLSearchParams({
-    api_key: TMDB_API_KEY,
+  const params: Record<string, string> = {
     include_adult: 'false',
     include_video: 'false',
     language: 'en-US',
     page: page,
     sort_by: sortBy,
-  });
+  };
 
   // Only add vote_count.gte filter if not looking for hidden gems
   if (!voteCountLte) {
-    params.append('vote_count.gte', voteCountGte || '100');
+    params['vote_count.gte'] = voteCountGte || '100';
   }
 
-  if (genreIds) params.append('with_genres', genreIds);
-  if (yearGte) params.append('primary_release_date.gte', `${yearGte}-01-01`);
-  if (yearLte) params.append('primary_release_date.lte', `${yearLte}-12-31`);
-  if (voteAverageGte) params.append('vote_average.gte', voteAverageGte);
-  if (voteCountGte) params.append('vote_count.gte', voteCountGte);
-  if (voteCountLte) params.append('vote_count.lte', voteCountLte);
+  if (genreIds) params.with_genres = genreIds;
+  if (yearGte) params['primary_release_date.gte'] = `${yearGte}-01-01`;
+  if (yearLte) params['primary_release_date.lte'] = `${yearLte}-12-31`;
+  if (voteAverageGte) params['vote_average.gte'] = voteAverageGte;
+  if (voteCountGte) params['vote_count.gte'] = voteCountGte;
+  if (voteCountLte) params['vote_count.lte'] = voteCountLte;
 
-  const response = await fetch(`${BASE_URL}/discover/movie?${params.toString()}`);
+  const response = await tmdbFetch('/discover/movie', params);
   if (!response.ok) {
     console.error('discoverMovies failed:', response.status, await response.text());
     throw new Error('Failed to discover movies');
@@ -207,8 +221,7 @@ export async function discoverMovies(
  * Fetch movie details by ID
  */
 export async function getMovieDetails(movieId: number): Promise<Movie> {
-  const url = withApiKey(`${BASE_URL}/movie/${movieId}?language=en-US`);
-  const response = await fetch(url);
+  const response = await tmdbFetch(`/movie/${movieId}`, { language: 'en-US' });
   if (!response.ok) {
     console.error('getMovieDetails failed:', response.status, await response.text());
     throw new Error('Failed to fetch movie details');
@@ -220,8 +233,7 @@ export async function getMovieDetails(movieId: number): Promise<Movie> {
  * Fetch movie credits (cast & crew)
  */
 export async function getMovieCredits(movieId: number): Promise<Credits> {
-  const url = withApiKey(`${BASE_URL}/movie/${movieId}/credits?language=en-US`);
-  const response = await fetch(url);
+  const response = await tmdbFetch(`/movie/${movieId}/credits`, { language: 'en-US' });
   if (!response.ok) {
     console.error('getMovieCredits failed:', response.status, await response.text());
     throw new Error('Failed to fetch movie credits');
@@ -233,8 +245,7 @@ export async function getMovieCredits(movieId: number): Promise<Credits> {
  * Fetch similar movies
  */
 export async function getSimilarMovies(movieId: number): Promise<Movie[]> {
-  const url = withApiKey(`${BASE_URL}/movie/${movieId}/similar?language=en-US&page=1`);
-  const response = await fetch(url);
+  const response = await tmdbFetch(`/movie/${movieId}/similar`, { language: 'en-US', page: '1' });
   if (!response.ok) {
     console.error('getSimilarMovies failed:', response.status, await response.text());
     throw new Error('Failed to fetch similar movies');
@@ -248,8 +259,7 @@ export async function getSimilarMovies(movieId: number): Promise<Movie[]> {
  * Returns videos sorted by: Official trailers first, then by publish date
  */
 export async function getMovieVideos(movieId: number): Promise<Video[]> {
-  const url = withApiKey(`${BASE_URL}/movie/${movieId}/videos?language=en-US`);
-  const response = await fetch(url);
+  const response = await tmdbFetch(`/movie/${movieId}/videos`, { language: 'en-US' });
   if (!response.ok) {
     console.error('getMovieVideos failed:', response.status, await response.text());
     throw new Error('Failed to fetch movie videos');
@@ -360,8 +370,7 @@ export interface PersonImages {
  * Fetch person details by ID
  */
 export async function getPersonDetails(personId: number): Promise<Person> {
-  const url = withApiKey(`${BASE_URL}/person/${personId}?language=en-US`);
-  const response = await fetch(url);
+  const response = await tmdbFetch(`/person/${personId}`, { language: 'en-US' });
   if (!response.ok) {
     console.error('getPersonDetails failed:', response.status, await response.text());
     throw new Error('Failed to fetch person details');
@@ -373,8 +382,7 @@ export async function getPersonDetails(personId: number): Promise<Person> {
  * Fetch person's movie credits (as cast and crew)
  */
 export async function getPersonMovieCredits(personId: number): Promise<PersonCredits> {
-  const url = withApiKey(`${BASE_URL}/person/${personId}/movie_credits?language=en-US`);
-  const response = await fetch(url);
+  const response = await tmdbFetch(`/person/${personId}/movie_credits`, { language: 'en-US' });
   if (!response.ok) {
     console.error('getPersonMovieCredits failed:', response.status, await response.text());
     throw new Error('Failed to fetch person movie credits');
@@ -386,8 +394,7 @@ export async function getPersonMovieCredits(personId: number): Promise<PersonCre
  * Fetch person's images/photos
  */
 export async function getPersonImages(personId: number): Promise<PersonImages> {
-  const url = withApiKey(`${BASE_URL}/person/${personId}/images`);
-  const response = await fetch(url);
+  const response = await tmdbFetch(`/person/${personId}/images`, {});
   if (!response.ok) {
     console.error('getPersonImages failed:', response.status, await response.text());
     throw new Error('Failed to fetch person images');
@@ -400,8 +407,11 @@ export async function getPersonImages(personId: number): Promise<PersonImages> {
  */
 export async function searchPeople(query: string): Promise<Person[]> {
   if (!query.trim()) return [];
-  const url = withApiKey(`${BASE_URL}/search/person?query=${encodeURIComponent(query)}&language=en-US&page=1`);
-  const response = await fetch(url);
+  const response = await tmdbFetch('/search/person', { 
+    query: encodeURIComponent(query), 
+    language: 'en-US', 
+    page: '1' 
+  });
   if (!response.ok) {
     console.error('searchPeople failed:', response.status, await response.text());
     throw new Error('Failed to search people');
