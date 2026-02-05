@@ -103,25 +103,25 @@ export function Navbar() {
         <Surface
           variant="navbar"
           cornerRadius={isMobile ? 14 : 16}
-          padding={isMobile ? '14px 20px' : '16px 32px'}
+          padding={isMobile ? '10px 12px' : '16px 32px'}
         >
           <div style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             width: '100%',
-            gap: '12px',
+            gap: isMobile ? '8px' : '12px',
           }}>
             {/* Logo */}
             <Link to="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
-                style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '10px' }}
+                style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '4px' : '10px' }}
               >
-                <span style={{ fontSize: isMobile ? '24px' : '28px' }}>🎬</span>
+                <span style={{ fontSize: isMobile ? '22px' : '28px' }}>🎬</span>
                 <span style={{ 
-                  fontSize: isMobile ? '18px' : '24px', 
+                  fontSize: isMobile ? '16px' : '24px', 
                   fontWeight: 700,
                   background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%)',
                   WebkitBackgroundClip: 'text',
@@ -226,18 +226,18 @@ export function Navbar() {
             )}
 
             {/* Right Side: Search + Mobile Menu */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '12px', flexShrink: 1, minWidth: 0 }}>
               {/* Search Bar */}
-              <div ref={searchRef} style={{ position: 'relative' }}>
+              <div ref={searchRef} style={{ position: 'relative', flex: isMobile ? '1 1 auto' : '0 0 auto', minWidth: 0 }}>
                 <Surface
                   variant="button"
                   cornerRadius={50}
-                  padding={isMobile ? '8px 12px' : '8px 16px'}
+                  padding={isMobile ? '6px 10px' : '8px 16px'}
                   displacementScale={40}
                   blurAmount={0.05}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '10px' }}>
-                    <span style={{ fontSize: '16px', opacity: 0.6 }}>🔍</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '4px' : '10px' }}>
+                    <span style={{ fontSize: isMobile ? '14px' : '16px', opacity: 0.6, flexShrink: 0 }}>🔍</span>
                     <input
                       type="text"
                       placeholder={isMobile ? 'Search...' : 'Search movies...'}
@@ -248,12 +248,12 @@ export function Navbar() {
                         border: 'none',
                         outline: 'none',
                         color: '#fff',
-                        fontSize: '14px',
+                        fontSize: isMobile ? '13px' : '14px',
                         width: isMobile ? '100%' : '200px',
-                        minWidth: isMobile ? '120px' : '200px',
+                        minWidth: isMobile ? '0' : '200px',
                       }}
                     />
-                    {isSearching && <span style={{ fontSize: '14px' }}>⏳</span>}
+                    {isSearching && <span style={{ fontSize: '14px', flexShrink: 0 }}>⏳</span>}
                   </div>
                 </Surface>
 
@@ -319,32 +319,35 @@ export function Navbar() {
                     background: 'rgba(255,255,255,0.1)',
                     border: 'none',
                     borderRadius: '8px',
-                    padding: '10px',
+                    padding: '8px',
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '4px',
-                    minWidth: '44px',
-                    minHeight: '44px',
+                    minWidth: '40px',
+                    minHeight: '40px',
+                    width: '40px',
+                    height: '40px',
                     alignItems: 'center',
                     justifyContent: 'center',
                     position: 'relative',
                     overflow: 'hidden',
+                    flexShrink: 0,
                   }}
                 >
                   <span style={{ 
-                    width: '18px', 
+                    width: '16px', 
                     height: '2px', 
                     background: '#fff',
                     borderRadius: '1px',
                     position: 'absolute',
-                    top: mobileMenuOpen ? '50%' : 'calc(50% - 6px)',
+                    top: mobileMenuOpen ? '50%' : 'calc(50% - 5px)',
                     left: '50%',
                     transform: mobileMenuOpen ? 'translate(-50%, -50%) rotate(45deg)' : 'translate(-50%, -50%)',
                     transition: 'all 0.2s ease',
                   }} />
                   <span style={{ 
-                    width: '18px', 
+                    width: '16px', 
                     height: '2px', 
                     background: '#fff',
                     borderRadius: '1px',
@@ -356,12 +359,12 @@ export function Navbar() {
                     transition: 'opacity 0.2s ease',
                   }} />
                   <span style={{ 
-                    width: '18px', 
+                    width: '16px', 
                     height: '2px', 
                     background: '#fff',
                     borderRadius: '1px',
                     position: 'absolute',
-                    top: mobileMenuOpen ? '50%' : 'calc(50% + 6px)',
+                    top: mobileMenuOpen ? '50%' : 'calc(50% + 5px)',
                     left: '50%',
                     transform: mobileMenuOpen ? 'translate(-50%, -50%) rotate(-45deg)' : 'translate(-50%, -50%)',
                     transition: 'all 0.2s ease',
