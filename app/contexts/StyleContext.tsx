@@ -28,9 +28,12 @@ export function StyleProvider({ children }: { children: ReactNode }) {
 
   // Initialize style mode from localStorage
   useEffect(() => {
-    const stored = localStorage.getItem(STYLE_STORAGE_KEY) as StyleMode | null;
-    if (stored && ['liquid-glass', 'vercel'].includes(stored)) {
-      setStyleModeState(stored);
+    // Only access localStorage on client-side to avoid SSR hydration mismatches
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STYLE_STORAGE_KEY) as StyleMode | null;
+      if (stored && ['liquid-glass', 'vercel'].includes(stored)) {
+        setStyleModeState(stored);
+      }
     }
   }, []);
 

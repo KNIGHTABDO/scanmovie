@@ -58,6 +58,16 @@ const VARIANT_STYLES: Record<string, CSSProperties> = {
   },
 };
 
+// Memoized animation objects to avoid recreation on every render
+const HOVER_ANIMATION = {
+  borderColor: 'rgba(255, 255, 255, 0.15)',
+  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15), 0 0 1px rgba(255, 255, 255, 0.1)',
+};
+
+const TAP_ANIMATION = {
+  scale: 0.98,
+};
+
 export function VercelSurface({
   children,
   className = '',
@@ -77,14 +87,8 @@ export function VercelSurface({
     ...style,
   };
 
-  const hoverAnimation = animate ? {
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15), 0 0 1px rgba(255, 255, 255, 0.1)',
-  } : {};
-
-  const tapAnimation = animate ? {
-    scale: 0.98,
-  } : {};
+  const hoverAnimation = animate ? HOVER_ANIMATION : {};
+  const tapAnimation = animate ? TAP_ANIMATION : {};
 
   return (
     <motion.div
