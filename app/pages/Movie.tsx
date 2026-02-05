@@ -444,7 +444,7 @@ export function MoviePage() {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 45vw), 1fr))',
                 gap: '20px',
               }}
             >
@@ -540,7 +540,7 @@ export function MoviePage() {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 45vw), 1fr))',
                 gap: '24px',
               }}
             >

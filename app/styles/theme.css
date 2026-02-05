@@ -742,6 +742,15 @@ img {
 }
 
 /* ====== Responsive Design ====== */
+
+/* Extra large devices and desktops */
+@media (max-width: 1280px) {
+  .movie-header-content {
+    gap: 30px;
+  }
+}
+
+/* Large tablets and small laptops */
 @media (max-width: 1024px) {
   .hero-title {
     font-size: 36px;
@@ -766,6 +775,7 @@ img {
   }
 }
 
+/* Standard tablets and iPad */
 @media (max-width: 768px) {
   .navbar-links {
     display: none;
@@ -786,13 +796,32 @@ img {
   }
 }
 
+/* Large phones and small tablets */
+@media (max-width: 600px) {
+  .hero-title {
+    font-size: 26px;
+  }
+  
+  .movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 14px;
+  }
+  
+  .section-title {
+    font-size: 22px;
+  }
+}
+
+/* Standard mobile phones (iPhone 12, 13, 14) */
 @media (max-width: 480px) {
   .search-glass {
-    min-width: 200px;
+    min-width: auto;
+    width: 100%;
   }
   
   .search-input {
-    width: 140px;
+    width: 100%;
+    min-width: 120px;
   }
   
   .hero-title {
@@ -801,9 +830,93 @@ img {
   
   .movie-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
   
   .cast-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  :root {
+    --content-padding: 12px;
+    --section-gap: 32px;
+  }
+}
+
+/* iPhone 12 Mini and similar */
+@media (max-width: 390px) {
+  .hero-title {
+    font-size: 22px;
+  }
+  
+  .section-title {
+    font-size: 20px;
+  }
+  
+  .movie-detail-title {
+    font-size: 26px;
+  }
+  
+  .movie-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .cast-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+/* iPhone SE and very small phones */
+@media (max-width: 375px) {
+  .hero-title {
+    font-size: 20px;
+  }
+  
+  .section-title {
+    font-size: 18px;
+  }
+  
+  .movie-detail-title {
+    font-size: 24px;
+  }
+  
+  .logo-text {
+    font-size: 18px;
+  }
+  
+  .logo-icon {
+    font-size: 22px;
+  }
+  
+  :root {
+    --content-padding: 10px;
+  }
+}
+
+/* Very small devices (iPhone SE 1st gen) */
+@media (max-width: 320px) {
+  .hero-title {
+    font-size: 18px;
+  }
+  
+  .section-title {
+    font-size: 16px;
+  }
+  
+  .movie-detail-title {
+    font-size: 22px;
+  }
+  
+  .movie-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .cast-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 }

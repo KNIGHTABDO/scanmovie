@@ -191,10 +191,11 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             style={{
               position: 'fixed',
-              bottom: '100px',
+              bottom: 'max(100px, calc(100px + env(safe-area-inset-bottom)))',
               right: '24px',
               width: 'min(420px, calc(100vw - 48px))',
-              height: 'min(600px, calc(100vh - 160px))',
+              height: 'min(70vh, calc(100vh - 200px))',
+              maxHeight: 'min(600px, calc(100vh - 200px))',
               zIndex: 1999,
               display: 'flex',
               flexDirection: 'column',
