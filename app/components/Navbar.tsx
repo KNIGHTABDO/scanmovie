@@ -11,7 +11,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LiquidSurface } from './Liquid/LiquidSurface';
+import { Surface } from './Surface';
 import { searchMovies, type Movie } from '~/services/tmdb';
 import { useAuth } from '~/contexts/AuthContext';
 
@@ -100,7 +100,7 @@ export function Navbar() {
       }}
     >
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-        <LiquidSurface
+        <Surface
           variant="navbar"
           cornerRadius={isMobile ? 14 : 16}
           padding={isMobile ? '14px 20px' : '16px 32px'}
@@ -229,7 +229,7 @@ export function Navbar() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               {/* Search Bar */}
               <div ref={searchRef} style={{ position: 'relative' }}>
-                <LiquidSurface
+                <Surface
                   variant="button"
                   cornerRadius={50}
                   padding={isMobile ? '8px 12px' : '8px 16px'}
@@ -255,7 +255,7 @@ export function Navbar() {
                     />
                     {isSearching && <span style={{ fontSize: '14px' }}>⏳</span>}
                   </div>
-                </LiquidSurface>
+                </Surface>
 
                 {/* Search Results Dropdown */}
                 <AnimatePresence>
@@ -273,7 +273,7 @@ export function Navbar() {
                         zIndex: 100,
                       }}
                     >
-                      <LiquidSurface
+                      <Surface
                         variant="modal"
                         cornerRadius={16}
                         padding="8px"
@@ -304,7 +304,7 @@ export function Navbar() {
                             </span>
                           </motion.button>
                         ))}
-                      </LiquidSurface>
+                      </Surface>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -358,7 +358,7 @@ export function Navbar() {
               )}
             </div>
           </div>
-        </LiquidSurface>
+        </Surface>
 
         {/* Mobile Dropdown Menu */}
         <AnimatePresence>
@@ -370,7 +370,7 @@ export function Navbar() {
               transition={{ duration: 0.3 }}
               style={{ marginTop: '12px', overflow: 'hidden' }}
             >
-              <LiquidSurface
+              <Surface
                 variant="modal"
                 cornerRadius={16}
                 padding="12px"
@@ -481,7 +481,7 @@ export function Navbar() {
                     </motion.div>
                   </Link>
                 </div>
-              </LiquidSurface>
+              </Surface>
             </motion.div>
           )}
         </AnimatePresence>
