@@ -249,7 +249,7 @@ export function Navbar() {
                         border: 'none',
                         outline: 'none',
                         color: '#fff',
-                        fontSize: isMobile ? '14px' : '14px',
+                        fontSize: '14px',
                         width: '100%',
                         minWidth: isMobile ? '60px' : '200px',
                       }}
