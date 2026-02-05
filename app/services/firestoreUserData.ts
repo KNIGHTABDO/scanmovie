@@ -127,11 +127,12 @@ export async function getUserData(uid: string): Promise<UserMovieData | null> {
 /**
  * Cache for parsed localStorage data to avoid repeated JSON.parse() calls
  */
-const localStorageCache = new Map<string, any>();
+type LocalStorageValue = Movie[] | Record<number, number> | MovieCollection[] | string[] | Record<string, number> | { count: number; lastDate: string };
+const localStorageCache = new Map<string, LocalStorageValue | null>();
 let cacheTimestamp = 0;
 const CACHE_DURATION = 5000; // 5 seconds
 
-function getCachedLocalStorage(key: string): any {
+function getCachedLocalStorage<T extends LocalStorageValue>(key: string): T | null {
   const now = Date.now();
   
   // Invalidate cache if too old
@@ -142,14 +143,25 @@ function getCachedLocalStorage(key: string): any {
   
   // Return cached value if available
   if (localStorageCache.has(key)) {
-    return localStorageCache.get(key);
+    return localStorageCache.get(key) as T | null;
   }
   
-  // Parse and cache
+  // Parse and cache with error handling
   const value = localStorage.getItem(key);
-  const parsed = value ? JSON.parse(value) : null;
-  localStorageCache.set(key, parsed);
-  return parsed;
+  if (!value) {
+    localStorageCache.set(key, null);
+    return null;
+  }
+  
+  try {
+    const parsed = JSON.parse(value) as T;
+    localStorageCache.set(key, parsed);
+    return parsed;
+  } catch (error) {
+    console.error(`Failed to parse localStorage key "${key}":`, error);
+    localStorageCache.set(key, null);
+    return null;
+  }
 }
 
 /**
