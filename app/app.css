@@ -157,23 +157,30 @@ textarea {
 /* Improve touch responsiveness on iOS */
 button,
 a,
-[role="button"] {
+[role="button"],
+[onclick] {
   touch-action: manipulation;
   cursor: pointer;
-  /* Minimum touch target size for iOS (44x44px recommended) */
+}
+
+/* Minimum touch target size for iOS (44x44px recommended) */
+button,
+a[href],
+[role="button"] {
   min-height: 44px;
-  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
 }
 
 /* Prevent 300ms tap delay on iOS */
-* {
+a,
+button,
+input,
+select,
+textarea {
   -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-/* Improve scrolling momentum on iOS */
-* {
-  -webkit-overflow-scrolling: touch;
 }
 
 /* Better input field handling on mobile */
@@ -190,6 +197,17 @@ textarea {
 input[type="search"]::-webkit-search-decoration,
 input[type="search"]::-webkit-search-cancel-button {
   -webkit-appearance: none;
+}
+
+/* Smooth scrolling for overflow containers */
+.overflow-auto,
+.overflow-y-auto,
+.overflow-x-auto,
+[style*="overflow: auto"],
+[style*="overflow-y: auto"],
+[style*="overflow-x: auto"] {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 /* ====== Liquid Glass CSS Fallback Styles (iOS/iPad) ====== */
