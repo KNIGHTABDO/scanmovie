@@ -326,6 +326,7 @@ export function Home() {
             {trending.slice(0, 5).map((_, idx) => (
               <motion.button
                 key={idx}
+                className="no-touch-target"
                 onClick={() => setFeaturedIndex(idx)}
                 whileHover={{ scale: 1.3 }}
                 whileTap={{ scale: 0.9 }}
