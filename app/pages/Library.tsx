@@ -13,7 +13,7 @@
  * All with beautiful liquid glass styling!
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Link } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LiquidSurface } from '~/components/Liquid/LiquidSurface';
@@ -771,7 +771,7 @@ function CompareTab({ isMobile }: { isMobile: boolean }) {
     fetchComparisonMovies();
   }, [comparison]);
 
-  const filledSlots = movies.filter(m => m !== null).length;
+  const filledSlots = useMemo(() => movies.filter(m => m !== null).length, [movies]);
 
   return (
     <div>

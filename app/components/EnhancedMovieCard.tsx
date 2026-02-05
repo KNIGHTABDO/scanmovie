@@ -72,6 +72,15 @@ export function EnhancedMovieCard({
     }
   }, [isHovered, movie.id, showPreview, isMobile, trailerKey]);
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Handle hover with delay for preview
   const handleMouseEnter = () => {
     if (isMobile) return;

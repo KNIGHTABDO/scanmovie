@@ -225,16 +225,9 @@ function RandomMoviePicker({ isMobile }: { isMobile: boolean }) {
         return;
       }
 
-      // Animate through random movies
-      const animationDuration = 2000;
-      const intervals = 10;
-      const intervalTime = animationDuration / intervals;
-      
-      for (let i = 0; i < intervals; i++) {
-        await new Promise(resolve => setTimeout(resolve, intervalTime));
-        const randomIndex = Math.floor(Math.random() * filtered.length);
-        setPickedMovie(filtered[randomIndex]);
-      }
+      // Optimized animation: only set final movie after delay
+      // This avoids 10 re-renders during the spinning animation
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Final pick
       const finalIndex = Math.floor(Math.random() * filtered.length);

@@ -7,7 +7,7 @@
  * Mobile-optimized with responsive sizing.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Link } from 'react-router';
 import { motion } from 'framer-motion';
 import { LiquidSurface } from './Liquid/LiquidSurface';
@@ -18,7 +18,7 @@ interface MovieCardProps {
   index?: number;
 }
 
-export function MovieCard({ movie, index = 0 }: MovieCardProps) {
+export const MovieCard = memo(function MovieCard({ movie, index = 0 }: MovieCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -180,6 +180,6 @@ export function MovieCard({ movie, index = 0 }: MovieCardProps) {
       </Link>
     </motion.div>
   );
-}
+});
 
 export default MovieCard;

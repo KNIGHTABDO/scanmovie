@@ -125,6 +125,34 @@ export async function getUserData(uid: string): Promise<UserMovieData | null> {
 }
 
 /**
+ * Cache for parsed localStorage data to avoid repeated JSON.parse() calls
+ */
+const localStorageCache = new Map<string, any>();
+let cacheTimestamp = 0;
+const CACHE_DURATION = 5000; // 5 seconds
+
+function getCachedLocalStorage(key: string): any {
+  const now = Date.now();
+  
+  // Invalidate cache if too old
+  if (now - cacheTimestamp > CACHE_DURATION) {
+    localStorageCache.clear();
+    cacheTimestamp = now;
+  }
+  
+  // Return cached value if available
+  if (localStorageCache.has(key)) {
+    return localStorageCache.get(key);
+  }
+  
+  // Parse and cache
+  const value = localStorage.getItem(key);
+  const parsed = value ? JSON.parse(value) : null;
+  localStorageCache.set(key, parsed);
+  return parsed;
+}
+
+/**
  * Migrate localStorage data to Firestore
  * Called on first sign-in to sync existing data
  */
@@ -134,22 +162,14 @@ export async function migrateLocalStorageToFirestore(uid: string): Promise<void>
   console.log('Starting localStorage migration to Firestore...');
   
   try {
-    // Get existing localStorage data
-    const watchlistStr = localStorage.getItem('scanmovie_watchlist');
-    const favoritesStr = localStorage.getItem('scanmovie_favorites');
-    const ratingsStr = localStorage.getItem('scanmovie_ratings');
-    const collectionsStr = localStorage.getItem('scanmovie_collections');
-    const achievementsStr = localStorage.getItem('scanmovie_achievements');
-    const progressStr = localStorage.getItem('scanmovie_achievement_progress');
-    const streakStr = localStorage.getItem('scanmovie_streak');
-    
-    const watchlist: Movie[] = watchlistStr ? JSON.parse(watchlistStr) : [];
-    const favorites: Movie[] = favoritesStr ? JSON.parse(favoritesStr) : [];
-    const ratings: Record<number, number> = ratingsStr ? JSON.parse(ratingsStr) : {};
-    const collections: MovieCollection[] = collectionsStr ? JSON.parse(collectionsStr) : [];
-    const unlockedAchievements: string[] = achievementsStr ? JSON.parse(achievementsStr) : [];
-    const achievementProgress: Record<string, number> = progressStr ? JSON.parse(progressStr) : {};
-    const streakData = streakStr ? JSON.parse(streakStr) : { count: 0, lastDate: '' };
+    // Get existing localStorage data with caching to avoid repeated JSON.parse()
+    const watchlist: Movie[] = getCachedLocalStorage('scanmovie_watchlist') || [];
+    const favorites: Movie[] = getCachedLocalStorage('scanmovie_favorites') || [];
+    const ratings: Record<number, number> = getCachedLocalStorage('scanmovie_ratings') || {};
+    const collections: MovieCollection[] = getCachedLocalStorage('scanmovie_collections') || [];
+    const unlockedAchievements: string[] = getCachedLocalStorage('scanmovie_achievements') || [];
+    const achievementProgress: Record<string, number> = getCachedLocalStorage('scanmovie_achievement_progress') || {};
+    const streakData = getCachedLocalStorage('scanmovie_streak') || { count: 0, lastDate: '' };
     
     // Check if there's any data to migrate
     const hasData = watchlist.length > 0 || 
