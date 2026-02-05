@@ -251,7 +251,7 @@ export function Navbar() {
                         border: 'none',
                         outline: 'none',
                         color: '#ffffff',
-                        fontSize: isMobile ? '15px' : '15px',
+                        fontSize: '15px',
                         width: '100%',
                         minWidth: isMobile ? '80px' : '180px',
                         fontWeight: 500,
@@ -277,7 +277,7 @@ export function Navbar() {
                         right: 0,
                         left: isMobile ? 0 : 'auto',
                         width: isMobile ? '100%' : '320px',
-                        maxWidth: isMobile ? 'calc(100vw - 32px)' : '320px',
+                        maxWidth: isMobile ? 'calc(100vw - 32px)' : 'none',
                         zIndex: 100,
                       }}
                     >
