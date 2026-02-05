@@ -171,9 +171,9 @@ export function MoviePage() {
           position: 'relative',
           zIndex: 10,
           paddingTop: '120px',
-          paddingBottom: '80px',
-          paddingLeft: '24px',
-          paddingRight: '24px',
+          paddingBottom: 'max(80px, calc(80px + env(safe-area-inset-bottom)))',
+          paddingLeft: 'max(24px, env(safe-area-inset-left))',
+          paddingRight: 'max(24px, env(safe-area-inset-right))',
           maxWidth: '1400px',
           margin: '0 auto',
         }}
