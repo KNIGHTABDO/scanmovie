@@ -81,7 +81,7 @@ export function Home() {
       <div style={{ 
         minHeight: '100vh', 
         background: 'linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f0f1a 100%)',
-        paddingTop: '120px',
+        paddingTop: isMobile ? '80px' : '120px',
         paddingLeft: '24px',
         paddingRight: '24px',
       }}>
@@ -178,7 +178,7 @@ export function Home() {
       <main style={{
         position: 'relative',
         zIndex: 10,
-        paddingTop: isMobile ? 'max(100px, calc(100px + env(safe-area-inset-top)))' : '120px',
+        paddingTop: isMobile ? 'max(80px, calc(80px + env(safe-area-inset-top)))' : '120px',
         paddingBottom: isMobile ? 'max(40px, calc(40px + env(safe-area-inset-bottom)))' : '80px',
         width: '100%',
         maxWidth: '1200px',

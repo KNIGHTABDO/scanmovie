@@ -27,9 +27,9 @@ export function Navbar() {
   const location = useLocation();
   const { user, isAuthenticated, isLoading: authLoading, signIn } = useAuth();
 
-  // Check if mobile/tablet on mount and resize (hamburger shows until 1024px)
+  // Check if mobile/tablet on mount and resize (hamburger shows on tablets and below at 768px)
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -93,17 +93,17 @@ export function Navbar() {
         left: 0,
         right: 0,
         zIndex: 1000,
-        padding: isMobile ? '12px 16px' : '16px 24px',
-        paddingTop: isMobile ? 'max(12px, env(safe-area-inset-top))' : '16px',
-        paddingLeft: isMobile ? 'max(16px, env(safe-area-inset-left))' : '24px',
-        paddingRight: isMobile ? 'max(16px, env(safe-area-inset-right))' : '24px',
+        padding: isMobile ? '8px 12px' : '16px 24px',
+        paddingTop: isMobile ? 'max(8px, env(safe-area-inset-top))' : '16px',
+        paddingLeft: isMobile ? 'max(12px, env(safe-area-inset-left))' : '24px',
+        paddingRight: isMobile ? 'max(12px, env(safe-area-inset-right))' : '24px',
       }}
     >
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         <Surface
           variant="navbar"
-          cornerRadius={isMobile ? 14 : 16}
-          padding={isMobile ? '10px 12px' : '16px 32px'}
+          cornerRadius={isMobile ? 12 : 16}
+          padding={isMobile ? '8px 10px' : '16px 32px'}
         >
           <div style={{
             display: 'flex',
@@ -119,9 +119,9 @@ export function Navbar() {
                 whileTap={{ scale: 0.98 }}
                 style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '4px' : '10px' }}
               >
-                <span style={{ fontSize: isMobile ? '22px' : '28px' }}>🎬</span>
+                <span style={{ fontSize: isMobile ? '20px' : '28px' }}>🎬</span>
                 <span style={{ 
-                  fontSize: isMobile ? '16px' : '24px', 
+                  fontSize: isMobile ? '15px' : '24px', 
                   fontWeight: 700,
                   background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%)',
                   WebkitBackgroundClip: 'text',
@@ -233,12 +233,12 @@ export function Navbar() {
                 <Surface
                   variant="button"
                   cornerRadius={50}
-                  padding={isMobile ? '6px 10px' : '8px 16px'}
+                  padding={isMobile ? '5px 8px' : '8px 16px'}
                   displacementScale={40}
                   blurAmount={0.05}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '4px' : '10px' }}>
-                    <span style={{ fontSize: isMobile ? '14px' : '16px', opacity: 0.6, flexShrink: 0 }}>🔍</span>
+                    <span style={{ fontSize: isMobile ? '13px' : '16px', opacity: 0.6, flexShrink: 0 }}>🔍</span>
                     <input
                       type="text"
                       placeholder={isMobile ? 'Search...' : 'Search movies...'}
@@ -249,12 +249,12 @@ export function Navbar() {
                         border: 'none',
                         outline: 'none',
                         color: '#fff',
-                        fontSize: isMobile ? '13px' : '14px',
+                        fontSize: isMobile ? '12px' : '14px',
                         width: isMobile ? '100%' : '200px',
                         minWidth: isMobile ? '0' : '200px',
                       }}
                     />
-                    {isSearching && <span style={{ fontSize: '14px', flexShrink: 0 }}>⏳</span>}
+                    {isSearching && <span style={{ fontSize: '12px', flexShrink: 0 }}>⏳</span>}
                   </div>
                 </Surface>
 

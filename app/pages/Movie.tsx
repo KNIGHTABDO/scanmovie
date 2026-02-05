@@ -171,7 +171,7 @@ export function MoviePage() {
         style={{
           position: 'relative',
           zIndex: 10,
-          paddingTop: '120px',
+          paddingTop: isMobile ? '80px' : '120px',
           paddingBottom: 'max(80px, calc(80px + env(safe-area-inset-bottom)))',
           paddingLeft: 'max(24px, env(safe-area-inset-left))',
           paddingRight: 'max(24px, env(safe-area-inset-right))',

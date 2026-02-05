@@ -19,8 +19,16 @@ export function RecommendationsPage() {
   const [recommendations, setRecommendations] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
   
   const { viewHistory, ratings, favorites } = useUserData();
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   useEffect(() => {
     async function fetchRecommendations() {
@@ -47,7 +55,10 @@ export function RecommendationsPage() {
     <div style={{ 
       minHeight: '100vh',
       background: 'linear-gradient(180deg, #0a0a0f 0%, #1a0a2e 50%, #0a0a0f 100%)',
-      padding: '24px 16px',
+      paddingTop: isMobile ? '80px' : '100px',
+      paddingBottom: '60px',
+      paddingLeft: '16px',
+      paddingRight: '16px',
     }}>
       {/* Header */}
       <motion.div

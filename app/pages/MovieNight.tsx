@@ -169,7 +169,7 @@ export function MovieNight() {
       style={{
         minHeight: '100vh',
         background: 'linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%)',
-        paddingTop: '100px',
+        paddingTop: isMobile ? '80px' : '100px',
         paddingBottom: '100px',
       }}
     >

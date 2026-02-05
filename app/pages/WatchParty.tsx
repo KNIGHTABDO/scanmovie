@@ -28,6 +28,7 @@ import {
 export function WatchPartyPage() {
   const [searchParams] = useSearchParams();
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
   
   // State
   const [parties, setParties] = useState<WatchParty[]>([]);
@@ -40,6 +41,13 @@ export function WatchPartyPage() {
   const [importCode, setImportCode] = useState('');
   const [showImportModal, setShowImportModal] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Load parties and check for shared import
   useEffect(() => {
@@ -206,7 +214,7 @@ export function WatchPartyPage() {
         style={{
           position: 'relative',
           zIndex: 10,
-          paddingTop: '120px',
+          paddingTop: isMobile ? '80px' : '120px',
           paddingBottom: '80px',
           paddingLeft: '24px',
           paddingRight: '24px',
