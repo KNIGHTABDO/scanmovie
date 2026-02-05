@@ -32,6 +32,10 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   
+  // Focus delay constants - mobile needs longer delay to prevent keyboard layout issues
+  const FOCUS_DELAY_MOBILE = 300; // ms - allows mobile browser to finish opening modal
+  const FOCUS_DELAY_DESKTOP = 100; // ms - quick focus for desktop
+  
   // Detect mobile
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -58,7 +62,8 @@ export function AIChat({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
   // Focus input when opened (delayed for mobile to prevent keyboard issues)
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), isMobile ? 300 : 100);
+      const delay = isMobile ? FOCUS_DELAY_MOBILE : FOCUS_DELAY_DESKTOP;
+      setTimeout(() => inputRef.current?.focus(), delay);
     }
   }, [isOpen, isMobile]);
 
