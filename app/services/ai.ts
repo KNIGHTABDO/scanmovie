@@ -1,4 +1,5 @@
 import type { ChatCompletionTool } from 'openai/resources/chat/completions';
+import { sanitizeAIPrompt } from './validation';
 
 // Note: OpenAI client now used server-side only (in api.ai.ts route)
 // This removes the need for dangerouslyAllowBrowser flag
@@ -200,13 +201,19 @@ export interface AIResponse {
  */
 export async function getAIResponse(messages: AIMessage[]): Promise<AIResponse> {
   try {
+    // Sanitize user messages to prevent prompt injection
+    const sanitizedMessages = messages.map(m => ({
+      role: m.role,
+      content: m.role === 'user' ? sanitizeAIPrompt(m.content) : m.content,
+    }));
+
     const response = await fetch('/api/ai', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        messages: messages.map(m => ({ role: m.role, content: m.content })),
+        messages: sanitizedMessages,
         tools,
         toolChoice: 'auto',
       }),

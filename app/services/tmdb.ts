@@ -4,6 +4,8 @@
  * Uses server-side proxy to keep API key secure
  */
 
+import { sanitizeSearchQuery } from './validation';
+
 export const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
 
 // Check if we're running in browser or server
@@ -161,8 +163,13 @@ export async function getTopRated(): Promise<Movie[]> {
  */
 export async function searchMovies(query: string): Promise<Movie[]> {
   if (!query.trim()) return [];
+  
+  // Sanitize search query to prevent injection
+  const sanitizedQuery = sanitizeSearchQuery(query);
+  if (!sanitizedQuery) return [];
+  
   const response = await tmdbFetch('/search/movie', { 
-    query: encodeURIComponent(query), 
+    query: encodeURIComponent(sanitizedQuery), 
     language: 'en-US', 
     page: '1' 
   });
@@ -407,8 +414,13 @@ export async function getPersonImages(personId: number): Promise<PersonImages> {
  */
 export async function searchPeople(query: string): Promise<Person[]> {
   if (!query.trim()) return [];
+  
+  // Sanitize search query to prevent injection
+  const sanitizedQuery = sanitizeSearchQuery(query);
+  if (!sanitizedQuery) return [];
+  
   const response = await tmdbFetch('/search/person', { 
-    query: encodeURIComponent(query), 
+    query: encodeURIComponent(sanitizedQuery), 
     language: 'en-US', 
     page: '1' 
   });

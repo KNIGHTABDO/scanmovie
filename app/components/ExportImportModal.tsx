@@ -21,6 +21,7 @@ import {
   readFileAsText,
 } from '~/services/exportImport';
 import type { Movie } from '~/services/tmdb';
+import { getMovieDetails } from '~/services/tmdb';
 import { useLanguage } from '~/contexts/LanguageContext';
 
 interface ExportImportModalProps {
@@ -111,11 +112,61 @@ export function ExportImportModal({
           return;
         }
         
-        // TODO: Import the data
+        // Convert ExportMovie to Movie objects by fetching details
+        setImportProgress({ current: 0, total: data.data.watchlist.length + data.data.favorites.length });
+        
+        const watchlistMovies: Movie[] = [];
+        const favoritesMovies: Movie[] = [];
+        
+        // Process watchlist
+        for (let i = 0; i < data.data.watchlist.length; i++) {
+          const exportMovie = data.data.watchlist[i];
+          setImportProgress({ current: i + 1, total: data.data.watchlist.length + data.data.favorites.length });
+          
+          try {
+            const movie = await getMovieDetails(exportMovie.id);
+            watchlistMovies.push(movie);
+            await new Promise(resolve => setTimeout(resolve, 100)); // Rate limit
+          } catch (error) {
+            console.error(`Failed to fetch movie ${exportMovie.id}:`, error);
+          }
+        }
+        
+        // Process favorites
+        for (let i = 0; i < data.data.favorites.length; i++) {
+          const exportMovie = data.data.favorites[i];
+          setImportProgress({ 
+            current: data.data.watchlist.length + i + 1, 
+            total: data.data.watchlist.length + data.data.favorites.length 
+          });
+          
+          try {
+            const movie = await getMovieDetails(exportMovie.id);
+            favoritesMovies.push(movie);
+            await new Promise(resolve => setTimeout(resolve, 100)); // Rate limit
+          } catch (error) {
+            console.error(`Failed to fetch movie ${exportMovie.id}:`, error);
+          }
+        }
+        
+        setImportProgress(null);
         setImportResult({ 
-          matched: data.data.watchlist.length + data.data.favorites.length,
-          unmatched: 0,
+          matched: watchlistMovies.length + favoritesMovies.length,
+          unmatched: (data.data.watchlist.length - watchlistMovies.length) + 
+                     (data.data.favorites.length - favoritesMovies.length),
         });
+        
+        // Call onImport with the data
+        if (onImport && (watchlistMovies.length > 0 || favoritesMovies.length > 0)) {
+          onImport({
+            watchlist: watchlistMovies,
+            favorites: favoritesMovies,
+            ratings: data.data.ratings.map(r => ({ 
+              movieId: r.movieId, 
+              rating: r.rating 
+            })),
+          });
+        }
       } else if (importSource === 'letterboxd') {
         const { movies, errors } = await parseLetterboxdCSV(content);
         if (errors.length > 0) {

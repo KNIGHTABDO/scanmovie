@@ -234,13 +234,13 @@ scanmovie/
 
 ### 🔴 Critical Priority (Security & Stability)
 
-- [ ] **Move TMDB API Key to Server-Side** - Currently hardcoded in client, should be proxied through backend
-- [ ] **Secure AI API Calls** - Remove `dangerouslyAllowBrowser: true` and proxy GitHub Models API through backend
-- [ ] **Complete ScanMovie Import Feature** - Import callback is not implemented in `ExportImportModal.tsx`
-- [ ] **Add React Error Boundaries** - Implement error boundaries to gracefully handle crashes
-- [ ] **Implement Rate Limiting** - Add protection against API abuse and excessive requests
-- [ ] **Add Input Validation & Sanitization** - Sanitize all user inputs before processing (AI queries, search terms)
-- [ ] **Environment Variables Validation** - Add startup checks to ensure all required env vars are configured
+- [x] **Move TMDB API Key to Server-Side** - ~~Currently hardcoded in client, should be proxied through backend~~ **DONE:** Implemented server-side API proxy routes
+- [x] **Secure AI API Calls** - ~~Remove `dangerouslyAllowBrowser: true` and proxy GitHub Models API through backend~~ **DONE:** AI calls now go through secure server-side proxy
+- [x] **Complete ScanMovie Import Feature** - ~~Import callback is not implemented in `ExportImportModal.tsx`~~ **DONE:** Fully implemented import with progress tracking
+- [x] **Add React Error Boundaries** - ~~Implement error boundaries to gracefully handle crashes~~ **DONE:** Enhanced root error boundary with custom styling
+- [x] **Implement Rate Limiting** - ~~Add protection against API abuse and excessive requests~~ **DONE:** Client-side rate limiting and throttling utilities
+- [x] **Add Input Validation & Sanitization** - ~~Sanitize all user inputs before processing (AI queries, search terms)~~ **DONE:** Comprehensive validation service with sanitization
+- [x] **Environment Variables Validation** - ~~Add startup checks to ensure all required env vars are configured~~ **DONE:** Startup validation in root component
 
 ### 🟡 High Priority (Features & UX)
 
