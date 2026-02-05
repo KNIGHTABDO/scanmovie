@@ -126,7 +126,7 @@ export function Home() {
           >
             {/* Cinematic slow zoom animation */}
             <motion.img
-              src={`https://image.tmdb.org/t/p/original${featuredMovie.backdrop_path}`}
+              src={`https://image.tmdb.org/t/p/w1280${featuredMovie.backdrop_path}`}
               alt=""
               initial={{ scale: 1 }}
               animate={{ scale: 1.08 }}
