@@ -229,16 +229,18 @@ export function Navbar() {
             {/* Right Side: Search + Mobile Menu */}
             <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '12px', flexShrink: 1, minWidth: 0 }}>
               {/* Search Bar */}
-              <div ref={searchRef} style={{ position: 'relative', flex: isMobile ? '1 1 auto' : '0 0 auto', minWidth: isMobile ? '120px' : 0, maxWidth: isMobile ? 'none' : '300px' }}>
-                <Surface
-                  variant="button"
-                  cornerRadius={50}
-                  padding={isMobile ? '8px 12px' : '8px 16px'}
-                  displacementScale={40}
-                  blurAmount={0.05}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '10px' }}>
-                    <span style={{ fontSize: isMobile ? '14px' : '16px', opacity: 0.6, flexShrink: 0 }}>🔍</span>
+              <div ref={searchRef} style={{ position: 'relative', flex: isMobile ? '1 1 auto' : '0 0 auto', minWidth: isMobile ? '140px' : 0, maxWidth: isMobile ? 'none' : '320px' }}>
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '50px',
+                  padding: isMobile ? '10px 14px' : '10px 18px',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '12px' }}>
+                    <span style={{ fontSize: isMobile ? '16px' : '18px', opacity: 0.8, flexShrink: 0, lineHeight: 1 }}>🔍</span>
                     <input
                       type="text"
                       placeholder={isMobile ? 'Search...' : 'Search movies...'}
@@ -248,15 +250,18 @@ export function Navbar() {
                         background: 'none',
                         border: 'none',
                         outline: 'none',
-                        color: '#fff',
-                        fontSize: '14px',
+                        color: '#ffffff',
+                        fontSize: isMobile ? '15px' : '15px',
                         width: '100%',
-                        minWidth: isMobile ? '60px' : '200px',
+                        minWidth: isMobile ? '80px' : '180px',
+                        fontWeight: 500,
+                        textAlign: 'left',
+                        paddingLeft: 0,
                       }}
                     />
-                    {isSearching && <span style={{ fontSize: '14px', flexShrink: 0 }}>⏳</span>}
+                    {isSearching && <span style={{ fontSize: '16px', flexShrink: 0 }}>⏳</span>}
                   </div>
-                </Surface>
+                </div>
 
                 {/* Search Results Dropdown */}
                 <AnimatePresence>
@@ -270,15 +275,21 @@ export function Navbar() {
                         position: 'absolute',
                         top: 'calc(100% + 12px)',
                         right: 0,
-                        width: isMobile ? 'calc(100vw - 32px)' : '320px',
+                        left: isMobile ? 0 : 'auto',
+                        width: isMobile ? '100%' : '320px',
+                        maxWidth: isMobile ? 'calc(100vw - 32px)' : '320px',
                         zIndex: 100,
                       }}
                     >
-                      <Surface
-                        variant="modal"
-                        cornerRadius={16}
-                        padding="8px"
-                      >
+                      <div style={{
+                        background: 'rgba(26, 26, 46, 0.95)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        borderRadius: '16px',
+                        padding: '8px',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                      }}>
                         {searchResults.map((movie) => (
                           <motion.button
                             key={movie.id}
@@ -299,13 +310,13 @@ export function Navbar() {
                               minHeight: '48px',
                             }}
                           >
-                            <span style={{ fontWeight: 500, fontSize: '14px' }}>{movie.title}</span>
-                            <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>
+                            <span style={{ fontWeight: 500, fontSize: '15px', color: '#ffffff' }}>{movie.title}</span>
+                            <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>
                               {movie.release_date?.split('-')[0] || 'N/A'}
                             </span>
                           </motion.button>
                         ))}
-                      </Surface>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
