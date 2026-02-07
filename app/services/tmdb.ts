@@ -24,7 +24,7 @@ async function tmdbFetch(endpoint: string, params?: Record<string, string>): Pro
     return fetch(`/api/tmdb?${queryParams.toString()}`);
   } else {
     // Server: direct call (for SSR loaders)
-    const TMDB_API_KEY = process.env.VITE_TMDB_API_KEY || '926f46968b21a2856b40b4bf9af55847';
+    const TMDB_API_KEY = process.env.TMDB_API_KEY || '926f46968b21a2856b40b4bf9af55847';
     const BASE_URL = 'https://api.themoviedb.org/3';
     const queryParams = new URLSearchParams(params);
     queryParams.set('api_key', TMDB_API_KEY);

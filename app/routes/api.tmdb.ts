@@ -6,7 +6,7 @@
 import type { LoaderFunctionArgs } from 'react-router';
 
 // Server-side only - API key is not exposed to client
-const TMDB_API_KEY = process.env.VITE_TMDB_API_KEY || '926f46968b21a2856b40b4bf9af55847';
+const TMDB_API_KEY = process.env.TMDB_API_KEY || '926f46968b21a2856b40b4bf9af55847';
 const BASE_URL = 'https://api.themoviedb.org/3';
 
 /**
