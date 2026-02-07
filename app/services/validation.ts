@@ -217,8 +217,8 @@ export function validateEnvironment(isBrowser: boolean = false): void {
   }
   
   if (missing.length > 0) {
-    console.warn('Missing optional environment variables:', missing);
-    console.warn('Some features (Firebase authentication and cloud sync) will be disabled.');
+    console.warn('Missing Firebase environment variables:', missing);
+    console.warn('Firebase features (authentication and cloud sync) will be disabled.');
     console.warn('To enable all features, please check your .env file and set these variables.');
     
     // Don't throw error - allow app to work with degraded functionality
