@@ -43,6 +43,7 @@ const firebaseConfig = {
 let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
+let googleProvider: GoogleAuthProvider;
 
 // Check if we're in a browser environment
 const isBrowser = typeof window !== 'undefined';
@@ -55,17 +56,17 @@ if (isBrowser) {
   }
   auth = getAuth(app);
   db = getFirestore(app);
+  
+  // Google Auth Provider (only initialize in browser)
+  googleProvider = new GoogleAuthProvider();
+  googleProvider.addScope('profile');
+  googleProvider.addScope('email');
+  
+  // Custom parameters for Google sign-in
+  googleProvider.setCustomParameters({
+    prompt: 'select_account'
+  });
 }
-
-// Google Auth Provider
-const googleProvider = new GoogleAuthProvider();
-googleProvider.addScope('profile');
-googleProvider.addScope('email');
-
-// Custom parameters for Google sign-in
-googleProvider.setCustomParameters({
-  prompt: 'select_account'
-});
 
 /**
  * Sign in with Google
