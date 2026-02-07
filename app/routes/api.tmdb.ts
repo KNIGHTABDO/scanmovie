@@ -12,27 +12,9 @@ const BASE_URL = 'https://api.themoviedb.org/3';
 const REQUEST_TIMEOUT = 8000; // 8 seconds
 const DEFAULT_RETRY_AFTER_SECONDS = '60'; // Default retry-after value for rate limiting
 
-// Allowed TMDB API endpoints for validation
-const ALLOWED_ENDPOINT_PATTERNS = [
-  /^\/movie\/\d+$/,                    // /movie/{id}
-  /^\/movie\/\d+\/credits$/,           // /movie/{id}/credits
-  /^\/movie\/\d+\/similar$/,           // /movie/{id}/similar
-  /^\/movie\/\d+\/videos$/,            // /movie/{id}/videos
-  /^\/movie\/now_playing$/,            // /movie/now_playing
-  /^\/movie\/popular$/,                // /movie/popular
-  /^\/movie\/top_rated$/,              // /movie/top_rated
-  /^\/movie\/upcoming$/,               // /movie/upcoming
-  /^\/trending\/movie\/(day|week)$/,   // /trending/movie/day or week
-  /^\/search\/movie$/,                 // /search/movie
-  /^\/search\/person$/,                // /search/person
-  /^\/discover\/movie$/,               // /discover/movie
-  /^\/person\/\d+$/,                   // /person/{id}
-  /^\/person\/\d+\/movie_credits$/,    // /person/{id}/movie_credits
-  /^\/person\/\d+\/images$/,           // /person/{id}/images
-];
-
 /**
  * Validate endpoint parameter to prevent injection attacks
+ * Only performs basic validation - endpoint must start with /
  */
 function validateEndpoint(endpoint: string): boolean {
   // Check if endpoint starts with /
@@ -40,8 +22,12 @@ function validateEndpoint(endpoint: string): boolean {
     return false;
   }
   
-  // Check against allowed patterns
-  return ALLOWED_ENDPOINT_PATTERNS.some(pattern => pattern.test(endpoint));
+  // Prevent path traversal attempts
+  if (endpoint.includes('..')) {
+    return false;
+  }
+  
+  return true;
 }
 
 /**
