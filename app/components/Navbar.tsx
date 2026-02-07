@@ -395,14 +395,21 @@ export function Navbar() {
               animate={{ opacity: 1, y: 0, height: 'auto' }}
               exit={{ opacity: 0, y: -20, height: 0 }}
               transition={{ duration: 0.3 }}
-              style={{ marginTop: '12px', overflow: 'hidden' }}
+              style={{ marginTop: '12px', overflow: 'visible' }}
             >
               <Surface
                 variant="modal"
                 cornerRadius={16}
                 padding="12px"
               >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: '4px',
+                  maxHeight: 'calc(100vh - 200px)',
+                  overflowY: 'auto',
+                  overflowX: 'hidden',
+                }}>
                   {/* User Profile Section */}
                   {isAuthenticated ? (
                     <Link to="/profile" style={{ textDecoration: 'none' }} onClick={() => setMobileMenuOpen(false)}>

@@ -119,8 +119,8 @@ export function MoviePage() {
     return <MovieNotFound />;
   }
 
-  const director = credits?.crew.find((c) => c.job === 'Director');
-  const topCast = credits?.cast.slice(0, 8) || [];
+  const director = credits?.crew?.find((c) => c.job === 'Director');
+  const topCast = credits?.cast?.slice(0, 8) || [];
   const genres = movie.genres?.map((g) => g.name).join(', ') || 'N/A';
 
   return (
