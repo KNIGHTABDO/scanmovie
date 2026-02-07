@@ -10,6 +10,7 @@ import type { LoaderFunctionArgs } from 'react-router';
 const TMDB_API_KEY = process.env.TMDB_API_KEY || '926f46968b21a2856b40b4bf9af55847';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const REQUEST_TIMEOUT = 8000; // 8 seconds
+const DEFAULT_RETRY_AFTER_SECONDS = '60'; // Default retry-after value for rate limiting
 
 // Allowed TMDB API endpoints for validation
 const ALLOWED_ENDPOINT_PATTERNS = [
@@ -147,7 +148,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
             status: 429, 
             headers: { 
               'Content-Type': 'application/json',
-              'Retry-After': response.headers.get('Retry-After') || '60',
+              'Retry-After': response.headers.get('Retry-After') || DEFAULT_RETRY_AFTER_SECONDS,
             } 
           }
         );
