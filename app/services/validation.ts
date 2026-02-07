@@ -217,15 +217,11 @@ export function validateEnvironment(isBrowser: boolean = false): void {
   }
   
   if (missing.length > 0) {
-    console.error('Missing required environment variables:', missing);
-    console.error('Please check your .env file and ensure all required variables are set.');
+    console.warn('Missing Firebase environment variables:', missing);
+    console.warn('Firebase features (authentication and cloud sync) will be disabled.');
+    console.warn('To enable all features, please check your .env file and set these variables.');
     
-    // In development, throw error. In production, just log
-    if (import.meta.env.DEV) {
-      throw new Error(
-        `Missing required environment variables: ${missing.join(', ')}. ` +
-        'Please check your .env file.'
-      );
-    }
+    // Don't throw error - allow app to work with degraded functionality
+    // Users can still browse movies using TMDB API without Firebase
   }
 }
