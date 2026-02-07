@@ -28,7 +28,7 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 
 # API Keys
-VITE_TMDB_API_KEY=your_tmdb_api_key
+TMDB_API_KEY=your_tmdb_api_key
 VITE_OPENAI_API_KEY=your_openai_api_key
 ```
 

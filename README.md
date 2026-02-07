@@ -107,7 +107,7 @@ A modern, feature-rich movie discovery and tracking application with an elegant 
    VITE_FIREBASE_APP_ID=your_app_id
 
    # API Keys
-   VITE_TMDB_API_KEY=your_tmdb_api_key
+   TMDB_API_KEY=your_tmdb_api_key
    VITE_OPENAI_API_KEY=your_openai_api_key
    ```
 
