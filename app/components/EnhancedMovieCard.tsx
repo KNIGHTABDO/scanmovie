@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Movie Card with Hover Preview

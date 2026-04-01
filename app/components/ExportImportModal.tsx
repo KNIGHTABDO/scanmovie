@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Export/Import Modal Component

@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * AI Response Card Component

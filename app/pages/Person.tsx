@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Person/Cast Member Detail Page

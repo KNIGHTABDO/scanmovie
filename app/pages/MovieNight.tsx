@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Movie Night Decision Maker
